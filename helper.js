@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         雨课堂 helper
-// @version      0.1.0
+// @version      0.1.1
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @author       hotwords123
 // @match        https://pro.yuketang.cn/lesson/fullscreen/v3/*
@@ -102,7 +102,8 @@
       this.lastProblem = null;
 
       this.autoAnswer = false;
-      this.autoAnswerDelay = [5 * 1000, 10 * 1000];
+      this.autoAnswerDelay = [3 * 1000, 6 * 1000];
+      this.autoAnswerTimers = [];
 
       window.addEventListener("keydown", (evt) => {
         if (evt.key === "F9") {
@@ -110,11 +111,20 @@
             this.revealAnswers(this.lastProblem);
           }
         } else if (evt.key === "F10") {
-          this.autoAnswer = !this.autoAnswer;
-          $toast({
-            message: `自动作答：${this.autoAnswer ? "开" : "关"}`,
-            duration: 1500
-          });
+          if (this.autoAnswerTimers.length > 0) {
+            let timer = this.autoAnswerTimers.shift();
+            clearTimeout(timer);
+            $toast({
+              message: "已取消自动作答",
+              duration: 3000
+            });
+          } else {
+            this.autoAnswer = !this.autoAnswer;
+            $toast({
+              message: `自动作答：${this.autoAnswer ? "开" : "关"}`,
+              duration: 1500
+            });
+          }
         }
       });
     }
@@ -197,7 +207,7 @@
         console.log(problem);
         console.groupEnd();
       } else {
-        body = `Problem #${data.prob} not found`;
+        body = "题目未找到";
       }
 
       const notification = new Notification("课堂习题提示", {
@@ -240,12 +250,21 @@
 
     doAutoAnswer(problem) {
       let result = this.getAnswerToProblem(problem);
-      if (!result) return;
+      if (!result) {
+        $toast({
+          message: "未指定提交内容，无法自动作答本题",
+          duration: 3000
+        });
+        return;
+      }
 
       const content = ["内容：" + JSON.stringify(result)];
 
       let delay = randInt(...this.autoAnswerDelay);
-      setTimeout(async () => {
+      let timer = setTimeout(async () => {
+        let index = this.autoAnswerTimers.indexOf(timer);
+        if (index !== -1) this.autoAnswerTimers.splice(index, 1);
+
         try {
           const resp = await API.answerProblem(problem, result);
           if (resp.code === 0) {
@@ -273,6 +292,12 @@
           console.error(evt);
         });
       }, delay);
+
+      this.autoAnswerTimers.push(timer);
+      $toast({
+        message: `将在 ${Math.round(delay / 1000)} 秒后自动作答本题，按 F10 取消`,
+        duration: 3000
+      });
     }
 
     revealAnswers(problem) {
