@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         雨课堂 helper
-// @version      0.1.1
+// @version      0.1.2
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @author       hotwords123
 // @match        https://pro.yuketang.cn/lesson/fullscreen/v3/*
@@ -144,6 +144,11 @@
           this.problems.set(slide.problem.problemId, slide.problem);
         }
       }
+
+      console.group(`【课件】${presentation.title}`);
+      console.log("课件", presentation);
+      console.log("题目页面", presentation.slides.filter(slide => !!slide.problem));
+      console.groupEnd();
 
       // save presentation data in local storage
       let list;
