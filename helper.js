@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         雨课堂 helper
-// @version      0.1.2
+// @version      0.2.0
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @author       hotwords123
 // @match        https://pro.yuketang.cn/lesson/fullscreen/v3/*
@@ -34,12 +34,21 @@
     return array;
   }
 
+  /**
+   * Adds a <style> element to the document.
+   * @param {string} content stylesheet content
+   */
   function addStyle(content) {
     const styleElement = document.createElement("style");
     styleElement.textContent = content;
     document.head.appendChild(styleElement);
   }
 
+  /**
+   * Adds a <script> element to the document.
+   * @param {string} source script url
+   * @returns {Promise<void>}
+   */
   function addScript(source) {
     return new Promise((resolve, reject) => {
       const scriptElement = document.createElement("script");
@@ -48,6 +57,18 @@
       scriptElement.addEventListener("error", reject);
       document.head.appendChild(scriptElement);
     });
+  }
+
+  /**
+   * Returns a (getter, setter) pair for lazy evaluation.
+   * @returns {[Promise<any>, (value: any) => void]}
+   */
+  function lazyEvaluator() {
+    let callback;
+    let promise = new Promise(resolve => {
+      callback = resolve;
+    });
+    return [promise, callback];
   }
 
   const API = {
@@ -121,7 +142,9 @@
       this.autoAnswerDelay = [3 * 1000, 6 * 1000];
       this.autoAnswerTimers = [];
 
-      this.vueApp = null;
+      const [getter, setter] = lazyEvaluator();
+      this.vueApp = getter;
+      this.setVueApp = setter;
 
       window.addEventListener("keydown", (evt) => {
         if (evt.key === "F10") {
@@ -160,7 +183,9 @@
       console.log("题目页面", problemSlides);
       console.groupEnd();
 
-      this.vueApp.appendPresentation(id, presentation, problemSlides);
+      this.vueApp.then(vueApp => {
+        vueApp.appendPresentation(id, presentation, problemSlides);
+      });
 
       // save presentation data in local storage
       let list;
@@ -204,7 +229,9 @@
       const slide = this.slides.get(data.sid);
 
       this.lastProblem = problem || null;
-      this.vueApp.canRevealAnswers = this.lastProblem !== null;
+      this.vueApp.then(vueApp => {
+        vueApp.canRevealAnswers = this.lastProblem !== null;
+      });
       this.notifyProblem(problem, slide);
 
       if (this.autoAnswer && problem) {
@@ -457,6 +484,8 @@
       height: 90%;
       background: rgba(255, 255, 255, 0.9);
       border: 1px solid #bbbbbb;
+      border-radius: 5px;
+      overflow: hidden;
     }
 
     #ykt-helper .problem-ui>.list {
@@ -504,7 +533,7 @@
       padding: 3px 5px;
       font-size: small;
       color: #f7f7f7;
-      background: #aaaaaa;
+      background: rgba(64, 64, 64, .4);
     }
 
     #ykt-helper .problem-ui>.list .slide.active {
@@ -558,7 +587,7 @@
     appContainer.id = "ykt-helper";
     document.body.appendChild(appContainer);
 
-    const app = helper.vueApp = Vue.createApp({
+    const app = Vue.createApp({
       template: `
         <div class="toolbar">
           <span class="btn" title="查看习题答案" :class="{ disabled: !canRevealAnswers }" @click="revealAnswers(null)">
@@ -676,7 +705,7 @@
                 result = content.split("").sort();
                 break;
               case 4:
-                result = content.split("\n");
+                result = content.split("\n").filter(text => !!text);
                 break;
               case 5:
                 result = [content];
@@ -692,7 +721,9 @@
       }
     }).mount("#ykt-helper");
 
+    helper.setVueApp(app);
     window.yktApp = app;
+
   }).catch(console.error);
 
   window.WebSocket = MyWebSocket;
