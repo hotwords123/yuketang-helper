@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         雨课堂 helper
-// @version      0.2.0
+// @version      0.2.1
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @author       hotwords123
 // @match        https://pro.yuketang.cn/lesson/fullscreen/v3/*
@@ -670,22 +670,26 @@
           if (slide) {
             const problem = slide.problem;
             const result = helper.problemAnswers.get(problem.problemId);
-            if (Array.isArray(result)) {
-              switch (problem.problemType) {
-                case 1: case 2: case 3:
-                  this.autoAnswerContent = result.join("");
-                  break;
-                case 4:
-                  this.autoAnswerContent = result.join("\n");
-                  break;
-                case 5:
-                  this.autoAnswerContent = result[0];
-                  break;
-              }
-            } else {
-              this.autoAnswerContent = "";
-            }
+            this.autoAnswerContent = this.loadAutoAnswerContent(problem.problemType, result);
           }
+        },
+
+        loadAutoAnswerContent(problemType, result) {
+          switch (problemType) {
+            case 1: case 2: case 3:
+              if (Array.isArray(result))
+                return result.join("");
+              break;
+            case 4:
+              if (Array.isArray(result))
+                return result.join("\n");
+              break;
+            case 5:
+              if (result && typeof result.content === "string")
+                return result.content;
+              break;
+          }
+          return "";
         },
 
         confirmAutoAnswer() {
@@ -708,7 +712,8 @@
                 result = content.split("\n").filter(text => !!text);
                 break;
               case 5:
-                result = [content];
+                // { content: string, pics: { pic: string, thumb: string }[] }
+                result = { content, pics: [] };
                 break;
             }
             helper.problemAnswers.set(problem.problemId, result);
