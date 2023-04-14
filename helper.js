@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         雨课堂 helper
-// @version      0.2.1
+// @version      0.2.2
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @author       hotwords123
 // @match        https://pro.yuketang.cn/lesson/fullscreen/v3/*
@@ -71,6 +71,46 @@
     return [promise, callback];
   }
 
+  const storage = {
+    prefix: "ykt-helper:",
+
+    get(key, defaultValue = null) {
+      let value = localStorage.getItem(this.prefix + key);
+      if (value) {
+        try {
+          return JSON.parse(value);
+        } catch (err) {}
+      }
+      return defaultValue;
+    },
+
+    set(key, value) {
+      localStorage.setItem(this.prefix + key, JSON.stringify(value));
+    },
+
+    remove(key) {
+      localStorage.removeItem(this.prefix + key);
+    },
+
+    getMap(key) {
+      try {
+        return new Map(this.get(key, []));
+      } catch (err) {
+        return new Map();
+      }
+    },
+
+    setMap(key, map) {
+      this.set(key, [...map]);
+    },
+
+    alterMap(key, callback) {
+      const map = this.getMap(key);
+      callback(map);
+      this.setMap(key, map);
+    }
+  };
+
   const API = {
     async fetch(method, path, options = {}) {
       const url = new URL("https://pro.yuketang.cn/api" + path);
@@ -133,7 +173,26 @@
       this.presentations = new Map();
       this.slides = new Map();
       this.problems = new Map();
-      this.problemAnswers = new Map();
+      this.problemAnswers = new class extends Map {
+        constructor() {
+          super(storage.getMap("auto-answer"));
+        }
+
+        set(key, value) {
+          super.set(key, value);
+          storage.alterMap("auto-answer", map => map.set(key, value));
+        }
+
+        delete(key) {
+          super.delete(key);
+          storage.alterMap("auto-answer", map => map.delete(key));
+        }
+
+        clear() {
+          super.clear();
+          storage.remove("auto-answer");
+        }
+      };
 
       this.unlockedProblems = new Set();
       this.lastProblem = null;
@@ -188,14 +247,7 @@
       });
 
       // save presentation data in local storage
-      let list;
-      try {
-        list = new Map(JSON.parse(localStorage.getItem("ykt-helper:presentations")));
-      } catch (err) {
-        list = new Map();
-      }
-      list.set(id, presentation);
-      localStorage.setItem("ykt-helper:presentations", JSON.stringify([...list]));
+      storage.alterMap("presentations", map => map.set(id, presentation));
     }
 
     onWebSocketMessage(message) {
