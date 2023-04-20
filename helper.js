@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         雨课堂 helper
-// @version      0.2.2
+// @version      0.2.3
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @author       hotwords123
 // @match        https://pro.yuketang.cn/lesson/fullscreen/v3/*
@@ -231,7 +231,7 @@
       for (const slide of presentation.slides) {
         this.slides.set(slide.id, slide);
 
-        if (typeof slide.problem === "object") {
+        if (slide.problem) {
           problemSlides.push(slide);
           this.problems.set(slide.problem.problemId, slide.problem);
         }
@@ -243,7 +243,7 @@
       console.groupEnd();
 
       this.vueApp.then(vueApp => {
-        vueApp.appendPresentation(id, presentation, problemSlides);
+        vueApp.appendPresentation(id, presentation);
       });
 
       // save presentation data in local storage
@@ -531,7 +531,7 @@
 
     #ykt-helper .problem-ui {
       display: grid;
-      grid-template: 100% / 240px auto;
+      grid-template: auto 36px / 240px auto;
       width: 80%;
       height: 90%;
       background: rgba(255, 255, 255, 0.9);
@@ -541,8 +541,9 @@
     }
 
     #ykt-helper .problem-ui>.list {
+      grid-row: 1;
+      grid-column: 1;
       padding: 5px 15px;
-      border-right: 1px solid #bbbbbb;
       overflow-y: auto;
     }
 
@@ -596,9 +597,29 @@
       background: #2d70e7;
     }
 
+    #ykt-helper .problem-ui>.toolbar {
+      grid-row: 2;
+      grid-column: 1;
+      padding: 5px 15px;
+      line-height: 26px;
+      border-top: 1px solid #bbbbbb;
+    }
+
+    #ykt-helper .problem-ui>.toolbar label {
+      font-size: small;
+    }
+
+    #ykt-helper .problem-ui>.toolbar input[type="checkbox"] {
+      appearance: auto;
+      vertical-align: middle;
+    }
+
     #ykt-helper .problem-ui>.detail {
+      grid-row: 1 / span 2;
+      gird-column: 2;
       padding: 25px 40px;
       overflow-y: auto;
+      border-left: 1px solid #bbbbbb;
     }
 
     #ykt-helper .problem-ui>.detail .cover {
@@ -655,27 +676,35 @@
         <div v-if="problemUIVisible" class="problem-ui-container">
           <div class="problem-ui">
             <div class="list">
-              <template v-for="presentation in presentations" :key="presentation.id">
+              <template v-for="presentation in filteredPresentations" :key="presentation.id">
                 <div class="title">{{ presentation.title }}</div>
-                <div class="slide" v-for="slide in presentation.problemSlides" :key="slide.id" :class="{ active: slide === currentSlide }" @click="setCurrentSlide(slide)">
+                <div class="slide" v-for="slide in presentation.slides" :key="slide.id" :class="{ active: slide === currentSlide }" @click="setCurrentSlide(slide)">
                   <img :src="slide.thumbnail">
                   <span class="tag">{{ slide.index }}</span>
                 </div>
               </template>
+            </div>
+            <div class="toolbar">
+              <label>
+                <input type="checkbox" v-model="showAllSlides">
+                显示全部页面
+              </label>
             </div>
             <div class="detail">
               <template v-if="currentSlide">
                 <div class="cover">
                   <img :src="currentSlide.cover">
                 </div>
-                <div class="body">
-                  <p>题面：{{ currentSlide.problem.body || "空" }}</p>
-                  <textarea v-model="autoAnswerContent" rows="6" placeholder="自动作答内容"></textarea>
-                </div>
-                <div class="actions">
-                  <button @click="revealAnswers(currentSlide.problem)">查看答案</button>
-                  <button @click="confirmAutoAnswer">自动作答</button>
-                </div>
+                <template v-if="currentSlide.problem">
+                  <div class="body">
+                    <p>题面：{{ currentSlide.problem.body || "空" }}</p>
+                    <textarea v-model="autoAnswerContent" rows="6" placeholder="自动作答内容"></textarea>
+                  </div>
+                  <div class="actions">
+                    <button @click="revealAnswers(currentSlide.problem)">查看答案</button>
+                    <button @click="confirmAutoAnswer">自动作答</button>
+                  </div>
+                </template>
               </template>
             </div>
           </div>
@@ -689,7 +718,17 @@
           problemUIVisible: false,
           presentations: [],
           currentSlide: null,
+          showAllSlides: false,
           autoAnswerContent: ""
+        }
+      },
+
+      computed: {
+        filteredPresentations() {
+          return this.presentations.map(({ slides, ...more }) => ({
+            slides: slides.filter(slide => this.showAllSlides || !!slide.problem),
+            ...more
+          }));
         }
       },
 
@@ -709,11 +748,11 @@
           });
         },
 
-        appendPresentation(id, presentation, problemSlides) {
+        appendPresentation(id, presentation) {
+          const { title, slides, ...meta } = presentation;
           this.presentations.push({
-            id: id,
-            title: presentation.title,
-            problemSlides: JSON.parse(JSON.stringify(problemSlides))
+            id, title, meta,
+            slides: JSON.parse(JSON.stringify(slides))
           });
         },
 
