@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         雨课堂 helper
-// @version      0.2.3
+// @version      0.2.4
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @author       hotwords123
 // @match        https://pro.yuketang.cn/lesson/fullscreen/v3/*
@@ -567,7 +567,6 @@
 
     #ykt-helper .problem-ui>.list .slide {
       position: relative;
-      min-height: 120px;
       margin: 10px 0;
       border: 2px solid #dddddd;
       cursor: pointer;
@@ -678,8 +677,8 @@
             <div class="list">
               <template v-for="presentation in filteredPresentations" :key="presentation.id">
                 <div class="title">{{ presentation.title }}</div>
-                <div class="slide" v-for="slide in presentation.slides" :key="slide.id" :class="{ active: slide === currentSlide }" @click="setCurrentSlide(slide)">
-                  <img :src="slide.thumbnail">
+                <div class="slide" v-for="slide in presentation.slides" :key="slide.id" :class="{ active: slide === currentSlide }" @click="setCurrentSlide(slide, presentation)">
+                  <img :src="slide.thumbnail" :style="{ aspectRatio: presentation.meta.width + '/' + presentation.meta.height }">
                   <span class="tag">{{ slide.index }}</span>
                 </div>
               </template>
@@ -693,7 +692,7 @@
             <div class="detail">
               <template v-if="currentSlide">
                 <div class="cover">
-                  <img :src="currentSlide.cover">
+                  <img :src="currentSlide.cover" :style="{ aspectRatio: currentPresentation.meta.width + '/' + currentPresentation.meta.height }">
                 </div>
                 <template v-if="currentSlide.problem">
                   <div class="body">
@@ -717,6 +716,7 @@
           autoAnswerEnabled: false,
           problemUIVisible: false,
           presentations: [],
+          currentPresentation: null,
           currentSlide: null,
           showAllSlides: false,
           autoAnswerContent: ""
@@ -756,8 +756,9 @@
           });
         },
 
-        setCurrentSlide(slide) {
+        setCurrentSlide(slide, presentation) {
           this.currentSlide = slide;
+          this.currentPresentation = presentation;
           if (slide) {
             const problem = slide.problem;
             const result = helper.problemAnswers.get(problem.problemId);
