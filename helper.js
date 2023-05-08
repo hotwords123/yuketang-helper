@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         雨课堂 helper
-// @version      0.2.4
+// @version      0.2.5
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @author       hotwords123
 // @match        https://pro.yuketang.cn/lesson/fullscreen/v3/*
@@ -194,6 +194,7 @@
         }
       };
 
+      this.messages = [];
       this.unlockedProblems = new Set();
       this.lastProblem = null;
 
@@ -224,6 +225,8 @@
         throw new Error(`Failed to load presentation ${id}: ${resp.msg}`);
       }
 
+      if (this.presentations.has(id)) return;
+
       const presentation = resp.data;
       this.presentations.set(id, presentation);
 
@@ -251,6 +254,8 @@
     }
 
     onWebSocketMessage(message) {
+      this.messages.push(message);
+
       switch (message.op) {
         case "fetchtimeline":
           this.onFetchTimeline(message.timeline);
