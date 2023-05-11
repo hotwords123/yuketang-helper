@@ -264,6 +264,10 @@
         case "unlockproblem":
           this.onUnlockProblem(message.problem);
           break;
+
+        case "lessonfinished":
+          this.onLessonFinished();
+          break;
       }
     }
 
@@ -294,6 +298,17 @@
       if (this.autoAnswer && problem) {
         this.doAutoAnswer(problem);
       }
+    }
+
+    onLessonFinished() {
+      const notification = new Notification("下课提示", {
+        body: "当前课程已结束",
+        tag: "lesson-finished-notice"
+      });
+
+      notification.addEventListener("error", (evt) => {
+        console.error(evt);
+      });
     }
 
     notifyProblem(problem, slide) {
