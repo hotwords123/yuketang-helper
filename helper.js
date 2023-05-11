@@ -194,7 +194,8 @@
         }
       };
 
-      this.messages = [];
+      this.messagesReceived = [];
+      this.messagesSent = [];
       this.unlockedProblems = new Set();
       this.lastProblem = null;
 
@@ -253,8 +254,8 @@
       storage.alterMap("presentations", map => map.set(id, presentation));
     }
 
-    onWebSocketMessage(message) {
-      this.messages.push(message);
+    onWebSocketMessageReceived(message) {
+      this.messagesReceived.push(message);
 
       switch (message.op) {
         case "fetchtimeline":
@@ -269,6 +270,10 @@
           this.onLessonFinished();
           break;
       }
+    }
+
+    onWebSocketMessageSent(message) {
+      this.messagesSent.push(message);
     }
 
     onFetchTimeline(timeline) {
@@ -453,11 +458,20 @@
       if (url === "wss://pro.yuketang.cn/wsapp/") {
         this.addEventListener("message", (evt) => {
           try {
-            helper.onWebSocketMessage(JSON.parse(evt.data));
+            helper.onWebSocketMessageReceived(JSON.parse(evt.data));
           } catch (err) {
             console.error(err);
           }
         });
+
+        this.send = data => {
+          try {
+            helper.onWebSocketMessageSent(JSON.parse(data));
+          } catch (err) {
+            console.error(err);
+          }
+          return super.send(data);
+        };
       }
     }
   }
