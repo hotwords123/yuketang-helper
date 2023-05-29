@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         雨课堂 helper
-// @version      0.2.7
+// @version      0.2.8
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @author       hotwords123
 // @match        https://pro.yuketang.cn/lesson/fullscreen/v3/*
@@ -199,13 +199,17 @@
       this.unlockedProblems = new Set();
       this.lastProblem = null;
 
-      this.autoAnswer = false;
-      this.autoAnswerDelay = [3 * 1000, 6 * 1000];
+      this.autoAnswer = storage.get("auto-answer-switch", false);
+      this.autoAnswerDelay = storage.get("auto-answer-delay", [3 * 1000, 6 * 1000]);
       this.autoAnswerTimers = [];
 
       const [getter, setter] = lazyEvaluator();
       this.vueApp = getter;
       this.setVueApp = setter;
+
+      this.vueApp.then(vueApp => {
+        vueApp.autoAnswerEnabled = this.autoAnswer;
+      });
 
       window.addEventListener("keydown", (evt) => {
         if (evt.key === "F10") {
@@ -219,6 +223,12 @@
           }
         }
       });
+    }
+
+    toggleAutoAnswer() {
+      this.autoAnswer = !this.autoAnswer;
+      storage.set("auto-answer-switch", this.autoAnswer);
+      return this.autoAnswer;
     }
 
     onPresentationLoaded(id, resp) {
@@ -797,7 +807,7 @@
         },
 
         toggleAutoAnswer() {
-          this.autoAnswerEnabled = helper.autoAnswer = !helper.autoAnswer;
+          this.autoAnswerEnabled = helper.toggleAutoAnswer();
           $toast({
             message: `自动作答：${this.autoAnswerEnabled ? "开" : "关"}`,
             duration: 1500
