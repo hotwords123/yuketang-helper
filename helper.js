@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         雨课堂 helper
-// @version      0.2.6
+// @version      0.2.7
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @author       hotwords123
 // @match        https://pro.yuketang.cn/lesson/fullscreen/v3/*
@@ -748,7 +748,7 @@
             <div class="detail">
               <template v-if="currentSlide">
                 <div class="cover">
-                  <img :src="currentSlide.cover" :style="{ aspectRatio: currentPresentation.meta.width + '/' + currentPresentation.meta.height }">
+                  <img :key="currentSlide.id" :src="currentSlide.cover" :style="{ aspectRatio: currentPresentation.meta.width + '/' + currentPresentation.meta.height }">
                 </div>
                 <template v-if="currentSlide.problem">
                   <div class="body">
