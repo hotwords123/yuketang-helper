@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         雨课堂 helper
-// @version      0.2.5
+// @version      0.2.6
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @author       hotwords123
 // @match        https://pro.yuketang.cn/lesson/fullscreen/v3/*
@@ -442,6 +442,14 @@
 
       alert(content.join("\n"));
     }
+
+    onRedEnvelopeListLoaded(id, result) {
+      if (result.code === 0) {
+        storage.alterMap("red-envelopes", map => map.set(id, result.data));
+      } else {
+        console.log(`Failed to load red envelope list: ${result.msg} (${result.code})`);
+      }
+    }
   }
 
   const helper = new YuketangHelper();
@@ -489,6 +497,15 @@
           try {
             const id = parsed.searchParams.get("presentation_id");
             helper.onPresentationLoaded(id, JSON.parse(this.responseText));
+          } catch (err) {
+            console.error(err);
+          }
+        });
+      } else if (parsed.pathname === "/api/v3/lesson/redenvelope/issue-list") {
+        this.addEventListener("load", (evt) => {
+          try {
+            const id = parsed.searchParams.get("redEnvelopeId");
+            helper.onRedEnvelopeListLoaded(id, JSON.parse(this.responseText));
           } catch (err) {
             console.error(err);
           }
