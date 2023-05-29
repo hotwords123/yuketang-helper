@@ -303,6 +303,7 @@
 
       const problem = this.problems.get(data.prob);
       const slide = this.slides.get(data.sid);
+      if (problem && problem.result !== null) return;
 
       this.lastProblem = problem || null;
       this.vueApp.then(vueApp => {
