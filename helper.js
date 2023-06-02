@@ -173,6 +173,7 @@
       this.presentations = new Map();
       this.slides = new Map();
       this.problems = new Map();
+      this.problemPresentationIds = new Map();
       this.problemAnswers = new class extends Map {
         constructor() {
           super(storage.getMap("auto-answer"));
@@ -248,6 +249,7 @@
         if (slide.problem) {
           problemSlides.push(slide);
           this.problems.set(slide.problem.problemId, slide.problem);
+          this.problemPresentationIds.set(slide.problem.problemId, id);
         }
       }
 
@@ -261,7 +263,16 @@
       });
 
       // save presentation data in local storage
-      storage.alterMap("presentations", map => map.set(id, presentation));
+      storage.alterMap("presentations", map => {
+        map.set(id, presentation);
+        const max_size = storage.get("max-presentations", 5);
+        if (map.size > max_size) {
+          const keys = [...map.keys()].slice(0, map.size - max_size);
+          for (const key of keys) {
+            map.delete(key);
+          }
+        }
+      });
     }
 
     onWebSocketMessageReceived(message) {
@@ -303,7 +314,7 @@
 
       const problem = this.problems.get(data.prob);
       const slide = this.slides.get(data.sid);
-      if (problem && problem.result !== null) return;
+      if (problem && problem.result) return;
 
       this.lastProblem = problem || null;
       this.vueApp.then(vueApp => {
@@ -314,6 +325,22 @@
       if (this.autoAnswer && problem) {
         this.doAutoAnswer(problem);
       }
+    }
+
+    onAnswerProblem(problemId, result, data) {
+      if (data.code !== 0) return;
+
+      const problem = this.problems.get(problemId);
+      if (!problem) return;
+
+      problem.result = result;
+
+      const presentationId = this.problemPresentationIds.get(problem.problemId);
+      this.vueApp.then(vueApp => {
+        const presentation = vueApp.presentations.find(x => x.id === presentationId);
+        const slide = presentation.slides.find(x => x.problem && x.problem.problemId === problemId);
+        slide.problem.result = JSON.parse(JSON.stringify(result));
+      });
     }
 
     onLessonFinished() {
@@ -402,6 +429,7 @@
           const resp = await API.answerProblem(problem, result);
           if (resp.code === 0) {
             content.push("作答完成");
+            this.onAnswerProblem(problem.problemId, result, resp);
           } else {
             content.push(`作答失败：${resp.msg} (${resp.code})`);
           }
@@ -504,25 +532,37 @@
     open(method, url, async) {
       const parsed = new URL(url, location.href);
       if (parsed.pathname === "/api/v3/lesson/presentation/fetch") {
-        this.addEventListener("load", (evt) => {
-          try {
-            const id = parsed.searchParams.get("presentation_id");
-            helper.onPresentationLoaded(id, JSON.parse(this.responseText));
-          } catch (err) {
-            console.error(err);
-          }
+        this.intercept(resp => {
+          const id = parsed.searchParams.get("presentation_id");
+          helper.onPresentationLoaded(id, resp);
         });
       } else if (parsed.pathname === "/api/v3/lesson/redenvelope/issue-list") {
-        this.addEventListener("load", (evt) => {
-          try {
-            const id = parsed.searchParams.get("redEnvelopeId");
-            helper.onRedEnvelopeListLoaded(id, JSON.parse(this.responseText));
-          } catch (err) {
-            console.error(err);
-          }
+        this.intercept(resp => {
+          const id = parsed.searchParams.get("redEnvelopeId");
+          helper.onRedEnvelopeListLoaded(id, resp);
+        });
+      } else if (parsed.pathname === "/api/v3/lesson/problem/answer") {
+        this.intercept((resp, payload) => {
+          const { problemId, result } = JSON.parse(payload);
+          helper.onAnswerProblem(problemId, result, resp);
         });
       }
       return super.open(method, url, async);
+    }
+
+    intercept(callback) {
+      let payload;
+      this.send = body => {
+        payload = body;
+        return super.send(body);
+      }
+      this.addEventListener("load", () => {
+        try {
+          callback(JSON.parse(this.responseText), payload);
+        } catch (err) {
+          console.error(err);
+        }
+      });
     }
   }
 
@@ -663,6 +703,18 @@
       background: #2d70e7;
     }
 
+    #ykt-helper .problem-ui>.list .slide.answered {
+      border-color: #8dd790;
+    }
+
+    #ykt-helper .problem-ui>.list .slide.answered.active {
+      border-color: #4caf50;
+    }
+
+    #ykt-helper .problem-ui>.list .slide.answered.active>.tag {
+      background: #4caf50;
+    }
+
     #ykt-helper .problem-ui>.toolbar {
       grid-row: 2;
       grid-column: 1;
@@ -744,7 +796,7 @@
             <div class="list">
               <template v-for="presentation in filteredPresentations" :key="presentation.id">
                 <div class="title">{{ presentation.title }}</div>
-                <div class="slide" v-for="slide in presentation.slides" :key="slide.id" :class="{ active: slide === currentSlide }" @click="setCurrentSlide(slide, presentation)">
+                <div class="slide" v-for="slide in presentation.slides" :key="slide.id" :class="{ active: slide === currentSlide, answered: slide.problem && slide.problem.result }" @click="setCurrentSlide(slide, presentation)">
                   <img :src="slide.thumbnail" :style="{ aspectRatio: presentation.meta.width + '/' + presentation.meta.height }">
                   <span class="tag">{{ slide.index }}</span>
                 </div>
@@ -764,6 +816,7 @@
                 <template v-if="currentSlide.problem">
                   <div class="body">
                     <p>题面：{{ currentSlide.problem.body || "空" }}</p>
+                    <p v-if="currentSlide.problem.result">作答内容：<code>{{ JSON.stringify(currentSlide.problem.result) }}</code></p>
                     <textarea v-model="autoAnswerContent" rows="6" placeholder="自动作答内容"></textarea>
                   </div>
                   <div class="actions">
