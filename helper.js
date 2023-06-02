@@ -200,8 +200,19 @@
       this.unlockedProblems = new Set();
       this.lastProblem = null;
 
-      this.autoAnswer = storage.get("auto-answer-switch", false);
-      this.autoAnswerDelay = storage.get("auto-answer-delay", [3 * 1000, 6 * 1000]);
+      const config = storage.get("config", {
+        autoAnswer: false,
+        autoAnswerDelay: [3 * 1000, 6 * 1000],
+        maxPresentations: 5,
+      });
+      this.config = new Proxy(config, {
+        set(target, key, value) {
+          Reflect.set(target, key, value);
+          storage.set("config", target);
+          return true;
+        }
+      });
+
       this.autoAnswerTimers = [];
 
       const [getter, setter] = lazyEvaluator();
@@ -209,7 +220,7 @@
       this.setVueApp = setter;
 
       this.vueApp.then(vueApp => {
-        vueApp.autoAnswerEnabled = this.autoAnswer;
+        vueApp.autoAnswerEnabled = this.config.autoAnswer;
       });
 
       window.addEventListener("keydown", (evt) => {
@@ -227,9 +238,7 @@
     }
 
     toggleAutoAnswer() {
-      this.autoAnswer = !this.autoAnswer;
-      storage.set("auto-answer-switch", this.autoAnswer);
-      return this.autoAnswer;
+      return this.config.autoAnswer = !this.config.autoAnswer;
     }
 
     onPresentationLoaded(id, resp) {
@@ -265,9 +274,9 @@
       // save presentation data in local storage
       storage.alterMap("presentations", map => {
         map.set(id, presentation);
-        const max_size = storage.get("max-presentations", 5);
-        if (map.size > max_size) {
-          const keys = [...map.keys()].slice(0, map.size - max_size);
+        const excess = map.size - this.config.maxPresentations;
+        if (excess > 0) {
+          const keys = [...map.keys()].slice(0, excess);
           for (const key of keys) {
             map.delete(key);
           }
@@ -322,7 +331,7 @@
       });
       this.notifyProblem(problem, slide);
 
-      if (this.autoAnswer && problem) {
+      if (this.config.autoAnswer && problem) {
         this.doAutoAnswer(problem);
       }
     }
@@ -420,7 +429,7 @@
 
       const content = ["内容：" + JSON.stringify(result)];
 
-      let delay = randInt(...this.autoAnswerDelay);
+      let delay = randInt(...this.config.autoAnswerDelay);
       let timer = setTimeout(async () => {
         let index = this.autoAnswerTimers.indexOf(timer);
         if (index !== -1) this.autoAnswerTimers.splice(index, 1);
