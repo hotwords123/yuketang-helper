@@ -215,6 +215,9 @@
 
       this.autoAnswerTimers = [];
 
+      this.users = new Map();
+      this.updateUsers([...storage.getMap("red-envelopes").values()]);
+
       const [getter, setter] = lazyEvaluator();
       this.vueApp = getter;
       this.setVueApp = setter;
@@ -494,8 +497,17 @@
     onRedEnvelopeListLoaded(id, result) {
       if (result.code === 0) {
         storage.alterMap("red-envelopes", map => map.set(id, result.data));
+        this.updateUsers([result.data]);
       } else {
         console.log(`Failed to load red envelope list: ${result.msg} (${result.code})`);
+      }
+    }
+
+    updateUsers(redEnvelopes) {
+      for (const { issueList } of redEnvelopes) {
+        for (const { userId, userName } of issueList) {
+          this.users.set(userId, { userName });
+        }
       }
     }
   }
@@ -890,8 +902,10 @@
           this.currentPresentation = presentation;
           if (slide) {
             const problem = slide.problem;
-            const result = helper.problemAnswers.get(problem.problemId);
-            this.autoAnswerContent = this.loadAutoAnswerContent(problem.problemType, result);
+            if (problem) {
+              const result = helper.problemAnswers.get(problem.problemId);
+              this.autoAnswerContent = this.loadAutoAnswerContent(problem.problemType, result);
+            }
           }
         },
 
