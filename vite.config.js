@@ -15,7 +15,7 @@ export default defineConfig({
         author: 'hotwords123',
         match: ['https://pro.yuketang.cn/lesson/fullscreen/v3/*'],
         icon: 'https://www.google.com/s2/favicons?sz=64&domain=yuketang.cn',
-        namespace: 'npm/vite-plugin-monkey',
+        namespace: 'https://github.com/hotwords123/yuketang-helper',
         grant: 'none',
       },
       build: {
