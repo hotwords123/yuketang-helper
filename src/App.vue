@@ -144,7 +144,7 @@ function onPresentationLoaded(id, data) {
 
   // Save presentation data in local storage
   storage.alterMap("presentations", (map) => {
-    map.set(id, presentation);
+    map.set(id, data);
 
     const excess = map.size - config.maxPresentations;
     if (excess > 0) {
@@ -342,7 +342,7 @@ function toggleProblemUI() {
 window.debugHelper = () => {
   const presentations = storage.getMap("presentations");
   for (const [id, presentation] of presentations) {
-    onPresentationLoaded(id, { code: 0, data: presentation });
+    onPresentationLoaded(id, presentation);
   }
 };
 </script>
@@ -373,7 +373,6 @@ window.debugHelper = () => {
     :config="config"
     :presentations="presentations"
     :problem-status="problemStatus"
-    @reveal-answers="revealAnswers"
     @answer-problem="onAnswerProblem"
   />
 </template>

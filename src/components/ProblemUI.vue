@@ -1,14 +1,14 @@
 <script setup>
-import { defineProps, ref, computed } from "vue";
+import { defineProps, ref, computed, reactive } from "vue";
 import storage from "../storage";
 import { randInt } from "../util";
 import { retryProblem } from "../api";
+import ProblemResult from "./ProblemResult.vue";
 
 const props = defineProps([
   "config",
   "presentations",
   "problemStatus",
-  "onRevealAnswers",
   "onAnswerProblem",
 ]);
 
@@ -69,6 +69,16 @@ function setCurrentSlide(slide, presentation) {
         break;
     }
   }
+}
+
+const revealedProblemIds = reactive(new Set());
+
+function answerRevealed(problem) {
+  return problem.result || revealedProblemIds.has(problem.problemId);
+}
+
+function revealAnswer(problem) {
+  revealedProblemIds.add(problem.problemId);
 }
 
 function parseAnswer(problemType, content) {
@@ -186,13 +196,26 @@ async function handleRetry(problem) {
               <p>
                 题面：{{ currentProblem.body || "空" }}
               </p>
-              <p v-if="currentProblem.result">
-                作答内容：<code>{{ JSON.stringify(currentProblem.result) }}</code>
-              </p>
+              <template v-if="[1, 2, 4].includes(currentProblem.problemType)">
+                <ProblemResult
+                  v-if="answerRevealed(currentProblem)"
+                  tag="答案"
+                  :type="currentProblem.problemType"
+                  :result="currentProblem.answers"
+                />
+                <p v-else>
+                  答案：<a href="#" @click.prevent="revealAnswer(currentProblem)">查看答案</a>
+                </p>
+              </template>
+              <ProblemResult
+                v-if="currentProblem.result"
+                tag="作答内容"
+                :type="currentProblem.problemType"
+                :result="currentProblem.result"
+              />
               <textarea v-model="answerContent" rows="6" placeholder="自动作答内容"></textarea>
             </div>
             <div class="actions">
-              <button @click="props.onRevealAnswers(currentProblem)">查看答案</button>
               <button @click="updateAutoAnswer()">自动作答</button>
               <button :disabled="!canRetry(currentProblem)" @click="handleRetry(currentProblem)">重试作答</button>
             </div>
