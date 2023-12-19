@@ -1,14 +1,22 @@
 <script setup>
 import { defineProps, ref, computed } from "vue";
 import storage from "../storage";
+import { randInt } from "../util";
+import { retryProblem } from "../api";
 
-const props = defineProps(["presentations", "unlockedProblemIds", "onRevealAnswers"])
+const props = defineProps([
+  "config",
+  "presentations",
+  "problemStatus",
+  "onRevealAnswers",
+  "onAnswerProblem",
+]);
 
 const showAllSlides = ref(false);
 const currentPresentation = ref(null);
 const currentSlide = ref(null);
 const currentProblem = computed(() => currentSlide.value?.problem);
-const autoAnswerContent = ref("");
+const answerContent = ref("");
 
 const filteredPresentations = computed(() => {
   return [...props.presentations.values()].map(({ slides, ...more }) => ({
@@ -22,7 +30,7 @@ function slideClass(slide) {
   return {
     active: slide === currentSlide.value,
     ...problem && {
-      unlocked: props.unlockedProblemIds.has(problem.problemId),
+      unlocked: props.problemStatus.has(problem.problemId),
       answered: !!problem.result
     }
   };
@@ -37,7 +45,7 @@ function setCurrentSlide(slide, presentation) {
   currentPresentation.value = presentation;
   currentSlide.value = slide;
 
-  autoAnswerContent.value = "";
+  answerContent.value = "";
 
   const problem = slide.problem;
   if (problem) {
@@ -47,25 +55,39 @@ function setCurrentSlide(slide, presentation) {
     switch (problem.problemType) {
       case 1: case 2: case 3:
         if (Array.isArray(result))
-          autoAnswerContent.value = result.join("");
+          answerContent.value = result.join("");
         break;
 
       case 4:
         if (Array.isArray(result))
-          autoAnswerContent.value = result.join("\n");
+          answerContent.value = result.join("\n");
         break;
 
       case 5:
         if (result && typeof result.content === "string")
-          autoAnswerContent.value = result.content;
+          answerContent.value = result.content;
         break;
     }
   }
 }
 
+function parseAnswer(problemType, content) {
+  switch (problemType) {
+    case 1: case 2: case 3:
+      return content.split("").sort();
+
+    case 4:
+      return content.split("\n").filter(text => !!text);
+
+    case 5:
+      // { content: string, pics: { pic: string, thumb: string }[] }
+      return { content, pics: [] };
+  }
+}
+
 function updateAutoAnswer() {
   const problem = currentProblem.value;
-  const content = autoAnswerContent.value;
+  const content = answerContent.value;
 
   if (!content) {
     storage.alterMap("auto-answer", (map) => map.delete(problem.problemId));
@@ -75,25 +97,56 @@ function updateAutoAnswer() {
       duration: 3000
     });
   } else {
-    let result;
-    switch (problem.problemType) {
-      case 1: case 2: case 3:
-        result = content.split("").sort();
-        break;
-
-      case 4:
-        result = content.split("\n").filter(text => !!text);
-        break;
-
-      case 5:
-        // { content: string, pics: { pic: string, thumb: string }[] }
-        result = { content, pics: [] };
-        break;
-    }
+    const result = parseAnswer(problem.problemType, content);
     storage.alterMap("auto-answer", (map) => map.set(problem.problemId, result));
 
     $toast({
       message: "已设置本题的自动作答内容",
+      duration: 3000
+    });
+  }
+}
+
+function canRetry(problem) {
+  return props.problemStatus.has(problem.problemId) && !problem.result;
+}
+
+async function handleRetry(problem) {
+  const content = answerContent.value;
+  if (!content) {
+    $toast({
+      message: "作答内容不能为空",
+      duration: 3000
+    });
+    return;
+  }
+
+  if (!confirm("此功能用于补救超时未作答的题目，是否继续？"))
+    return;
+
+  try {
+    const result = parseAnswer(problem.problemType, content);
+    const status = props.problemStatus.get(problem.problemId);
+    const dt = status.startTime + randInt(...props.config.autoAnswerDelay);
+
+    const resp = await retryProblem(problem, result, dt);
+
+    if (resp.code !== 0)
+      throw new Error(`${resp.msg} (${resp.code})`);
+
+    if (!resp.data.success.includes(problem.problemId))
+      throw new Error("服务器未返回成功信息");
+
+    props.onAnswerProblem(problem, result);
+
+    $toast({
+      message: "重试作答成功",
+      duration: 3000
+    });
+  } catch (err) {
+    console.error(err);
+    $toast({
+      message: "重试作答失败：" + err.message,
       duration: 3000
     });
   }
@@ -136,11 +189,12 @@ function updateAutoAnswer() {
               <p v-if="currentProblem.result">
                 作答内容：<code>{{ JSON.stringify(currentProblem.result) }}</code>
               </p>
-              <textarea v-model="autoAnswerContent" rows="6" placeholder="自动作答内容"></textarea>
+              <textarea v-model="answerContent" rows="6" placeholder="自动作答内容"></textarea>
             </div>
             <div class="actions">
               <button @click="props.onRevealAnswers(currentProblem)">查看答案</button>
               <button @click="updateAutoAnswer()">自动作答</button>
+              <button :disabled="!canRetry(currentProblem)" @click="handleRetry(currentProblem)">重试作答</button>
             </div>
           </template>
         </template>

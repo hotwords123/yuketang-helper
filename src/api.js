@@ -32,13 +32,26 @@ export async function request(method, path, options = {}) {
   return json;
 }
 
-export function answerProblem(problem, result) {
+export function answerProblem(problem, result, dt = Date.now()) {
   return request("POST", "/v3/lesson/problem/answer", {
     body: {
       problemId: problem.problemId,
       problemType: problem.problemType,
-      dt: Date.now(),
+      dt: dt,
       result: result
+    }
+  });
+}
+
+export function retryProblem(problem, result, dt) {
+  return request("POST", "/v3/lesson/problem/retry", {
+    body: {
+      problems: [{
+        problemId: problem.problemId,
+        problemType: problem.problemType,
+        dt: dt,
+        result: result
+      }]
     }
   });
 }

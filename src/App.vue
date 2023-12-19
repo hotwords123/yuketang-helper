@@ -19,7 +19,7 @@ watch(config, (value) => storage.set("config", value));
 const presentations = reactive(new Map());
 const slides = reactive(new Map());
 const problems = reactive(new Map());
-const unlockedProblemIds = reactive(new Set());
+const problemStatus = reactive(new Map());
 const lastProblem = ref(null);
 // #endregion
 
@@ -61,12 +61,16 @@ function onFetchTimeline(timeline) {
 }
 
 function onUnlockProblem(data) {
-  if (unlockedProblemIds.has(data.prob)) return;
-  unlockedProblemIds.add(data.prob);
+  if (problemStatus.has(data.prob)) return;
+
+  const status = {
+    startTime: data.dt,
+    endTime: data.dt + 1000 * data.limit,
+  };
+  problemStatus.set(data.prob, status);
 
   // Skip if problem has expired
-  const endTime = data.dt + 1000 * data.limit;
-  if (Date.now() > endTime) return;
+  if (Date.now() > status.endTime) return;
 
   const problem = problems.get(data.prob);
   const slide = slides.get(data.sid);
@@ -100,32 +104,33 @@ MyXMLHttpRequest.addHandler((xhr, method, url) => {
   if (url.pathname === "/api/v3/lesson/presentation/fetch") {
     xhr.intercept((resp) => {
       const id = url.searchParams.get("presentation_id");
-      onPresentationLoaded(id, resp);
+      if (resp.code === 0) {
+        onPresentationLoaded(id, resp.data);
+      }
     });
   }
 
   if (url.pathname === "/api/v3/lesson/redenvelope/issue-list") {
     xhr.intercept((resp) => {
       const id = url.searchParams.get("redEnvelopeId");
-      onRedEnvelopeListLoaded(id, resp);
+      if (resp.code === 0) {
+        onRedEnvelopeListLoaded(id, resp.data);
+      }
     });
   }
 
   if (url.pathname === "/api/v3/lesson/problem/answer") {
     xhr.intercept((resp, payload) => {
       const { problemId, result } = JSON.parse(payload);
-      onAnswerProblem(problemId, result, resp);
+      if (resp.code === 0) {
+        onAnswerProblem(problemId, result);
+      }
     });
   }
 });
 
-function onPresentationLoaded(id, resp) {
-  if (resp.code !== 0) {
-    throw new Error(`Failed to load presentation ${id}: ${resp.msg}`);
-  }
-
-  const presentation = resp.data;
-  presentation.id = id;
+function onPresentationLoaded(id, data) {
+  const presentation = { id, ...data };
   presentations.set(id, presentation);
 
   for (const slide of presentation.slides) {
@@ -151,17 +156,11 @@ function onPresentationLoaded(id, resp) {
   });
 }
 
-function onRedEnvelopeListLoaded(id, result) {
-  if (result.code === 0) {
-    storage.alterMap("red-envelopes", map => map.set(id, result.data));
-  } else {
-    console.log(`Failed to load red envelope list: ${result.msg} (${result.code})`);
-  }
+function onRedEnvelopeListLoaded(id, data) {
+  storage.alterMap("red-envelopes", map => map.set(id, data));
 }
 
-function onAnswerProblem(problemId, result, data) {
-  if (data.code !== 0) return;
-
+function onAnswerProblem(problemId, result) {
   const problem = problems.get(problemId);
   if (problem) {
     problem.result = result;
@@ -371,9 +370,11 @@ window.debugHelper = () => {
   </div>
   <ProblemUI
     v-show="problemUIVisible"
+    :config="config"
     :presentations="presentations"
-    :unlocked-problem-ids="unlockedProblemIds"
+    :problem-status="problemStatus"
     @reveal-answers="revealAnswers"
+    @answer-problem="onAnswerProblem"
   />
 </template>
 
