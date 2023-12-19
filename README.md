@@ -2,6 +2,8 @@
 
 一个雨课堂辅助工具。
 
+如果浏览器已经安装了 Tampermonkey 插件，可以 [点此安装](https://raw.githubusercontent.com/hotwords123/yuketang-helper/gh-pages/yuketang-helper.user.js)。
+
 ## 功能介绍
 
 加载成功时，页面左下角会出现一个工具栏。
