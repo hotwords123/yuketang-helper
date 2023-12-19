@@ -1,0 +1,312 @@
+<script setup>
+import { defineProps, ref, computed } from "vue";
+import storage from "../storage";
+
+const props = defineProps(["presentations", "unlockedProblemIds", "onRevealAnswers"])
+
+const showAllSlides = ref(false);
+const currentPresentation = ref(null);
+const currentSlide = ref(null);
+const currentProblem = computed(() => currentSlide.value?.problem);
+const autoAnswerContent = ref("");
+
+const filteredPresentations = computed(() => {
+  return [...props.presentations.values()].map(({ slides, ...more }) => ({
+    slides: slides.filter(slide => showAllSlides.value || slide.problem),
+    ...more
+  }));
+});
+
+function slideClass(slide) {
+  const problem = slide.problem;
+  return {
+    active: slide === currentSlide.value,
+    ...problem && {
+      unlocked: props.unlockedProblemIds.has(problem.problemId),
+      answered: !!problem.result
+    }
+  };
+}
+
+function coverStyle(presentation) {
+  const { width, height } = presentation;
+  return { aspectRatio: width + '/' + height };
+}
+
+function setCurrentSlide(slide, presentation) {
+  currentPresentation.value = presentation;
+  currentSlide.value = slide;
+
+  autoAnswerContent.value = "";
+
+  const problem = slide.problem;
+  if (problem) {
+    const problemAnswers = storage.getMap("auto-answer");
+    const result = problemAnswers.get(problem.problemId);
+
+    switch (problem.problemType) {
+      case 1: case 2: case 3:
+        if (Array.isArray(result))
+          autoAnswerContent.value = result.join("");
+        break;
+
+      case 4:
+        if (Array.isArray(result))
+          autoAnswerContent.value = result.join("\n");
+        break;
+
+      case 5:
+        if (result && typeof result.content === "string")
+          autoAnswerContent.value = result.content;
+        break;
+    }
+  }
+}
+
+function updateAutoAnswer() {
+  const problem = currentProblem.value;
+  const content = autoAnswerContent.value;
+
+  if (!content) {
+    storage.alterMap("auto-answer", (map) => map.delete(problem.problemId));
+
+    $toast({
+      message: "已重置本题的自动作答内容",
+      duration: 3000
+    });
+  } else {
+    let result;
+    switch (problem.problemType) {
+      case 1: case 2: case 3:
+        result = content.split("").sort();
+        break;
+
+      case 4:
+        result = content.split("\n").filter(text => !!text);
+        break;
+
+      case 5:
+        // { content: string, pics: { pic: string, thumb: string }[] }
+        result = { content, pics: [] };
+        break;
+    }
+    storage.alterMap("auto-answer", (map) => map.set(problem.problemId, result));
+
+    $toast({
+      message: "已设置本题的自动作答内容",
+      duration: 3000
+    });
+  }
+}
+</script>
+
+<template>
+  <div class="container">
+    <div class="popup">
+      <div class="list">
+        <template v-for="presentation in filteredPresentations" :key="presentation.id">
+          <div class="title">{{ presentation.title }}</div>
+          <div class="slide"
+            v-for="slide in presentation.slides"
+            :key="slide.id"
+            :class="slideClass(slide)"
+            @click="setCurrentSlide(slide, presentation)"
+          >
+            <img :src="slide.thumbnail" :style="coverStyle(presentation)" />
+            <span class="tag">{{ slide.index }}</span>
+          </div>
+        </template>
+      </div>
+      <div class="tail">
+        <label>
+          <input type="checkbox" v-model="showAllSlides">
+          显示全部页面
+        </label>
+      </div>
+      <div class="detail">
+        <template v-if="currentSlide">
+          <div class="cover">
+            <img :key="currentSlide.id" :src="currentSlide.cover" :style="coverStyle(currentPresentation)">
+          </div>
+          <template v-if="currentProblem">
+            <div class="body">
+              <p>
+                题面：{{ currentProblem.body || "空" }}
+              </p>
+              <p v-if="currentProblem.result">
+                作答内容：<code>{{ JSON.stringify(currentProblem.result) }}</code>
+              </p>
+              <textarea v-model="autoAnswerContent" rows="6" placeholder="自动作答内容"></textarea>
+            </div>
+            <div class="actions">
+              <button @click="props.onRevealAnswers(currentProblem)">查看答案</button>
+              <button @click="updateAutoAnswer()">自动作答</button>
+            </div>
+          </template>
+        </template>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.container {
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(64, 64, 64, 0.4);
+}
+
+.popup {
+  display: grid;
+  grid-template: auto 36px / 240px auto;
+  width: 80%;
+  height: 90%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #bbbbbb;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.list {
+  grid-row: 1;
+  grid-column: 1;
+  padding: 5px 15px;
+  overflow-y: auto;
+}
+
+.list .title {
+  font-weight: bold;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.list .title:after {
+  content: "";
+  display: inline-block;
+  height: 1px;
+  background: #aaaaaa;
+  position: relative;
+  vertical-align: middle;
+  width: 100%;
+  left: 1em;
+  margin-right: -100%;
+}
+
+.list .slide {
+  position: relative;
+  margin: 10px 0;
+  border: 2px solid #dddddd;
+  cursor: pointer;
+}
+
+.list .slide>img {
+  display: block;
+  width: 100%;
+}
+
+.list .slide>.tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  padding: 3px 5px;
+  font-size: small;
+  color: #f7f7f7;
+  background: rgba(64, 64, 64, .4);
+}
+
+.list .slide.active {
+  border-color: #2d70e7;
+}
+
+.list .slide.active>.tag {
+  background: #2d70e7;
+}
+
+.list .slide.unlocked {
+  border-color: #d7d48e;
+}
+
+.list .slide.unlocked.active {
+  border-color: #e6cb2d;
+}
+
+.list .slide.unlocked.active>.tag {
+  background: #e6cb2d;
+}
+
+.list .slide.answered {
+  border-color: #8dd790;
+}
+
+.list .slide.answered.active {
+  border-color: #4caf50;
+}
+
+.list .slide.answered.active>.tag {
+  background: #4caf50;
+}
+
+.tail {
+  grid-row: 2;
+  grid-column: 1;
+  padding: 5px 15px;
+  line-height: 26px;
+  border-top: 1px solid #bbbbbb;
+}
+
+.tail label {
+  font-size: small;
+}
+
+.tail input[type="checkbox"] {
+  appearance: auto;
+  vertical-align: middle;
+}
+
+.detail {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  padding: 25px 40px;
+  overflow-y: auto;
+  border-left: 1px solid #bbbbbb;
+}
+
+.detail .cover {
+  border: 1px solid #dddddd;
+  box-shadow: 0 1px 4px 3px rgba(0, 0, 0, .1);
+}
+
+.detail .cover>img {
+  display: block;
+  width: 100%;
+}
+
+.detail .body {
+  margin-top: 25px;
+}
+
+.detail .body>textarea {
+  width: 100%;
+  min-height: 40px;
+  resize: vertical;
+}
+
+.detail .actions {
+  margin-top: 25px;
+  text-align: center;
+}
+
+.detail .actions>button {
+  margin: 0 20px;
+  padding: 4px 10px;
+}
+</style>

@@ -1,7 +1,31 @@
-# Vue 3 + Vite
+# ykt-helper
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+一个雨课堂辅助工具。
 
-## Recommended IDE Setup
+## 功能介绍
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+加载成功时，页面左下角会出现一个工具栏。
+
+### 1. 课堂习题提示
+
+在有新的习题时自动弹出通知提示，防止上课摸鱼错过习题。
+
+若要查看这堂课的所有习题信息，可以点击工具栏的「显示习题列表」图标。
+
+### 2. 习题答案提示
+
+对于有标准答案的选择题和填空题，点击工具栏的「查看习题答案」图标可以显示最后发布的习题的答案。投票题和主观题没有标准答案，因此无法显示。
+
+### 3. 自动作答习题
+
+默认关闭，点击工具栏的「切换自动作答」图标可以切换自动作答功能的开启状态。功能开启时，将在习题发布后几秒内自动提交答案。
+
+对于选择题和填空题，默认提交正确答案；对于投票题，默认提交随机答案；对于主观题，默认不提交答案，需要用户设置提交内容才能自动作答。
+
+若要自定义提交的内容，首先打开习题列表，在左侧列表中选择习题，然后在右侧文本框中输入提交内容，最后点击「自动作答」按钮设置自动作答内容。对于选择题和投票题，直接输入选项字母；对于填空题，一行输入一个空的答案（空行会被自动忽略）；对于主观题，直接输入提交内容。
+
+## 注意事项
+
+1. 第一次使用时浏览器会弹出通知权限请求，需要用户同意授予网站通知权限。
+2. 自动作答功能只对开启功能后发布的习题生效。对于开启功能时已发布但未作答的习题，功能不会生效。
+3. 自动作答执行后会弹出通知提示。即使作答成功，网页端显示的作答状态也是未作答，但在网页端提交答案会提示题目已经作答过。

@@ -9,9 +9,14 @@ export default defineConfig({
     monkey({
       entry: 'src/main.js',
       userscript: {
-        icon: 'https://vitejs.dev/logo.svg',
+        name: '雨课堂 helper',
+        version: '1.0.0',
+        description: '雨课堂辅助工具：课堂习题提示，自动作答习题',
+        author: 'hotwords123',
+        match: ['https://pro.yuketang.cn/lesson/fullscreen/v3/*'],
+        icon: 'https://www.google.com/s2/favicons?sz=64&domain=yuketang.cn',
         namespace: 'npm/vite-plugin-monkey',
-        match: ['https://www.google.com/'],
+        grant: 'none',
       },
       build: {
         externalGlobals: {
