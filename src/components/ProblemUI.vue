@@ -3,7 +3,7 @@ import { defineProps, ref, computed, reactive } from "vue";
 import storage from "../storage";
 import { randInt } from "../util";
 import { retryProblem } from "../api";
-import ProblemResult from "./ProblemResult.vue";
+import AnswerReveal from "./AnswerReveal.vue";
 
 const props = defineProps([
   "config",
@@ -147,7 +147,7 @@ async function handleRetry(problem) {
     if (!resp.data.success.includes(problem.problemId))
       throw new Error("服务器未返回成功信息");
 
-    props.onAnswerProblem(problem, result);
+    props.onAnswerProblem?.(problem, result);
 
     $toast({
       message: "重试作答成功",
@@ -196,23 +196,15 @@ async function handleRetry(problem) {
               <p>
                 题面：{{ currentProblem.body || "空" }}
               </p>
-              <template v-if="[1, 2, 4].includes(currentProblem.problemType)">
-                <ProblemResult
-                  v-if="answerRevealed(currentProblem)"
-                  tag="答案"
-                  :type="currentProblem.problemType"
-                  :result="currentProblem.answers"
-                />
-                <p v-else>
-                  答案：<a href="#" @click.prevent="revealAnswer(currentProblem)">查看答案</a>
-                </p>
-              </template>
-              <ProblemResult
-                v-if="currentProblem.result"
-                tag="作答内容"
-                :type="currentProblem.problemType"
-                :result="currentProblem.result"
+              <AnswerReveal
+                v-if="[1, 2, 4].includes(currentProblem.problemType)"
+                :problem="currentProblem"
+                :revealed="answerRevealed(currentProblem)"
+                @reveal="revealAnswer(currentProblem)"
               />
+              <p v-if="currentProblem.result">
+                作答内容：<code>{{ JSON.stringify(currentProblem.result) }}</code>
+              </p>
               <textarea v-model="answerContent" rows="6" placeholder="自动作答内容"></textarea>
             </div>
             <div class="actions">
