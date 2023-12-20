@@ -1,16 +1,22 @@
 // ==UserScript==
 // @name         雨课堂 helper
 // @namespace    https://github.com/hotwords123/yuketang-helper
-// @version      1.0.0
+// @version      1.1.0
 // @author       hotwords123
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=yuketang.cn
-// @match        https://pro.yuketang.cn/lesson/fullscreen/v3/*
+// @match        https://pro.yuketang.cn/*
 // @require      https://cdn.jsdelivr.net/npm/vue@3.3.13/dist/vue.global.prod.js
-// @grant        none
+// @grant        GM_addStyle
+// @grant        GM_getTab
+// @grant        GM_getTabs
+// @grant        GM_notification
+// @grant        GM_openInTab
+// @grant        GM_saveTab
+// @grant        unsafeWindow
 // ==/UserScript==
 
-(a=>{if(typeof GM_addStyle=="function"){GM_addStyle(a);return}const d=document.createElement("style");d.textContent=a,document.head.append(d)})(' @import"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";#watermark_layer{display:none!important;visibility:hidden!important}.container[data-v-1b108640]{position:fixed;z-index:100;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:rgba(64,64,64,.4)}.popup[data-v-1b108640]{display:grid;grid-template:auto 36px / 240px auto;width:80%;height:90%;background:rgba(255,255,255,.9);border:1px solid #bbbbbb;border-radius:5px;overflow:hidden}.list[data-v-1b108640]{grid-row:1;grid-column:1;padding:5px 15px;overflow-y:auto}.list .title[data-v-1b108640]{font-weight:700;overflow:hidden;margin:10px 0}.list .title[data-v-1b108640]:after{content:"";display:inline-block;height:1px;background:#aaaaaa;position:relative;vertical-align:middle;width:100%;left:1em;margin-right:-100%}.list .slide[data-v-1b108640]{position:relative;margin:10px 0;border:2px solid #dddddd;cursor:pointer}.list .slide>img[data-v-1b108640]{display:block;width:100%}.list .slide>.tag[data-v-1b108640]{position:absolute;top:0;left:0;display:inline-block;padding:3px 5px;font-size:small;color:#f7f7f7;background:rgba(64,64,64,.4)}.list .slide.active[data-v-1b108640]{border-color:#2d70e7}.list .slide.active>.tag[data-v-1b108640]{background:#2d70e7}.list .slide.unlocked[data-v-1b108640]{border-color:#d7d48e}.list .slide.unlocked.active[data-v-1b108640]{border-color:#e6cb2d}.list .slide.unlocked.active>.tag[data-v-1b108640]{background:#e6cb2d}.list .slide.answered[data-v-1b108640]{border-color:#8dd790}.list .slide.answered.active[data-v-1b108640]{border-color:#4caf50}.list .slide.answered.active>.tag[data-v-1b108640]{background:#4caf50}.tail[data-v-1b108640]{grid-row:2;grid-column:1;padding:5px 15px;line-height:26px;border-top:1px solid #bbbbbb}.tail label[data-v-1b108640]{font-size:small}.tail input[type=checkbox][data-v-1b108640]{-webkit-appearance:auto;-moz-appearance:auto;appearance:auto;vertical-align:middle}.detail[data-v-1b108640]{grid-row:1 / span 2;grid-column:2;padding:25px 40px;overflow-y:auto;border-left:1px solid #bbbbbb}.detail .cover[data-v-1b108640]{border:1px solid #dddddd;box-shadow:0 1px 4px 3px #0000001a}.detail .cover>img[data-v-1b108640]{display:block;width:100%}.detail .body[data-v-1b108640]{margin-top:25px}.detail .body>textarea[data-v-1b108640]{width:100%;min-height:40px;resize:vertical}.detail .actions[data-v-1b108640]{margin-top:25px;text-align:center}.detail .actions>button[data-v-1b108640]{margin:0 20px;padding:4px 10px}*[data-v-d6b18f0d]{margin:0;padding:0;box-sizing:border-box}.toolbar[data-v-d6b18f0d]{position:fixed;z-index:2000001;left:15px;bottom:15px;width:100px;height:36px;padding:5px;display:flex;flex-direction:row;justify-content:space-between;align-items:center;background:#ffffff;border:1px solid #cccccc;border-radius:4px;box-shadow:0 1px 4px 3px #0000001a}.toolbar>.btn[data-v-d6b18f0d]{display:inline-block;padding:4px;cursor:pointer;color:#607190}.toolbar>.btn[data-v-d6b18f0d]:hover{color:#1e3050}.toolbar>.btn.active[data-v-d6b18f0d]{color:#1d63df}.toolbar>.btn.active[data-v-d6b18f0d]:hover{color:#1b53ac}.toolbar>.btn.disabled[data-v-d6b18f0d]{color:#bbb;cursor:default} ');
+(a=>{if(typeof GM_addStyle=="function"){GM_addStyle(a);return}const e=document.createElement("style");e.textContent=a,document.head.append(e)})(' @import"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";#watermark_layer{display:none!important;visibility:hidden!important}.container[data-v-b1ede9a0]{position:fixed;z-index:100;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:rgba(64,64,64,.4)}.popup[data-v-b1ede9a0]{display:grid;grid-template:auto 36px / 240px auto;width:80%;height:90%;background:rgba(255,255,255,.9);border:1px solid #bbbbbb;border-radius:5px;overflow:hidden}.list[data-v-b1ede9a0]{grid-row:1;grid-column:1;padding:5px 15px;overflow-y:auto}.list .title[data-v-b1ede9a0]{font-weight:700;overflow:hidden;margin:10px 0}.list .title[data-v-b1ede9a0]:after{content:"";display:inline-block;height:1px;background:#aaaaaa;position:relative;vertical-align:middle;width:100%;left:1em;margin-right:-100%}.list .slide[data-v-b1ede9a0]{position:relative;margin:10px 0;border:2px solid #dddddd;cursor:pointer}.list .slide>img[data-v-b1ede9a0]{display:block;width:100%}.list .slide>.tag[data-v-b1ede9a0]{position:absolute;top:0;left:0;display:inline-block;padding:3px 5px;font-size:small;color:#f7f7f7;background:rgba(64,64,64,.4)}.list .slide.active[data-v-b1ede9a0]{border-color:#2d70e7}.list .slide.active>.tag[data-v-b1ede9a0]{background:#2d70e7}.list .slide.unlocked[data-v-b1ede9a0]{border-color:#d7d48e}.list .slide.unlocked.active[data-v-b1ede9a0]{border-color:#e6cb2d}.list .slide.unlocked.active>.tag[data-v-b1ede9a0]{background:#e6cb2d}.list .slide.answered[data-v-b1ede9a0]{border-color:#8dd790}.list .slide.answered.active[data-v-b1ede9a0]{border-color:#4caf50}.list .slide.answered.active>.tag[data-v-b1ede9a0]{background:#4caf50}.tail[data-v-b1ede9a0]{grid-row:2;grid-column:1;padding:5px 15px;line-height:26px;border-top:1px solid #bbbbbb}.tail label[data-v-b1ede9a0]{font-size:small}.tail input[type=checkbox][data-v-b1ede9a0]{-webkit-appearance:auto;-moz-appearance:auto;appearance:auto;vertical-align:middle}.detail[data-v-b1ede9a0]{grid-row:1 / span 2;grid-column:2;padding:25px 40px;overflow-y:auto;border-left:1px solid #bbbbbb}.detail .cover[data-v-b1ede9a0]{border:1px solid #dddddd;box-shadow:0 1px 4px 3px #0000001a}.detail .cover>img[data-v-b1ede9a0]{display:block;width:100%}.detail .body[data-v-b1ede9a0]{margin-top:25px}.detail .body>textarea[data-v-b1ede9a0]{width:100%;min-height:40px;resize:vertical}.detail .actions[data-v-b1ede9a0]{margin-top:25px;text-align:center}.detail .actions>button[data-v-b1ede9a0]{margin:0 20px;padding:4px 10px}*[data-v-19552179]{margin:0;padding:0;box-sizing:border-box}.toolbar[data-v-19552179]{position:fixed;z-index:2000001;left:15px;bottom:15px;width:100px;height:36px;padding:5px;display:flex;flex-direction:row;justify-content:space-between;align-items:center;background:#ffffff;border:1px solid #cccccc;border-radius:4px;box-shadow:0 1px 4px 3px #0000001a}.toolbar>.btn[data-v-19552179]{display:inline-block;padding:4px;cursor:pointer;color:#607190}.toolbar>.btn[data-v-19552179]:hover{color:#1e3050}.toolbar>.btn.active[data-v-19552179]{color:#1d63df}.toolbar>.btn.active[data-v-19552179]:hover{color:#1b53ac}.toolbar>.btn.disabled[data-v-19552179]{color:#bbb;cursor:default} ');
 
 (function (vue) {
   'use strict';
@@ -21,6 +27,12 @@
     __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
     return value;
   };
+  var _GM_getTab = /* @__PURE__ */ (() => typeof GM_getTab != "undefined" ? GM_getTab : void 0)();
+  var _GM_getTabs = /* @__PURE__ */ (() => typeof GM_getTabs != "undefined" ? GM_getTabs : void 0)();
+  var _GM_notification = /* @__PURE__ */ (() => typeof GM_notification != "undefined" ? GM_notification : void 0)();
+  var _GM_openInTab = /* @__PURE__ */ (() => typeof GM_openInTab != "undefined" ? GM_openInTab : void 0)();
+  var _GM_saveTab = /* @__PURE__ */ (() => typeof GM_saveTab != "undefined" ? GM_saveTab : void 0)();
+  var _unsafeWindow = /* @__PURE__ */ (() => typeof unsafeWindow != "undefined" ? unsafeWindow : void 0)();
   class StorageManager {
     constructor(prefix) {
       this.prefix = prefix;
@@ -60,47 +72,60 @@
     }
   }
   const storage = new StorageManager("ykt-helper:");
-  async function request(method, path, options = {}) {
-    const url = new URL("https://pro.yuketang.cn/api" + path);
+  async function request(path, options = {}) {
+    const url2 = new URL(path, "https://pro.yuketang.cn");
     const init = {
-      method,
-      headers: {
-        "Authorization": "Bearer " + localStorage.getItem("Authorization"),
-        "X-Client": "h5",
-        "xtbz": "ykt",
-        ...options.headers
-      },
+      method: options.method ?? "GET",
+      headers: options.headers,
       mode: "cors",
       credentials: "include"
     };
+    if (options.bearer) {
+      init.headers["Authorization"] = "Bearer " + localStorage.getItem("Authorization");
+    }
     if (options.params) {
       for (const key in options.params) {
-        url.searchParams.set(key, options.params[key]);
+        url2.searchParams.set(key, options.params[key]);
       }
     }
     if (options.body) {
       init.headers["Content-Type"] = "application/json; charset=utf-8";
       init.body = JSON.stringify(options.body);
     }
-    const resp = await fetch(url.href, init);
-    if (resp.headers.has("set-auth")) {
-      localStorage.setItem("Authorization", resp.headers.get("set-auth"));
+    const resp = await fetch(url2.href, init);
+    if (options.bearer && resp.headers.has("Set-Auth")) {
+      localStorage.setItem("Authorization", resp.headers.get("Set-Auth"));
     }
     const json = await resp.json();
     return json;
   }
+  const H5_HEADERS = {
+    "xtbz": "ykt",
+    "X-Client": "h5"
+  };
+  const WEB_HEADERS = {
+    "university-id": "0",
+    "uv-id": "0",
+    "X-Client": "web",
+    "Xt-Agent": "web"
+  };
   function answerProblem(problem, result, dt = Date.now()) {
-    return request("POST", "/v3/lesson/problem/answer", {
+    return request("/api/v3/lesson/problem/answer", {
+      method: "POST",
+      headers: H5_HEADERS,
       body: {
         problemId: problem.problemId,
         problemType: problem.problemType,
         dt,
         result
-      }
+      },
+      bearer: true
     });
   }
   function retryProblem(problem, result, dt) {
-    return request("POST", "/v3/lesson/problem/retry", {
+    return request("/api/v3/lesson/problem/retry", {
+      method: "POST",
+      headers: H5_HEADERS,
       body: {
         problems: [{
           problemId: problem.problemId,
@@ -108,12 +133,29 @@
           dt,
           result
         }]
-      }
+      },
+      bearer: true
+    });
+  }
+  async function getActiveLessons() {
+    return request("/api/v3/classroom/on-lesson-upcoming-exam", {
+      method: "GET",
+      headers: WEB_HEADERS
+    });
+  }
+  async function getCourseList() {
+    return request("/v2/api/web/courses/list?identity=2", {
+      method: "GET",
+      headers: WEB_HEADERS
     });
   }
   const API = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
+    H5_HEADERS,
+    WEB_HEADERS,
     answerProblem,
+    getActiveLessons,
+    getCourseList,
     request,
     retryProblem
   }, Symbol.toStringTag, { value: "Module" }));
@@ -121,10 +163,10 @@
     static addHandler(handler) {
       this.handlers.push(handler);
     }
-    constructor(url, protocols) {
-      super(url, protocols);
+    constructor(url2, protocols) {
+      super(url2, protocols);
       for (const handler of this.constructor.handlers) {
-        handler(this, url);
+        handler(this, url2);
       }
     }
     intercept(callback) {
@@ -148,12 +190,12 @@
     static addHandler(handler) {
       this.handlers.push(handler);
     }
-    open(method, url, async) {
-      const parsed = new URL(url, location.href);
+    open(method, url2, async) {
+      const parsed = new URL(url2, location.href);
       for (const handler of this.constructor.handlers) {
         handler(this, method, parsed);
       }
-      return super.open(method, url, async);
+      return super.open(method, url2, async);
     }
     intercept(callback) {
       let payload;
@@ -180,25 +222,35 @@
     }
     return array;
   }
-  const _hoisted_1$2 = { key: 1 };
+  const _hoisted_1$2 = { key: 0 };
+  const _hoisted_2$2 = { key: 2 };
   const _sfc_main$2 = {
-    __name: "ProblemResult",
+    __name: "AnswerReveal",
     props: [
-      "tag",
-      "type",
-      "result"
+      "problem",
+      "revealed",
+      "onReveal"
     ],
     setup(__props) {
       const props = __props;
       return (_ctx, _cache) => {
-        return props.type === 4 ? (vue.openBlock(true), vue.createElementBlock(vue.Fragment, { key: 0 }, vue.renderList(props.result, (value, key) => {
+        return !props.revealed ? (vue.openBlock(), vue.createElementBlock("p", _hoisted_1$2, [
+          vue.createTextVNode(" 答案："),
+          vue.createElementVNode("a", {
+            href: "#",
+            onClick: _cache[0] || (_cache[0] = vue.withModifiers(($event) => {
+              var _a;
+              return (_a = props.onReveal) == null ? void 0 : _a.call(props);
+            }, ["prevent"]))
+          }, "查看答案")
+        ])) : props.problem.problemType === 4 ? (vue.openBlock(true), vue.createElementBlock(vue.Fragment, { key: 1 }, vue.renderList(props.problem.blanks, (blank, key) => {
           return vue.openBlock(), vue.createElementBlock("p", null, [
-            vue.createTextVNode(vue.toDisplayString(`${props.tag} ${key + 1}：`), 1),
-            vue.createElementVNode("code", null, vue.toDisplayString(JSON.stringify(value)), 1)
+            vue.createTextVNode(" 答案 " + vue.toDisplayString(key + 1) + "：", 1),
+            vue.createElementVNode("code", null, vue.toDisplayString(JSON.stringify(blank.answers)), 1)
           ]);
-        }), 256)) : (vue.openBlock(), vue.createElementBlock("p", _hoisted_1$2, [
-          vue.createTextVNode(vue.toDisplayString(`${props.tag}：`), 1),
-          vue.createElementVNode("code", null, vue.toDisplayString(JSON.stringify(props.result)), 1)
+        }), 256)) : (vue.openBlock(), vue.createElementBlock("p", _hoisted_2$2, [
+          vue.createTextVNode(" 答案："),
+          vue.createElementVNode("code", null, vue.toDisplayString(JSON.stringify(props.problem.answers)), 1)
         ]));
       };
     }
@@ -330,6 +382,7 @@
         return props.problemStatus.has(problem.problemId) && !problem.result;
       }
       async function handleRetry(problem) {
+        var _a;
         const content = answerContent.value;
         if (!content) {
           $toast({
@@ -349,7 +402,7 @@
             throw new Error(`${resp.msg} (${resp.code})`);
           if (!resp.data.success.includes(problem.problemId))
             throw new Error("服务器未返回成功信息");
-          props.onAnswerProblem(problem, result);
+          (_a = props.onAnswerProblem) == null ? void 0 : _a.call(props, problem, result);
           $toast({
             message: "重试作答成功",
             duration: 3e3
@@ -410,26 +463,16 @@
                 currentProblem.value ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 0 }, [
                   vue.createElementVNode("div", _hoisted_12, [
                     vue.createElementVNode("p", null, " 题面：" + vue.toDisplayString(currentProblem.value.body || "空"), 1),
-                    [1, 2, 4].includes(currentProblem.value.problemType) ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 0 }, [
-                      answerRevealed(currentProblem.value) ? (vue.openBlock(), vue.createBlock(_sfc_main$2, {
-                        key: 0,
-                        tag: "答案",
-                        type: currentProblem.value.problemType,
-                        result: currentProblem.value.answers
-                      }, null, 8, ["type", "result"])) : (vue.openBlock(), vue.createElementBlock("p", _hoisted_13, [
-                        vue.createTextVNode(" 答案："),
-                        vue.createElementVNode("a", {
-                          href: "#",
-                          onClick: _cache[1] || (_cache[1] = vue.withModifiers(($event) => revealAnswer(currentProblem.value), ["prevent"]))
-                        }, "查看答案")
-                      ]))
-                    ], 64)) : vue.createCommentVNode("", true),
-                    currentProblem.value.result ? (vue.openBlock(), vue.createBlock(_sfc_main$2, {
-                      key: 1,
-                      tag: "作答内容",
-                      type: currentProblem.value.problemType,
-                      result: currentProblem.value.result
-                    }, null, 8, ["type", "result"])) : vue.createCommentVNode("", true),
+                    [1, 2, 4].includes(currentProblem.value.problemType) ? (vue.openBlock(), vue.createBlock(_sfc_main$2, {
+                      key: 0,
+                      problem: currentProblem.value,
+                      revealed: answerRevealed(currentProblem.value),
+                      onReveal: _cache[1] || (_cache[1] = ($event) => revealAnswer(currentProblem.value))
+                    }, null, 8, ["problem", "revealed"])) : vue.createCommentVNode("", true),
+                    currentProblem.value.result ? (vue.openBlock(), vue.createElementBlock("p", _hoisted_13, [
+                      vue.createTextVNode(" 作答内容："),
+                      vue.createElementVNode("code", null, vue.toDisplayString(JSON.stringify(currentProblem.value.result)), 1)
+                    ])) : vue.createCommentVNode("", true),
                     vue.withDirectives(vue.createElementVNode("textarea", {
                       "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => answerContent.value = $event),
                       rows: "6",
@@ -455,8 +498,8 @@
       };
     }
   };
-  const ProblemUI = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-1b108640"]]);
-  const _withScopeId = (n) => (vue.pushScopeId("data-v-d6b18f0d"), n = n(), vue.popScopeId(), n);
+  const ProblemUI = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-b1ede9a0"]]);
+  const _withScopeId = (n) => (vue.pushScopeId("data-v-19552179"), n = n(), vue.popScopeId(), n);
   const _hoisted_1 = { class: "toolbar" };
   const _hoisted_2 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ vue.createElementVNode("i", { class: "fas fa-eye fa-lg" }, null, -1));
   const _hoisted_3 = [
@@ -485,8 +528,8 @@
       const problems = vue.reactive(/* @__PURE__ */ new Map());
       const problemStatus = vue.reactive(/* @__PURE__ */ new Map());
       const lastProblem = vue.ref(null);
-      MyWebSocket.addHandler((ws, url) => {
-        if (url === "wss://pro.yuketang.cn/wsapp/") {
+      MyWebSocket.addHandler((ws, url2) => {
+        if (url2 === "wss://pro.yuketang.cn/wsapp/") {
           ws.intercept((message) => {
           });
           ws.listen((message) => {
@@ -534,32 +577,31 @@
         }
       }
       function onLessonFinished() {
-        const notification = new Notification("下课提示", {
-          body: "当前课程已结束",
-          tag: "lesson-finished-notice"
-        });
-        notification.addEventListener("error", (evt) => {
-          console.error(evt);
+        _GM_notification({
+          title: "下课提示",
+          text: "当前课程已结束",
+          tag: "lesson-finished",
+          silent: true
         });
       }
-      MyXMLHttpRequest.addHandler((xhr, method, url) => {
-        if (url.pathname === "/api/v3/lesson/presentation/fetch") {
+      MyXMLHttpRequest.addHandler((xhr, method, url2) => {
+        if (url2.pathname === "/api/v3/lesson/presentation/fetch") {
           xhr.intercept((resp) => {
-            const id = url.searchParams.get("presentation_id");
+            const id = url2.searchParams.get("presentation_id");
             if (resp.code === 0) {
               onPresentationLoaded(id, resp.data);
             }
           });
         }
-        if (url.pathname === "/api/v3/lesson/redenvelope/issue-list") {
+        if (url2.pathname === "/api/v3/lesson/redenvelope/issue-list") {
           xhr.intercept((resp) => {
-            const id = url.searchParams.get("redEnvelopeId");
+            const id = url2.searchParams.get("redEnvelopeId");
             if (resp.code === 0) {
               onRedEnvelopeListLoaded(id, resp.data);
             }
           });
         }
-        if (url.pathname === "/api/v3/lesson/problem/answer") {
+        if (url2.pathname === "/api/v3/lesson/problem/answer") {
           xhr.intercept((resp, payload) => {
             const { problemId, result } = JSON.parse(payload);
             if (resp.code === 0) {
@@ -599,17 +641,12 @@
         }
       }
       function notifyProblem(problem, slide) {
-        const notification = new Notification("课堂习题提示", {
-          body: getProblemDetail(problem),
+        _GM_notification({
+          title: "课堂习题提示",
+          text: getProblemDetail(problem),
           image: slide == null ? void 0 : slide.thumbnail,
           tag: "problem-notice",
-          renotify: true
-        });
-        notification.addEventListener("click", (evt) => {
-          window.focus();
-        });
-        notification.addEventListener("error", (evt) => {
-          console.error(evt);
+          silent: false
         });
       }
       function getProblemDetail(problem) {
@@ -662,13 +699,11 @@
             console.error(err);
             messages.push(`作答失败：${err.message}`);
           }
-          const notification = new Notification("自动作答提示", {
-            body: messages.join("\n"),
+          _GM_notification({
+            title: "自动作答提示",
+            text: messages.join("\n"),
             tag: "problem-auto-answer",
-            renotify: true
-          });
-          notification.addEventListener("error", (evt) => {
-            console.error(evt);
+            silent: true
           });
         }, delay);
         autoAnswerTimers.push(timer);
@@ -735,12 +770,6 @@
       function toggleProblemUI() {
         problemUIVisible.value = !problemUIVisible.value;
       }
-      window.debugHelper = () => {
-        const presentations2 = storage.getMap("presentations");
-        for (const [id, presentation] of presentations2) {
-          onPresentationLoaded(id, presentation);
-        }
-      };
       return (_ctx, _cache) => {
         return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
           vue.createElementVNode("div", _hoisted_1, [
@@ -772,22 +801,64 @@
       };
     }
   };
-  const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-d6b18f0d"]]);
-  const app = vue.createApp(App);
-  app.mount(
-    (() => {
-      const app2 = document.createElement("div");
-      document.body.append(app2);
-      return app2;
-    })()
-  );
-  window.WebSocket = MyWebSocket;
-  window.XMLHttpRequest = MyXMLHttpRequest;
-  window.yktStorage = storage;
-  window.yktAPI = API;
-  window.yktHelper = app;
-  if (Notification.permission !== "granted") {
-    Notification.requestPermission();
+  const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-19552179"]]);
+  const url = new URL(window.location.href);
+  if (url.pathname.startsWith("/lesson/fullscreen/v3/")) {
+    launchLessonHelper();
+  } else if (url.pathname.startsWith("/v2/web/")) {
+    pollActiveLessons();
   }
+  function launchLessonHelper() {
+    _GM_getTab((tab) => {
+      tab.type = "lesson";
+      tab.lessonId = url.pathname.split("/")[4];
+      _GM_saveTab(tab);
+    });
+    vue.createApp(App).mount(
+      (() => {
+        const app = document.createElement("div");
+        document.body.append(app);
+        return app;
+      })()
+    );
+  }
+  function pollActiveLessons() {
+    const enteredLessonIds = /* @__PURE__ */ new Set();
+    function updateLessonIds() {
+      return new Promise((resolve) => {
+        _GM_getTabs((tabs) => {
+          for (const key in tabs) {
+            const tab = tabs[key];
+            if (tab.type === "lesson") {
+              enteredLessonIds.add(tab.lessonId);
+            }
+          }
+          resolve();
+        });
+      });
+    }
+    async function checkActiveLessons() {
+      const resp = await getActiveLessons();
+      if (resp.code !== 0) {
+        throw new Error("Failed to get active lessons: " + resp.msg);
+      }
+      for (const lesson of resp.data.onLessonClassrooms) {
+        const { classroomId, lessonId } = lesson;
+        if (!enteredLessonIds.has(lessonId)) {
+          _GM_openInTab("https://pro.yuketang.cn/lesson/fullscreen/v3/" + lessonId);
+          enteredLessonIds.add(lessonId);
+        }
+      }
+    }
+    updateLessonIds();
+    setInterval(async () => {
+      await updateLessonIds();
+      await checkActiveLessons();
+    }, 5e3);
+  }
+  _unsafeWindow.WebSocket = MyWebSocket;
+  _unsafeWindow.XMLHttpRequest = MyXMLHttpRequest;
+  _unsafeWindow.yktStorage = storage;
+  _unsafeWindow.yktAPI = API;
 
 })(Vue);
