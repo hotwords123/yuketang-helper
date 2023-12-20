@@ -1,16 +1,15 @@
-export async function request(method, path, options = {}) {
-  const url = new URL("https://pro.yuketang.cn/api" + path);
+export async function request(path, options = {}) {
+  const url = new URL(path, "https://pro.yuketang.cn");
   const init = {
-    method: method,
-    headers: {
-      "Authorization": "Bearer " + localStorage.getItem("Authorization"),
-      "X-Client": "h5",
-      "xtbz": "ykt",
-      ...options.headers
-    },
+    method: options.method ?? "GET",
+    headers: options.headers,
     mode: "cors",
-    credentials: "include"
+    credentials: "include",
   };
+
+  if (options.bearer) {
+    init.headers["Authorization"] = "Bearer " + localStorage.getItem("Authorization");
+  }
 
   if (options.params) {
     for (const key in options.params) {
@@ -24,27 +23,44 @@ export async function request(method, path, options = {}) {
   }
 
   const resp = await fetch(url.href, init);
-  if (resp.headers.has("set-auth")) {
-    localStorage.setItem("Authorization", resp.headers.get("set-auth"));
+  if (options.bearer && resp.headers.has("Set-Auth")) {
+    localStorage.setItem("Authorization", resp.headers.get("Set-Auth"));
   }
 
   const json = await resp.json();
   return json;
 }
 
+export const H5_HEADERS = {
+  "xtbz": "ykt",
+  "X-Client": "h5",
+};
+
+export const WEB_HEADERS = {
+  "university-id": "0",
+  "uv-id": "0",
+  "X-Client": "web",
+  "Xt-Agent": "web",
+};
+
 export function answerProblem(problem, result, dt = Date.now()) {
-  return request("POST", "/v3/lesson/problem/answer", {
+  return request("/api/v3/lesson/problem/answer", {
+    method: "POST",
+    headers: H5_HEADERS,
     body: {
       problemId: problem.problemId,
       problemType: problem.problemType,
       dt: dt,
       result: result
-    }
+    },
+    bearer: true,
   });
 }
 
 export function retryProblem(problem, result, dt) {
-  return request("POST", "/v3/lesson/problem/retry", {
+  return request("/api/v3/lesson/problem/retry", {
+    method: "POST",
+    headers: H5_HEADERS,
     body: {
       problems: [{
         problemId: problem.problemId,
@@ -52,6 +68,21 @@ export function retryProblem(problem, result, dt) {
         dt: dt,
         result: result
       }]
-    }
+    },
+    bearer: true,
+  });
+}
+
+export async function getActiveLessons() {
+  return request("/api/v3/classroom/on-lesson-upcoming-exam", {
+    method: "GET",
+    headers: WEB_HEADERS,
+  });
+}
+
+export async function getCourseList() {
+  return request("/v2/api/web/courses/list?identity=2", {
+    method: "GET",
+    headers: WEB_HEADERS,
   });
 }
