@@ -1,5 +1,6 @@
 <script setup>
 import { ref, reactive, watch, computed } from 'vue';
+import { GM_notification, unsafeWindow } from '$';
 import storage from './storage';
 import { answerProblem } from './api';
 import { MyWebSocket, MyXMLHttpRequest } from './network';
@@ -88,13 +89,11 @@ function onUnlockProblem(data) {
 }
 
 function onLessonFinished() {
-  const notification = new Notification("下课提示", {
-    body: "当前课程已结束",
-    tag: "lesson-finished-notice"
-  });
-
-  notification.addEventListener("error", (evt) => {
-    console.error(evt);
+  GM_notification({
+    title: "下课提示",
+    text: "当前课程已结束",
+    tag: "lesson-finished",
+    silent: true,
   });
 }
 // #endregion
@@ -170,19 +169,12 @@ function onAnswerProblem(problemId, result) {
 
 // #region Problem notification
 function notifyProblem(problem, slide) {
-  const notification = new Notification("课堂习题提示", {
-    body: getProblemDetail(problem),
+  GM_notification({
+    title: "课堂习题提示",
+    text: getProblemDetail(problem),
     image: slide?.thumbnail,
     tag: "problem-notice",
-    renotify: true
-  });
-
-  notification.addEventListener("click", (evt) => {
-    window.focus();
-  });
-
-  notification.addEventListener("error", (evt) => {
-    console.error(evt);
+    silent: false,
   });
 }
 
@@ -245,14 +237,11 @@ function doAutoAnswer(problem) {
       messages.push(`作答失败：${err.message}`);
     }
 
-    const notification = new Notification("自动作答提示", {
-      body: messages.join("\n"),
+    GM_notification({
+      title: "自动作答提示",
+      text: messages.join("\n"),
       tag: "problem-auto-answer",
-      renotify: true
-    });
-
-    notification.addEventListener("error", (evt) => {
-      console.error(evt);
+      silent: true,
     });
   }, delay);
   autoAnswerTimers.push(timer);
@@ -339,12 +328,15 @@ function toggleProblemUI() {
 }
 // #endregion
 
-window.debugHelper = () => {
-  const presentations = storage.getMap("presentations");
-  for (const [id, presentation] of presentations) {
-    onPresentationLoaded(id, presentation);
-  }
-};
+if (process.env.NODE_ENV === 'development') {
+  unsafeWindow.debugHelper = () => {
+    debugger;
+    const presentations = storage.getMap("presentations");
+    for (const [id, presentation] of presentations) {
+      onPresentationLoaded(id, presentation);
+    }
+  };
+}
 </script>
 
 <template>

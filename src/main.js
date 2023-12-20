@@ -1,4 +1,5 @@
 import { createApp } from 'vue';
+import { GM_openInTab, unsafeWindow } from '$';
 import './style.css';
 import App from './App.vue';
 import storage from './storage';
@@ -14,16 +15,13 @@ if (url.pathname.startsWith("/lesson/fullscreen/v3/")) {
 }
 
 function launchLessonHelper() {
-  const app = createApp(App);
-  app.mount(
+  createApp(App).mount(
     (() => {
       const app = document.createElement('div');
       document.body.append(app);
       return app;
     })(),
   );
-
-  window.yktHelper = app;
 }
 
 function pollActiveLessons() {
@@ -39,7 +37,7 @@ function pollActiveLessons() {
         const { classroomId, lessonId } = lesson;
 
         if (!enteredLessonIds.has(lessonId)) {
-          window.open("https://pro.yuketang.cn/lesson/fullscreen/v3/" + lessonId, "_blank");
+          GM_openInTab("https://pro.yuketang.cn/lesson/fullscreen/v3/" + lessonId);
           enteredLessonIds.add(lessonId);
         }
       }
@@ -51,11 +49,7 @@ function pollActiveLessons() {
   setInterval(checkActiveLessons, 5000);
 }
 
-window.WebSocket = MyWebSocket;
-window.XMLHttpRequest = MyXMLHttpRequest;
-window.yktStorage = storage;
-window.yktAPI = API;
-
-if (Notification.permission !== "granted") {
-  Notification.requestPermission();
-}
+unsafeWindow.WebSocket = MyWebSocket;
+unsafeWindow.XMLHttpRequest = MyXMLHttpRequest;
+unsafeWindow.yktStorage = storage;
+unsafeWindow.yktAPI = API;
