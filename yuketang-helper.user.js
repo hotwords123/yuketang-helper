@@ -7,6 +7,7 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=yuketang.cn
 // @match        https://pro.yuketang.cn/*
 // @require      https://cdn.jsdelivr.net/npm/vue@3.3.13/dist/vue.global.prod.js
+// @require      https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js
 // @grant        GM_addStyle
 // @grant        GM_getTab
 // @grant        GM_getTabs
@@ -16,9 +17,9 @@
 // @grant        unsafeWindow
 // ==/UserScript==
 
-(a=>{if(typeof GM_addStyle=="function"){GM_addStyle(a);return}const e=document.createElement("style");e.textContent=a,document.head.append(e)})(' @import"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";#watermark_layer{display:none!important;visibility:hidden!important}.container[data-v-b1ede9a0]{position:fixed;z-index:100;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:rgba(64,64,64,.4)}.popup[data-v-b1ede9a0]{display:grid;grid-template:auto 36px / 240px auto;width:80%;height:90%;background:rgba(255,255,255,.9);border:1px solid #bbbbbb;border-radius:5px;overflow:hidden}.list[data-v-b1ede9a0]{grid-row:1;grid-column:1;padding:5px 15px;overflow-y:auto}.list .title[data-v-b1ede9a0]{font-weight:700;overflow:hidden;margin:10px 0}.list .title[data-v-b1ede9a0]:after{content:"";display:inline-block;height:1px;background:#aaaaaa;position:relative;vertical-align:middle;width:100%;left:1em;margin-right:-100%}.list .slide[data-v-b1ede9a0]{position:relative;margin:10px 0;border:2px solid #dddddd;cursor:pointer}.list .slide>img[data-v-b1ede9a0]{display:block;width:100%}.list .slide>.tag[data-v-b1ede9a0]{position:absolute;top:0;left:0;display:inline-block;padding:3px 5px;font-size:small;color:#f7f7f7;background:rgba(64,64,64,.4)}.list .slide.active[data-v-b1ede9a0]{border-color:#2d70e7}.list .slide.active>.tag[data-v-b1ede9a0]{background:#2d70e7}.list .slide.unlocked[data-v-b1ede9a0]{border-color:#d7d48e}.list .slide.unlocked.active[data-v-b1ede9a0]{border-color:#e6cb2d}.list .slide.unlocked.active>.tag[data-v-b1ede9a0]{background:#e6cb2d}.list .slide.answered[data-v-b1ede9a0]{border-color:#8dd790}.list .slide.answered.active[data-v-b1ede9a0]{border-color:#4caf50}.list .slide.answered.active>.tag[data-v-b1ede9a0]{background:#4caf50}.tail[data-v-b1ede9a0]{grid-row:2;grid-column:1;padding:5px 15px;line-height:26px;border-top:1px solid #bbbbbb}.tail label[data-v-b1ede9a0]{font-size:small}.tail input[type=checkbox][data-v-b1ede9a0]{-webkit-appearance:auto;-moz-appearance:auto;appearance:auto;vertical-align:middle}.detail[data-v-b1ede9a0]{grid-row:1 / span 2;grid-column:2;padding:25px 40px;overflow-y:auto;border-left:1px solid #bbbbbb}.detail .cover[data-v-b1ede9a0]{border:1px solid #dddddd;box-shadow:0 1px 4px 3px #0000001a}.detail .cover>img[data-v-b1ede9a0]{display:block;width:100%}.detail .body[data-v-b1ede9a0]{margin-top:25px}.detail .body>textarea[data-v-b1ede9a0]{width:100%;min-height:40px;resize:vertical}.detail .actions[data-v-b1ede9a0]{margin-top:25px;text-align:center}.detail .actions>button[data-v-b1ede9a0]{margin:0 20px;padding:4px 10px}*[data-v-19552179]{margin:0;padding:0;box-sizing:border-box}.toolbar[data-v-19552179]{position:fixed;z-index:2000001;left:15px;bottom:15px;width:100px;height:36px;padding:5px;display:flex;flex-direction:row;justify-content:space-between;align-items:center;background:#ffffff;border:1px solid #cccccc;border-radius:4px;box-shadow:0 1px 4px 3px #0000001a}.toolbar>.btn[data-v-19552179]{display:inline-block;padding:4px;cursor:pointer;color:#607190}.toolbar>.btn[data-v-19552179]:hover{color:#1e3050}.toolbar>.btn.active[data-v-19552179]{color:#1d63df}.toolbar>.btn.active[data-v-19552179]:hover{color:#1b53ac}.toolbar>.btn.disabled[data-v-19552179]{color:#bbb;cursor:default} ');
+(a=>{if(typeof GM_addStyle=="function"){GM_addStyle(a);return}const t=document.createElement("style");t.textContent=a,document.head.append(t)})(' @import"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";#watermark_layer{display:none!important;visibility:hidden!important}.container[data-v-e5bfcf15]{position:fixed;z-index:100;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:rgba(64,64,64,.4)}.popup[data-v-e5bfcf15]{display:grid;grid-template:auto 36px / 240px auto;width:80%;height:90%;background:rgba(255,255,255,.9);border:1px solid #bbbbbb;border-radius:5px;overflow:hidden}.list[data-v-e5bfcf15]{grid-row:1;grid-column:1;padding:5px 15px;overflow-y:auto}.list .title[data-v-e5bfcf15]{font-weight:700;overflow:hidden;margin:10px 0}.list .title[data-v-e5bfcf15]:after{content:"";display:inline-block;height:1px;background:#aaaaaa;position:relative;vertical-align:middle;width:100%;left:1em;margin-right:-100%}.list .title .download-btn[data-v-e5bfcf15]{cursor:pointer}.list .slide[data-v-e5bfcf15]{position:relative;margin:10px 0;border:2px solid #dddddd;cursor:pointer}.list .slide>img[data-v-e5bfcf15]{display:block;width:100%}.list .slide>.tag[data-v-e5bfcf15]{position:absolute;top:0;left:0;display:inline-block;padding:3px 5px;font-size:small;color:#f7f7f7;background:rgba(64,64,64,.4)}.list .slide.active[data-v-e5bfcf15]{border-color:#2d70e7}.list .slide.active>.tag[data-v-e5bfcf15]{background:#2d70e7}.list .slide.unlocked[data-v-e5bfcf15]{border-color:#d7d48e}.list .slide.unlocked.active[data-v-e5bfcf15]{border-color:#e6cb2d}.list .slide.unlocked.active>.tag[data-v-e5bfcf15]{background:#e6cb2d}.list .slide.answered[data-v-e5bfcf15]{border-color:#8dd790}.list .slide.answered.active[data-v-e5bfcf15]{border-color:#4caf50}.list .slide.answered.active>.tag[data-v-e5bfcf15]{background:#4caf50}.tail[data-v-e5bfcf15]{grid-row:2;grid-column:1;padding:5px 15px;line-height:26px;border-top:1px solid #bbbbbb}.tail label[data-v-e5bfcf15]{font-size:small}.tail input[type=checkbox][data-v-e5bfcf15]{-webkit-appearance:auto;-moz-appearance:auto;appearance:auto;vertical-align:middle}.detail[data-v-e5bfcf15]{grid-row:1 / span 2;grid-column:2;padding:25px 40px;overflow-y:auto;border-left:1px solid #bbbbbb}.detail .cover[data-v-e5bfcf15]{border:1px solid #dddddd;box-shadow:0 1px 4px 3px #0000001a}.detail .cover>img[data-v-e5bfcf15]{display:block;width:100%}.detail .body[data-v-e5bfcf15]{margin-top:25px}.detail .body>textarea[data-v-e5bfcf15]{width:100%;min-height:40px;resize:vertical}.detail .actions[data-v-e5bfcf15]{margin-top:25px;text-align:center}.detail .actions>button[data-v-e5bfcf15]{margin:0 20px;padding:4px 10px}*[data-v-1c8fbbdf]{margin:0;padding:0;box-sizing:border-box}.toolbar[data-v-1c8fbbdf]{position:fixed;z-index:2000001;left:15px;bottom:15px;width:100px;height:36px;padding:5px;display:flex;flex-direction:row;justify-content:space-between;align-items:center;background:#ffffff;border:1px solid #cccccc;border-radius:4px;box-shadow:0 1px 4px 3px #0000001a}.toolbar>.btn[data-v-1c8fbbdf]{display:inline-block;padding:4px;cursor:pointer;color:#607190}.toolbar>.btn[data-v-1c8fbbdf]:hover{color:#1e3050}.toolbar>.btn.active[data-v-1c8fbbdf]{color:#1d63df}.toolbar>.btn.active[data-v-1c8fbbdf]:hover{color:#1b53ac}.toolbar>.btn.disabled[data-v-1c8fbbdf]{color:#bbb;cursor:default} ');
 
-(function (vue) {
+(function (vue, jspdf) {
   'use strict';
 
   var __defProp = Object.defineProperty;
@@ -210,6 +211,13 @@
   }
   __publicField(MyXMLHttpRequest, "original", XMLHttpRequest);
   __publicField(MyXMLHttpRequest, "handlers", []);
+  const PROBLEM_TYPE_MAP = {
+    1: "单选题",
+    2: "多选题",
+    3: "投票题",
+    4: "填空题",
+    5: "主观题"
+  };
   function randInt(l, r) {
     return l + Math.floor(Math.random() * (r - l + 1));
   }
@@ -221,6 +229,17 @@
       }
     }
     return array;
+  }
+  function loadImage(src) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => resolve(img);
+      img.onerror = (evt) => {
+        console.error(evt);
+        reject(new Error("Failed to load image: " + src));
+      };
+    });
   }
   const _hoisted_1$2 = { key: 0 };
   const _hoisted_2$2 = { key: 2 };
@@ -267,16 +286,17 @@
   const _hoisted_3$1 = { class: "list" };
   const _hoisted_4$1 = { class: "title" };
   const _hoisted_5$1 = ["onClick"];
-  const _hoisted_6$1 = ["src"];
-  const _hoisted_7$1 = { class: "tag" };
-  const _hoisted_8 = { class: "tail" };
-  const _hoisted_9 = { class: "detail" };
-  const _hoisted_10 = { class: "cover" };
-  const _hoisted_11 = ["src"];
-  const _hoisted_12 = { class: "body" };
-  const _hoisted_13 = { key: 1 };
-  const _hoisted_14 = { class: "actions" };
-  const _hoisted_15 = ["disabled"];
+  const _hoisted_6$1 = ["onClick"];
+  const _hoisted_7$1 = ["src"];
+  const _hoisted_8 = { class: "tag" };
+  const _hoisted_9 = { class: "tail" };
+  const _hoisted_10 = { class: "detail" };
+  const _hoisted_11 = { class: "cover" };
+  const _hoisted_12 = ["src"];
+  const _hoisted_13 = { class: "body" };
+  const _hoisted_14 = { key: 1 };
+  const _hoisted_15 = { class: "actions" };
+  const _hoisted_16 = ["disabled"];
   const _sfc_main$1 = {
     __name: "ProblemUI",
     props: [
@@ -415,6 +435,53 @@
           });
         }
       }
+      async function handleDownload(presentationId) {
+        try {
+          const presentation = props.presentations.get(presentationId);
+          $toast({
+            message: "正在下载课件，可能需要一些时间...",
+            duration: 3e3
+          });
+          await savePresentation(presentation);
+        } catch (err) {
+          console.error(err);
+          $toast({
+            message: "下载失败：" + err.message,
+            duration: 3e3
+          });
+        }
+      }
+      async function savePresentation(presentation) {
+        const { width, height } = presentation;
+        const doc = new jspdf.jsPDF({
+          format: [width, height],
+          orientation: width > height ? "l" : "p",
+          unit: "px",
+          putOnlyUsedFonts: true,
+          compress: true,
+          hotfixes: ["px_scaling"]
+        });
+        doc.deletePage(1);
+        let parent = null;
+        for (const slide of presentation.slides) {
+          const img = await loadImage(slide.cover);
+          doc.addPage();
+          doc.addImage(img, "PNG", 0, 0, width, height);
+          const pageNumber = doc.getNumberOfPages();
+          if (parent === null) {
+            parent = doc.outline.add(null, presentation.title, { pageNumber });
+          }
+          let bookmark = `${slide.index}`;
+          if (slide.note) {
+            bookmark += `: ${slide.note}`;
+          }
+          if (slide.problem) {
+            bookmark += ` - ${PROBLEM_TYPE_MAP[slide.problem.problemType]}`;
+          }
+          doc.outline.add(parent, bookmark, { pageNumber });
+        }
+        doc.save(presentation.title);
+      }
       return (_ctx, _cache) => {
         return vue.openBlock(), vue.createElementBlock("div", _hoisted_1$1, [
           vue.createElementVNode("div", _hoisted_2$1, [
@@ -423,7 +490,13 @@
                 return vue.openBlock(), vue.createElementBlock(vue.Fragment, {
                   key: presentation.id
                 }, [
-                  vue.createElementVNode("div", _hoisted_4$1, vue.toDisplayString(presentation.title), 1),
+                  vue.createElementVNode("div", _hoisted_4$1, [
+                    vue.createTextVNode(vue.toDisplayString(presentation.title) + " ", 1),
+                    vue.createElementVNode("i", {
+                      class: "download-btn fas fa-download",
+                      onClick: ($event) => handleDownload(presentation.id)
+                    }, null, 8, _hoisted_5$1)
+                  ]),
                   (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(presentation.slides, (slide) => {
                     return vue.openBlock(), vue.createElementBlock("div", {
                       class: vue.normalizeClass(["slide", slideClass(slide)]),
@@ -433,14 +506,14 @@
                       vue.createElementVNode("img", {
                         src: slide.thumbnail,
                         style: vue.normalizeStyle(coverStyle(presentation))
-                      }, null, 12, _hoisted_6$1),
-                      vue.createElementVNode("span", _hoisted_7$1, vue.toDisplayString(slide.index), 1)
-                    ], 10, _hoisted_5$1);
+                      }, null, 12, _hoisted_7$1),
+                      vue.createElementVNode("span", _hoisted_8, vue.toDisplayString(slide.index), 1)
+                    ], 10, _hoisted_6$1);
                   }), 128))
                 ], 64);
               }), 128))
             ]),
-            vue.createElementVNode("div", _hoisted_8, [
+            vue.createElementVNode("div", _hoisted_9, [
               vue.createElementVNode("label", null, [
                 vue.withDirectives(vue.createElementVNode("input", {
                   type: "checkbox",
@@ -451,17 +524,17 @@
                 vue.createTextVNode(" 显示全部页面 ")
               ])
             ]),
-            vue.createElementVNode("div", _hoisted_9, [
+            vue.createElementVNode("div", _hoisted_10, [
               currentSlide.value ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 0 }, [
-                vue.createElementVNode("div", _hoisted_10, [
+                vue.createElementVNode("div", _hoisted_11, [
                   (vue.openBlock(), vue.createElementBlock("img", {
                     key: currentSlide.value.id,
                     src: currentSlide.value.cover,
                     style: vue.normalizeStyle(coverStyle(currentPresentation.value))
-                  }, null, 12, _hoisted_11))
+                  }, null, 12, _hoisted_12))
                 ]),
                 currentProblem.value ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 0 }, [
-                  vue.createElementVNode("div", _hoisted_12, [
+                  vue.createElementVNode("div", _hoisted_13, [
                     vue.createElementVNode("p", null, " 题面：" + vue.toDisplayString(currentProblem.value.body || "空"), 1),
                     [1, 2, 4].includes(currentProblem.value.problemType) ? (vue.openBlock(), vue.createBlock(_sfc_main$2, {
                       key: 0,
@@ -469,7 +542,7 @@
                       revealed: answerRevealed(currentProblem.value),
                       onReveal: _cache[1] || (_cache[1] = ($event) => revealAnswer(currentProblem.value))
                     }, null, 8, ["problem", "revealed"])) : vue.createCommentVNode("", true),
-                    currentProblem.value.result ? (vue.openBlock(), vue.createElementBlock("p", _hoisted_13, [
+                    currentProblem.value.result ? (vue.openBlock(), vue.createElementBlock("p", _hoisted_14, [
                       vue.createTextVNode(" 作答内容："),
                       vue.createElementVNode("code", null, vue.toDisplayString(JSON.stringify(currentProblem.value.result)), 1)
                     ])) : vue.createCommentVNode("", true),
@@ -481,14 +554,14 @@
                       [vue.vModelText, answerContent.value]
                     ])
                   ]),
-                  vue.createElementVNode("div", _hoisted_14, [
+                  vue.createElementVNode("div", _hoisted_15, [
                     vue.createElementVNode("button", {
                       onClick: _cache[3] || (_cache[3] = ($event) => updateAutoAnswer())
                     }, "自动作答"),
                     vue.createElementVNode("button", {
                       disabled: !canRetry(currentProblem.value),
                       onClick: _cache[4] || (_cache[4] = ($event) => handleRetry(currentProblem.value))
-                    }, "重试作答", 8, _hoisted_15)
+                    }, "重试作答", 8, _hoisted_16)
                   ])
                 ], 64)) : vue.createCommentVNode("", true)
               ], 64)) : vue.createCommentVNode("", true)
@@ -498,8 +571,8 @@
       };
     }
   };
-  const ProblemUI = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-b1ede9a0"]]);
-  const _withScopeId = (n) => (vue.pushScopeId("data-v-19552179"), n = n(), vue.popScopeId(), n);
+  const ProblemUI = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-e5bfcf15"]]);
+  const _withScopeId = (n) => (vue.pushScopeId("data-v-1c8fbbdf"), n = n(), vue.popScopeId(), n);
   const _hoisted_1 = { class: "toolbar" };
   const _hoisted_2 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ vue.createElementVNode("i", { class: "fas fa-eye fa-lg" }, null, -1));
   const _hoisted_3 = [
@@ -731,13 +804,6 @@
             return null;
         }
       }
-      const PROBLEM_TYPE_MAP = {
-        1: "单选题",
-        2: "多选题",
-        3: "投票题",
-        4: "填空题",
-        5: "主观题"
-      };
       const problemUIVisible = vue.ref(false);
       function revealAnswers(problem) {
         const lines = [
@@ -801,7 +867,7 @@
       };
     }
   };
-  const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-19552179"]]);
+  const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-1c8fbbdf"]]);
   const url = new URL(window.location.href);
   if (url.pathname.startsWith("/lesson/fullscreen/v3/")) {
     launchLessonHelper();
@@ -861,4 +927,4 @@
   _unsafeWindow.yktStorage = storage;
   _unsafeWindow.yktAPI = API;
 
-})(Vue);
+})(Vue, jspdf);
