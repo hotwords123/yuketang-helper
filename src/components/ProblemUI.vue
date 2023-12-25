@@ -1,7 +1,8 @@
 <script setup>
-import { defineProps, ref, computed, reactive } from "vue";
+import { ref, computed, reactive } from "vue";
+import { jsPDF } from "jspdf";
 import storage from "../storage";
-import { randInt } from "../util";
+import { randInt, loadImage, PROBLEM_TYPE_MAP } from "../util";
 import { retryProblem } from "../api";
 import AnswerReveal from "./AnswerReveal.vue";
 
@@ -161,6 +162,61 @@ async function handleRetry(problem) {
     });
   }
 }
+
+async function handleDownload(presentationId) {
+  try {
+    const presentation = props.presentations.get(presentationId);
+    $toast({
+      message: "正在下载课件，可能需要一些时间...",
+      duration: 3000
+    });
+    await savePresentation(presentation);
+  } catch (err) {
+    console.error(err);
+    $toast({
+      message: "下载失败：" + err.message,
+      duration: 3000
+    });
+  }
+}
+
+async function savePresentation(presentation) {
+  const { width, height } = presentation;
+
+  const doc = new jsPDF({
+    format: [width, height],
+    orientation: width > height ? "l" : "p",
+    unit: 'px',
+    putOnlyUsedFonts: true,
+    compress: true,
+    hotfixes: ["px_scaling"],
+  });
+  doc.deletePage(1);
+
+  let parent = null;
+
+  for (const slide of presentation.slides) {
+    const img = await loadImage(slide.cover);
+    doc.addPage();
+    doc.addImage(img, "PNG", 0, 0, width, height);
+
+    const pageNumber = doc.getNumberOfPages();
+    if (parent === null) {
+      parent = doc.outline.add(null, presentation.title, { pageNumber });
+    }
+
+    let bookmark = `${slide.index}`;
+    if (slide.note) {
+      bookmark += `: ${slide.note}`;
+    }
+    if (slide.problem) {
+      bookmark += ` - ${PROBLEM_TYPE_MAP[slide.problem.problemType]}`;
+    }
+    doc.outline.add(parent, bookmark, { pageNumber });
+  }
+
+  doc.save(presentation.title);
+}
 </script>
 
 <template>
@@ -168,7 +224,10 @@ async function handleRetry(problem) {
     <div class="popup">
       <div class="list">
         <template v-for="presentation in filteredPresentations" :key="presentation.id">
-          <div class="title">{{ presentation.title }}</div>
+          <div class="title">
+            {{ presentation.title }}
+            <i class="download-btn fas fa-download" @click="handleDownload(presentation.id)"></i>
+          </div>
           <div class="slide"
             v-for="slide in presentation.slides"
             :key="slide.id"
@@ -267,6 +326,10 @@ async function handleRetry(problem) {
   width: 100%;
   left: 1em;
   margin-right: -100%;
+}
+
+.list .title .download-btn {
+  cursor: pointer;
 }
 
 .list .slide {

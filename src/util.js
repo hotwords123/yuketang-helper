@@ -1,3 +1,7 @@
+export const PROBLEM_TYPE_MAP = {
+  1: "单选题", 2: "多选题", 3: "投票题", 4: "填空题", 5: "主观题"
+};
+
 /**
  * Returns a random integer in [l, r].
  * @param {number} l
@@ -23,4 +27,16 @@ export function shuffleArray(array) {
 
 export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = src;
+    img.onload = () => resolve(img);
+    img.onerror = (evt) => {
+      console.error(evt);
+      reject(new Error("Failed to load image: " + src));
+    };
+  });
 }

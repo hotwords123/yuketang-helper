@@ -20,6 +20,7 @@ export default defineConfig({
       build: {
         externalGlobals: {
           vue: cdn.jsdelivr('Vue', 'dist/vue.global.prod.js'),
+          jspdf: cdn.jsdelivr('jspdf', 'dist/jspdf.umd.min.js'),
         },
       },
     }),

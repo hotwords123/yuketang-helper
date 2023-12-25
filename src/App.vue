@@ -4,7 +4,7 @@ import { GM_notification, unsafeWindow } from '$';
 import storage from './storage';
 import { answerProblem } from './api';
 import { MyWebSocket, MyXMLHttpRequest } from './network';
-import { randInt, shuffleArray, sleep } from './util';
+import { randInt, shuffleArray, PROBLEM_TYPE_MAP } from './util';
 import ProblemUI from './components/ProblemUI.vue';
 
 // #region App state
@@ -281,9 +281,6 @@ function getAnswerToProblem(problem) {
 // #endregion
 
 // #region Helper toolbar
-const PROBLEM_TYPE_MAP = {
-  1: "单选题", 2: "多选题", 3: "投票题", 4: "填空题", 5: "主观题"
-};
 
 const problemUIVisible = ref(false);
 
