@@ -148,7 +148,7 @@ async function handleRetry(problem) {
     if (!resp.data.success.includes(problem.problemId))
       throw new Error("服务器未返回成功信息");
 
-    props.onAnswerProblem?.(problem, result);
+    props.onAnswerProblem?.(problem.problemId, result);
 
     $toast({
       message: "重试作答成功",
