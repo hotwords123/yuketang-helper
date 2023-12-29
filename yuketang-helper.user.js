@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         雨课堂 helper
 // @namespace    https://github.com/hotwords123/yuketang-helper
-// @version      1.2.1
+// @version      1.3.0
 // @author       hotwords123
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=yuketang.cn
-// @match        https://pro.yuketang.cn/*
+// @match        https://*.yuketang.cn/lesson/fullscreen/v3/*
+// @match        https://*.yuketang.cn/v2/web/*
 // @require      https://cdn.jsdelivr.net/npm/vue@3.3.13/dist/vue.global.prod.js
 // @require      https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js
 // @grant        GM_addStyle
@@ -17,7 +18,7 @@
 // @grant        unsafeWindow
 // ==/UserScript==
 
-(a=>{if(typeof GM_addStyle=="function"){GM_addStyle(a);return}const t=document.createElement("style");t.textContent=a,document.head.append(t)})(' @import"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";#watermark_layer{display:none!important;visibility:hidden!important}.container[data-v-64c62bb5]{position:fixed;z-index:100;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:rgba(64,64,64,.4)}.popup[data-v-64c62bb5]{display:grid;grid-template:auto 36px / 240px auto;width:80%;height:90%;background:rgba(255,255,255,.9);border:1px solid #bbbbbb;border-radius:5px;overflow:hidden}.list[data-v-64c62bb5]{grid-row:1;grid-column:1;padding:5px 15px;overflow-y:auto}.list .title[data-v-64c62bb5]{font-weight:700;overflow:hidden;margin:10px 0}.list .title[data-v-64c62bb5]:after{content:"";display:inline-block;height:1px;background:#aaaaaa;position:relative;vertical-align:middle;width:100%;left:1em;margin-right:-100%}.list .title .download-btn[data-v-64c62bb5]{cursor:pointer}.list .slide[data-v-64c62bb5]{position:relative;margin:10px 0;border:2px solid #dddddd;cursor:pointer}.list .slide>img[data-v-64c62bb5]{display:block;width:100%}.list .slide>.tag[data-v-64c62bb5]{position:absolute;top:0;left:0;display:inline-block;padding:3px 5px;font-size:small;color:#f7f7f7;background:rgba(64,64,64,.4)}.list .slide.active[data-v-64c62bb5]{border-color:#2d70e7}.list .slide.active>.tag[data-v-64c62bb5]{background:#2d70e7}.list .slide.unlocked[data-v-64c62bb5]{border-color:#d7d48e}.list .slide.unlocked.active[data-v-64c62bb5]{border-color:#e6cb2d}.list .slide.unlocked.active>.tag[data-v-64c62bb5]{background:#e6cb2d}.list .slide.answered[data-v-64c62bb5]{border-color:#8dd790}.list .slide.answered.active[data-v-64c62bb5]{border-color:#4caf50}.list .slide.answered.active>.tag[data-v-64c62bb5]{background:#4caf50}.tail[data-v-64c62bb5]{grid-row:2;grid-column:1;padding:5px 15px;line-height:26px;border-top:1px solid #bbbbbb}.tail label[data-v-64c62bb5]{font-size:small}.tail input[type=checkbox][data-v-64c62bb5]{-webkit-appearance:auto;-moz-appearance:auto;appearance:auto;vertical-align:middle}.detail[data-v-64c62bb5]{grid-row:1 / span 2;grid-column:2;padding:25px 40px;overflow-y:auto;border-left:1px solid #bbbbbb}.detail .cover[data-v-64c62bb5]{border:1px solid #dddddd;box-shadow:0 1px 4px 3px #0000001a}.detail .cover>img[data-v-64c62bb5]{display:block;width:100%}.detail .body[data-v-64c62bb5]{margin-top:25px}.detail .body>textarea[data-v-64c62bb5]{width:100%;min-height:40px;resize:vertical}.detail .actions[data-v-64c62bb5]{margin-top:25px;text-align:center}.detail .actions>button[data-v-64c62bb5]{margin:0 20px;padding:4px 10px}*[data-v-1c8fbbdf]{margin:0;padding:0;box-sizing:border-box}.toolbar[data-v-1c8fbbdf]{position:fixed;z-index:2000001;left:15px;bottom:15px;width:100px;height:36px;padding:5px;display:flex;flex-direction:row;justify-content:space-between;align-items:center;background:#ffffff;border:1px solid #cccccc;border-radius:4px;box-shadow:0 1px 4px 3px #0000001a}.toolbar>.btn[data-v-1c8fbbdf]{display:inline-block;padding:4px;cursor:pointer;color:#607190}.toolbar>.btn[data-v-1c8fbbdf]:hover{color:#1e3050}.toolbar>.btn.active[data-v-1c8fbbdf]{color:#1d63df}.toolbar>.btn.active[data-v-1c8fbbdf]:hover{color:#1b53ac}.toolbar>.btn.disabled[data-v-1c8fbbdf]{color:#bbb;cursor:default} ');
+(a=>{if(typeof GM_addStyle=="function"){GM_addStyle(a);return}const t=document.createElement("style");t.textContent=a,document.head.append(t)})(' @import"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";:root{overflow:hidden}#watermark_layer{display:none!important;visibility:hidden!important}.container[data-v-64c62bb5]{position:fixed;z-index:100;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:rgba(64,64,64,.4)}.popup[data-v-64c62bb5]{display:grid;grid-template:auto 36px / 240px auto;width:80%;height:90%;background:rgba(255,255,255,.9);border:1px solid #bbbbbb;border-radius:5px;overflow:hidden}.list[data-v-64c62bb5]{grid-row:1;grid-column:1;padding:5px 15px;overflow-y:auto}.list .title[data-v-64c62bb5]{font-weight:700;overflow:hidden;margin:10px 0}.list .title[data-v-64c62bb5]:after{content:"";display:inline-block;height:1px;background:#aaaaaa;position:relative;vertical-align:middle;width:100%;left:1em;margin-right:-100%}.list .title .download-btn[data-v-64c62bb5]{cursor:pointer}.list .slide[data-v-64c62bb5]{position:relative;margin:10px 0;border:2px solid #dddddd;cursor:pointer}.list .slide>img[data-v-64c62bb5]{display:block;width:100%}.list .slide>.tag[data-v-64c62bb5]{position:absolute;top:0;left:0;display:inline-block;padding:3px 5px;font-size:small;color:#f7f7f7;background:rgba(64,64,64,.4)}.list .slide.active[data-v-64c62bb5]{border-color:#2d70e7}.list .slide.active>.tag[data-v-64c62bb5]{background:#2d70e7}.list .slide.unlocked[data-v-64c62bb5]{border-color:#d7d48e}.list .slide.unlocked.active[data-v-64c62bb5]{border-color:#e6cb2d}.list .slide.unlocked.active>.tag[data-v-64c62bb5]{background:#e6cb2d}.list .slide.answered[data-v-64c62bb5]{border-color:#8dd790}.list .slide.answered.active[data-v-64c62bb5]{border-color:#4caf50}.list .slide.answered.active>.tag[data-v-64c62bb5]{background:#4caf50}.tail[data-v-64c62bb5]{grid-row:2;grid-column:1;padding:5px 15px;line-height:26px;border-top:1px solid #bbbbbb}.tail label[data-v-64c62bb5]{font-size:small}.tail input[type=checkbox][data-v-64c62bb5]{-webkit-appearance:auto;-moz-appearance:auto;appearance:auto;vertical-align:middle}.detail[data-v-64c62bb5]{grid-row:1 / span 2;grid-column:2;padding:25px 40px;overflow-y:auto;border-left:1px solid #bbbbbb}.detail .cover[data-v-64c62bb5]{border:1px solid #dddddd;box-shadow:0 1px 4px 3px #0000001a}.detail .cover>img[data-v-64c62bb5]{display:block;width:100%}.detail .body[data-v-64c62bb5]{margin-top:25px}.detail .body>textarea[data-v-64c62bb5]{width:100%;min-height:40px;resize:vertical}.detail .actions[data-v-64c62bb5]{margin-top:25px;text-align:center}.detail .actions>button[data-v-64c62bb5]{margin:0 20px;padding:4px 10px}*[data-v-db763ccf]{margin:0;padding:0;box-sizing:border-box}.toolbar[data-v-db763ccf]{position:fixed;z-index:2000001;left:15px;bottom:15px;width:100px;height:36px;padding:5px;display:flex;flex-direction:row;justify-content:space-between;align-items:center;background:#ffffff;border:1px solid #cccccc;border-radius:4px;box-shadow:0 1px 4px 3px #0000001a}.toolbar>.btn[data-v-db763ccf]{display:inline-block;padding:4px;cursor:pointer;color:#607190}.toolbar>.btn[data-v-db763ccf]:hover{color:#1e3050}.toolbar>.btn.active[data-v-db763ccf]{color:#1d63df}.toolbar>.btn.active[data-v-db763ccf]:hover{color:#1b53ac}.toolbar>.btn.disabled[data-v-db763ccf]{color:#bbb;cursor:default} ');
 
 (function (vue, jspdf) {
   'use strict';
@@ -74,7 +75,7 @@
   }
   const storage = new StorageManager("ykt-helper:");
   async function request(path, options = {}) {
-    const url2 = new URL(path, "https://pro.yuketang.cn");
+    const url2 = new URL(path, location.origin);
     const init = {
       method: options.method ?? "GET",
       headers: options.headers,
@@ -166,8 +167,9 @@
     }
     constructor(url2, protocols) {
       super(url2, protocols);
+      const parsed = new URL(url2, location.href);
       for (const handler of this.constructor.handlers) {
-        handler(this, url2);
+        handler(this, parsed);
       }
     }
     intercept(callback) {
@@ -572,7 +574,7 @@
     }
   };
   const ProblemUI = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-64c62bb5"]]);
-  const _withScopeId = (n) => (vue.pushScopeId("data-v-1c8fbbdf"), n = n(), vue.popScopeId(), n);
+  const _withScopeId = (n) => (vue.pushScopeId("data-v-db763ccf"), n = n(), vue.popScopeId(), n);
   const _hoisted_1 = { class: "toolbar" };
   const _hoisted_2 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ vue.createElementVNode("i", { class: "fas fa-eye fa-lg" }, null, -1));
   const _hoisted_3 = [
@@ -602,7 +604,7 @@
       const problemStatus = vue.reactive(/* @__PURE__ */ new Map());
       const lastProblem = vue.ref(null);
       MyWebSocket.addHandler((ws, url2) => {
-        if (url2 === "wss://pro.yuketang.cn/wsapp/") {
+        if (url2.pathname === "/wsapp/") {
           ws.intercept((message) => {
           });
           ws.listen((message) => {
@@ -867,7 +869,7 @@
       };
     }
   };
-  const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-1c8fbbdf"]]);
+  const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-db763ccf"]]);
   const url = new URL(window.location.href);
   if (url.pathname.startsWith("/lesson/fullscreen/v3/")) {
     launchLessonHelper();
@@ -911,7 +913,8 @@
       for (const lesson of resp.data.onLessonClassrooms) {
         const { classroomId, lessonId } = lesson;
         if (!enteredLessonIds.has(lessonId)) {
-          _GM_openInTab("https://pro.yuketang.cn/lesson/fullscreen/v3/" + lessonId);
+          const url2 = new URL(`/lesson/fullscreen/v3/${lessonId}`, location.origin);
+          _GM_openInTab(url2.href, { active: false });
           enteredLessonIds.add(lessonId);
         }
       }
