@@ -1,5 +1,5 @@
 export async function request(path, options = {}) {
-  const url = new URL(path, "https://pro.yuketang.cn");
+  const url = new URL(path, location.origin);
   const init = {
     method: options.method ?? "GET",
     headers: options.headers,

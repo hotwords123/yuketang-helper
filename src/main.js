@@ -57,7 +57,8 @@ function pollActiveLessons() {
       const { classroomId, lessonId } = lesson;
 
       if (!enteredLessonIds.has(lessonId)) {
-        GM_openInTab("https://pro.yuketang.cn/lesson/fullscreen/v3/" + lessonId);
+        const url = new URL(`/lesson/fullscreen/v3/${lessonId}`, location.origin);
+        GM_openInTab(url.href, { active: false });
         enteredLessonIds.add(lessonId);
       }
     }

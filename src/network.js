@@ -11,8 +11,9 @@ export class MyWebSocket extends WebSocket {
 
   constructor(url, protocols) {
     super(url, protocols);
+    const parsed = new URL(url, location.href);
     for (const handler of this.constructor.handlers) {
-      handler(this, url);
+      handler(this, parsed);
     }
   }
 

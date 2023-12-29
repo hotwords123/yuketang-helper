@@ -29,7 +29,7 @@ const messagesReceived = [];
 const messagesSent = [];
 
 MyWebSocket.addHandler((ws, url) => {
-  if (url === "wss://pro.yuketang.cn/wsapp/") {
+  if (url.pathname === "/wsapp/") {
     ws.intercept((message) => {
       messagesSent.push(message);
     });
