@@ -18,6 +18,7 @@ const currentPresentation = ref(null);
 const currentSlide = ref(null);
 const currentProblem = computed(() => currentSlide.value?.problem);
 const answerContent = ref("");
+const downloadProgress = reactive(new Map());
 
 const filteredPresentations = computed(() => {
   return [...props.presentations.values()].map(({ slides, ...more }) => ({
@@ -177,6 +178,8 @@ async function handleDownload(presentationId) {
       message: "下载失败：" + err.message,
       duration: 3000
     });
+  } finally {
+    downloadProgress.delete(presentationId);
   }
 }
 
@@ -196,9 +199,14 @@ async function savePresentation(presentation) {
   let parent = null;
 
   for (const slide of presentation.slides) {
-    const img = await loadImage(slide.cover);
+    downloadProgress.set(presentation.id, `${slide.index}/${presentation.slides.length}`);
+
+    const resp = await fetch(slide.cover);
+    const arrayBuffer = await resp.arrayBuffer();
+    const data = new Uint8Array(arrayBuffer);
+
     doc.addPage();
-    doc.addImage(img, "PNG", 0, 0, width, height);
+    doc.addImage(data, "PNG", 0, 0, width, height);
 
     const pageNumber = doc.getNumberOfPages();
     if (parent === null) {
@@ -226,7 +234,10 @@ async function savePresentation(presentation) {
         <template v-for="presentation in filteredPresentations" :key="presentation.id">
           <div class="title">
             {{ presentation.title }}
-            <i class="download-btn fas fa-download" @click="handleDownload(presentation.id)"></i>
+            <span v-if="downloadProgress.has(presentation.id)" title="下载进度">
+              ({{ downloadProgress.get(presentation.id) }})
+            </span>
+            <i v-else class="download-btn fas fa-download" @click="handleDownload(presentation.id)"></i>
           </div>
           <div class="slide"
             v-for="slide in presentation.slides"
