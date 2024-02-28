@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         雨课堂 helper
 // @namespace    https://github.com/hotwords123/yuketang-helper
-// @version      1.3.0
+// @version      1.3.1
 // @author       hotwords123
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=yuketang.cn
@@ -18,7 +18,7 @@
 // @grant        unsafeWindow
 // ==/UserScript==
 
-(a=>{if(typeof GM_addStyle=="function"){GM_addStyle(a);return}const t=document.createElement("style");t.textContent=a,document.head.append(t)})(' @import"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";:root{overflow:hidden}#watermark_layer{display:none!important;visibility:hidden!important}.container[data-v-64c62bb5]{position:fixed;z-index:100;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:rgba(64,64,64,.4)}.popup[data-v-64c62bb5]{display:grid;grid-template:auto 36px / 240px auto;width:80%;height:90%;background:rgba(255,255,255,.9);border:1px solid #bbbbbb;border-radius:5px;overflow:hidden}.list[data-v-64c62bb5]{grid-row:1;grid-column:1;padding:5px 15px;overflow-y:auto}.list .title[data-v-64c62bb5]{font-weight:700;overflow:hidden;margin:10px 0}.list .title[data-v-64c62bb5]:after{content:"";display:inline-block;height:1px;background:#aaaaaa;position:relative;vertical-align:middle;width:100%;left:1em;margin-right:-100%}.list .title .download-btn[data-v-64c62bb5]{cursor:pointer}.list .slide[data-v-64c62bb5]{position:relative;margin:10px 0;border:2px solid #dddddd;cursor:pointer}.list .slide>img[data-v-64c62bb5]{display:block;width:100%}.list .slide>.tag[data-v-64c62bb5]{position:absolute;top:0;left:0;display:inline-block;padding:3px 5px;font-size:small;color:#f7f7f7;background:rgba(64,64,64,.4)}.list .slide.active[data-v-64c62bb5]{border-color:#2d70e7}.list .slide.active>.tag[data-v-64c62bb5]{background:#2d70e7}.list .slide.unlocked[data-v-64c62bb5]{border-color:#d7d48e}.list .slide.unlocked.active[data-v-64c62bb5]{border-color:#e6cb2d}.list .slide.unlocked.active>.tag[data-v-64c62bb5]{background:#e6cb2d}.list .slide.answered[data-v-64c62bb5]{border-color:#8dd790}.list .slide.answered.active[data-v-64c62bb5]{border-color:#4caf50}.list .slide.answered.active>.tag[data-v-64c62bb5]{background:#4caf50}.tail[data-v-64c62bb5]{grid-row:2;grid-column:1;padding:5px 15px;line-height:26px;border-top:1px solid #bbbbbb}.tail label[data-v-64c62bb5]{font-size:small}.tail input[type=checkbox][data-v-64c62bb5]{-webkit-appearance:auto;-moz-appearance:auto;appearance:auto;vertical-align:middle}.detail[data-v-64c62bb5]{grid-row:1 / span 2;grid-column:2;padding:25px 40px;overflow-y:auto;border-left:1px solid #bbbbbb}.detail .cover[data-v-64c62bb5]{border:1px solid #dddddd;box-shadow:0 1px 4px 3px #0000001a}.detail .cover>img[data-v-64c62bb5]{display:block;width:100%}.detail .body[data-v-64c62bb5]{margin-top:25px}.detail .body>textarea[data-v-64c62bb5]{width:100%;min-height:40px;resize:vertical}.detail .actions[data-v-64c62bb5]{margin-top:25px;text-align:center}.detail .actions>button[data-v-64c62bb5]{margin:0 20px;padding:4px 10px}*[data-v-db763ccf]{margin:0;padding:0;box-sizing:border-box}.toolbar[data-v-db763ccf]{position:fixed;z-index:2000001;left:15px;bottom:15px;width:100px;height:36px;padding:5px;display:flex;flex-direction:row;justify-content:space-between;align-items:center;background:#ffffff;border:1px solid #cccccc;border-radius:4px;box-shadow:0 1px 4px 3px #0000001a}.toolbar>.btn[data-v-db763ccf]{display:inline-block;padding:4px;cursor:pointer;color:#607190}.toolbar>.btn[data-v-db763ccf]:hover{color:#1e3050}.toolbar>.btn.active[data-v-db763ccf]{color:#1d63df}.toolbar>.btn.active[data-v-db763ccf]:hover{color:#1b53ac}.toolbar>.btn.disabled[data-v-db763ccf]{color:#bbb;cursor:default} ');
+(e=>{if(typeof GM_addStyle=="function"){GM_addStyle(e);return}const a=document.createElement("style");a.textContent=e,document.head.append(a)})(' @import"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";:root{overflow:hidden}#watermark_layer{display:none!important;visibility:hidden!important}.container[data-v-e83409ce]{position:fixed;z-index:100;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:rgba(64,64,64,.4)}.popup[data-v-e83409ce]{display:grid;grid-template:auto 36px / 240px auto;width:80%;height:90%;background:rgba(255,255,255,.9);border:1px solid #bbbbbb;border-radius:5px;overflow:hidden}.list[data-v-e83409ce]{grid-row:1;grid-column:1;padding:5px 15px;overflow-y:auto}.list .title[data-v-e83409ce]{font-weight:700;overflow:hidden;margin:10px 0}.list .title[data-v-e83409ce]:after{content:"";display:inline-block;height:1px;background:#aaaaaa;position:relative;vertical-align:middle;width:100%;left:1em;margin-right:-100%}.list .title .download-btn[data-v-e83409ce]{cursor:pointer}.list .slide[data-v-e83409ce]{position:relative;margin:10px 0;border:2px solid #dddddd;cursor:pointer}.list .slide>img[data-v-e83409ce]{display:block;width:100%}.list .slide>.tag[data-v-e83409ce]{position:absolute;top:0;left:0;display:inline-block;padding:3px 5px;font-size:small;color:#f7f7f7;background:rgba(64,64,64,.4)}.list .slide.active[data-v-e83409ce]{border-color:#2d70e7}.list .slide.active>.tag[data-v-e83409ce]{background:#2d70e7}.list .slide.unlocked[data-v-e83409ce]{border-color:#d7d48e}.list .slide.unlocked.active[data-v-e83409ce]{border-color:#e6cb2d}.list .slide.unlocked.active>.tag[data-v-e83409ce]{background:#e6cb2d}.list .slide.answered[data-v-e83409ce]{border-color:#8dd790}.list .slide.answered.active[data-v-e83409ce]{border-color:#4caf50}.list .slide.answered.active>.tag[data-v-e83409ce]{background:#4caf50}.tail[data-v-e83409ce]{grid-row:2;grid-column:1;padding:5px 15px;line-height:26px;border-top:1px solid #bbbbbb}.tail label[data-v-e83409ce]{font-size:small}.tail input[type=checkbox][data-v-e83409ce]{-webkit-appearance:auto;-moz-appearance:auto;appearance:auto;vertical-align:middle}.detail[data-v-e83409ce]{grid-row:1 / span 2;grid-column:2;padding:25px 40px;overflow-y:auto;border-left:1px solid #bbbbbb}.detail .cover[data-v-e83409ce]{border:1px solid #dddddd;box-shadow:0 1px 4px 3px #0000001a}.detail .cover>img[data-v-e83409ce]{display:block;width:100%}.detail .body[data-v-e83409ce]{margin-top:25px}.detail .body>textarea[data-v-e83409ce]{width:100%;min-height:40px;resize:vertical}.detail .actions[data-v-e83409ce]{margin-top:25px;text-align:center}.detail .actions>button[data-v-e83409ce]{margin:0 20px;padding:4px 10px}*[data-v-db763ccf]{margin:0;padding:0;box-sizing:border-box}.toolbar[data-v-db763ccf]{position:fixed;z-index:2000001;left:15px;bottom:15px;width:100px;height:36px;padding:5px;display:flex;flex-direction:row;justify-content:space-between;align-items:center;background:#ffffff;border:1px solid #cccccc;border-radius:4px;box-shadow:0 1px 4px 3px #0000001a}.toolbar>.btn[data-v-db763ccf]{display:inline-block;padding:4px;cursor:pointer;color:#607190}.toolbar>.btn[data-v-db763ccf]:hover{color:#1e3050}.toolbar>.btn.active[data-v-db763ccf]{color:#1d63df}.toolbar>.btn.active[data-v-db763ccf]:hover{color:#1b53ac}.toolbar>.btn.disabled[data-v-db763ccf]{color:#bbb;cursor:default} ');
 
 (function (vue, jspdf) {
   'use strict';
@@ -232,17 +232,6 @@
     }
     return array;
   }
-  function loadImage(src) {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.src = src;
-      img.onload = () => resolve(img);
-      img.onerror = (evt) => {
-        console.error(evt);
-        reject(new Error("Failed to load image: " + src));
-      };
-    });
-  }
   const _hoisted_1$2 = { key: 0 };
   const _hoisted_2$2 = { key: 2 };
   const _sfc_main$2 = {
@@ -287,18 +276,22 @@
   const _hoisted_2$1 = { class: "popup" };
   const _hoisted_3$1 = { class: "list" };
   const _hoisted_4$1 = { class: "title" };
-  const _hoisted_5$1 = ["onClick"];
+  const _hoisted_5$1 = {
+    key: 0,
+    title: "下载进度"
+  };
   const _hoisted_6$1 = ["onClick"];
-  const _hoisted_7$1 = ["src"];
-  const _hoisted_8 = { class: "tag" };
-  const _hoisted_9 = { class: "tail" };
-  const _hoisted_10 = { class: "detail" };
-  const _hoisted_11 = { class: "cover" };
-  const _hoisted_12 = ["src"];
-  const _hoisted_13 = { class: "body" };
-  const _hoisted_14 = { key: 1 };
-  const _hoisted_15 = { class: "actions" };
-  const _hoisted_16 = ["disabled"];
+  const _hoisted_7$1 = ["onClick"];
+  const _hoisted_8 = ["src"];
+  const _hoisted_9 = { class: "tag" };
+  const _hoisted_10 = { class: "tail" };
+  const _hoisted_11 = { class: "detail" };
+  const _hoisted_12 = { class: "cover" };
+  const _hoisted_13 = ["src"];
+  const _hoisted_14 = { class: "body" };
+  const _hoisted_15 = { key: 1 };
+  const _hoisted_16 = { class: "actions" };
+  const _hoisted_17 = ["disabled"];
   const _sfc_main$1 = {
     __name: "ProblemUI",
     props: [
@@ -317,6 +310,7 @@
         return (_a = currentSlide.value) == null ? void 0 : _a.problem;
       });
       const answerContent = vue.ref("");
+      const downloadProgress = vue.reactive(/* @__PURE__ */ new Map());
       const filteredPresentations = vue.computed(() => {
         return [...props.presentations.values()].map(({ slides, ...more }) => ({
           slides: slides.filter((slide) => showAllSlides.value || slide.problem),
@@ -451,6 +445,8 @@
             message: "下载失败：" + err.message,
             duration: 3e3
           });
+        } finally {
+          downloadProgress.delete(presentationId);
         }
       }
       async function savePresentation(presentation) {
@@ -466,9 +462,12 @@
         doc.deletePage(1);
         let parent = null;
         for (const slide of presentation.slides) {
-          const img = await loadImage(slide.cover);
+          downloadProgress.set(presentation.id, `${slide.index}/${presentation.slides.length}`);
+          const resp = await fetch(slide.cover);
+          const arrayBuffer = await resp.arrayBuffer();
+          const data = new Uint8Array(arrayBuffer);
           doc.addPage();
-          doc.addImage(img, "PNG", 0, 0, width, height);
+          doc.addImage(data, "PNG", 0, 0, width, height);
           const pageNumber = doc.getNumberOfPages();
           if (parent === null) {
             parent = doc.outline.add(null, presentation.title, { pageNumber });
@@ -494,10 +493,11 @@
                 }, [
                   vue.createElementVNode("div", _hoisted_4$1, [
                     vue.createTextVNode(vue.toDisplayString(presentation.title) + " ", 1),
-                    vue.createElementVNode("i", {
+                    downloadProgress.has(presentation.id) ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_5$1, " (" + vue.toDisplayString(downloadProgress.get(presentation.id)) + ") ", 1)) : (vue.openBlock(), vue.createElementBlock("i", {
+                      key: 1,
                       class: "download-btn fas fa-download",
                       onClick: ($event) => handleDownload(presentation.id)
-                    }, null, 8, _hoisted_5$1)
+                    }, null, 8, _hoisted_6$1))
                   ]),
                   (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(presentation.slides, (slide) => {
                     return vue.openBlock(), vue.createElementBlock("div", {
@@ -508,14 +508,14 @@
                       vue.createElementVNode("img", {
                         src: slide.thumbnail,
                         style: vue.normalizeStyle(coverStyle(presentation))
-                      }, null, 12, _hoisted_7$1),
-                      vue.createElementVNode("span", _hoisted_8, vue.toDisplayString(slide.index), 1)
-                    ], 10, _hoisted_6$1);
+                      }, null, 12, _hoisted_8),
+                      vue.createElementVNode("span", _hoisted_9, vue.toDisplayString(slide.index), 1)
+                    ], 10, _hoisted_7$1);
                   }), 128))
                 ], 64);
               }), 128))
             ]),
-            vue.createElementVNode("div", _hoisted_9, [
+            vue.createElementVNode("div", _hoisted_10, [
               vue.createElementVNode("label", null, [
                 vue.withDirectives(vue.createElementVNode("input", {
                   type: "checkbox",
@@ -526,17 +526,17 @@
                 vue.createTextVNode(" 显示全部页面 ")
               ])
             ]),
-            vue.createElementVNode("div", _hoisted_10, [
+            vue.createElementVNode("div", _hoisted_11, [
               currentSlide.value ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 0 }, [
-                vue.createElementVNode("div", _hoisted_11, [
+                vue.createElementVNode("div", _hoisted_12, [
                   (vue.openBlock(), vue.createElementBlock("img", {
                     key: currentSlide.value.id,
                     src: currentSlide.value.cover,
                     style: vue.normalizeStyle(coverStyle(currentPresentation.value))
-                  }, null, 12, _hoisted_12))
+                  }, null, 12, _hoisted_13))
                 ]),
                 currentProblem.value ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 0 }, [
-                  vue.createElementVNode("div", _hoisted_13, [
+                  vue.createElementVNode("div", _hoisted_14, [
                     vue.createElementVNode("p", null, " 题面：" + vue.toDisplayString(currentProblem.value.body || "空"), 1),
                     [1, 2, 4].includes(currentProblem.value.problemType) ? (vue.openBlock(), vue.createBlock(_sfc_main$2, {
                       key: 0,
@@ -544,7 +544,7 @@
                       revealed: answerRevealed(currentProblem.value),
                       onReveal: _cache[1] || (_cache[1] = ($event) => revealAnswer(currentProblem.value))
                     }, null, 8, ["problem", "revealed"])) : vue.createCommentVNode("", true),
-                    currentProblem.value.result ? (vue.openBlock(), vue.createElementBlock("p", _hoisted_14, [
+                    currentProblem.value.result ? (vue.openBlock(), vue.createElementBlock("p", _hoisted_15, [
                       vue.createTextVNode(" 作答内容："),
                       vue.createElementVNode("code", null, vue.toDisplayString(JSON.stringify(currentProblem.value.result)), 1)
                     ])) : vue.createCommentVNode("", true),
@@ -556,14 +556,14 @@
                       [vue.vModelText, answerContent.value]
                     ])
                   ]),
-                  vue.createElementVNode("div", _hoisted_15, [
+                  vue.createElementVNode("div", _hoisted_16, [
                     vue.createElementVNode("button", {
                       onClick: _cache[3] || (_cache[3] = ($event) => updateAutoAnswer())
                     }, "自动作答"),
                     vue.createElementVNode("button", {
                       disabled: !canRetry(currentProblem.value),
                       onClick: _cache[4] || (_cache[4] = ($event) => handleRetry(currentProblem.value))
-                    }, "重试作答", 8, _hoisted_16)
+                    }, "重试作答", 8, _hoisted_17)
                   ])
                 ], 64)) : vue.createCommentVNode("", true)
               ], 64)) : vue.createCommentVNode("", true)
@@ -573,7 +573,7 @@
       };
     }
   };
-  const ProblemUI = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-64c62bb5"]]);
+  const ProblemUI = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-e83409ce"]]);
   const _withScopeId = (n) => (vue.pushScopeId("data-v-db763ccf"), n = n(), vue.popScopeId(), n);
   const _hoisted_1 = { class: "toolbar" };
   const _hoisted_2 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ vue.createElementVNode("i", { class: "fas fa-eye fa-lg" }, null, -1));
