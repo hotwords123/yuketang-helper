@@ -200,7 +200,7 @@ function getProblemDetail(problem) {
 const autoAnswerTimers = [];
 
 window.addEventListener("keydown", (evt) => {
-  if (evt.key === "F10") {
+  if (evt.key === "Escape") {
     if (autoAnswerTimers.length > 0) {
       const timer = autoAnswerTimers.shift();
       clearTimeout(timer);
@@ -252,7 +252,7 @@ function doAutoAnswer(problem) {
   autoAnswerTimers.push(timer);
 
   $toast({
-    message: `将在 ${Math.round(delay / 1000)} 秒后自动作答本题，按 F10 取消`,
+    message: `将在 ${Math.round(delay / 1000)} 秒后自动作答本题，按 Esc 取消`,
     duration: 3000
   });
 }
