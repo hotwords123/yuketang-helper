@@ -9,12 +9,16 @@ import ProblemUI from './components/ProblemUI.vue';
 
 // #region App state
 const DEFAULT_CONFIG = {
+  notifyProblems: true,
   autoAnswer: false,
   autoAnswerDelay: [3 * 1000, 6 * 1000],
   maxPresentations: 5,
 };
 
-const config = reactive(storage.get("config", DEFAULT_CONFIG));
+const config = reactive({
+  ...DEFAULT_CONFIG,
+  ...storage.get("config", DEFAULT_CONFIG),
+});
 watch(config, (value) => storage.set("config", value));
 window.yktConfig = config;  // Expose to global scope for convenience
 
@@ -22,7 +26,6 @@ const presentations = reactive(new Map());
 const slides = reactive(new Map());
 const problems = reactive(new Map());
 const problemStatus = reactive(new Map());
-const lastProblem = ref(null);
 // #endregion
 
 // #region WebSocket messages
@@ -81,8 +84,9 @@ function onUnlockProblem(data) {
   // Skip if problem has been answered
   if (problem.result) return;
 
-  lastProblem.value = problem;
-  notifyProblem(problem, slide);
+  if (config.notifyProblems) {
+    notifyProblem(problem, slide);
+  }
 
   if (config.autoAnswer) {
     doAutoAnswer(problem);
@@ -313,6 +317,14 @@ function revealAnswers(problem) {
   alert(lines.join("\n"));
 }
 
+function toggleNotifyProblems() {
+  config.notifyProblems = !config.notifyProblems;
+  $toast({
+    message: `习题提醒：${config.notifyProblems ? "开" : "关"}`,
+    duration: 1500
+  });
+}
+
 function toggleAutoAnswer() {
   config.autoAnswer = !config.autoAnswer;
   $toast({
@@ -339,11 +351,11 @@ if (process.env.NODE_ENV === 'development') {
 
 <template>
   <div class="toolbar">
-    <span class="btn" title="查看习题答案"
-      :class="{ disabled: !lastProblem }"
-      @click="revealAnswers(lastProblem)"
+    <span class="btn" title="切换习题提醒"
+      :class="{ active: config.notifyProblems }"
+      @click="toggleNotifyProblems()"
     >
-      <i class="fas fa-eye fa-lg"></i>
+      <i class="fas fa-bell fa-lg"></i>
     </span>
     <span class="btn" title="切换自动作答"
       :class="{ active: config.autoAnswer }"
@@ -384,7 +396,7 @@ if (process.env.NODE_ENV === 'development') {
   bottom: 15px;
   width: 100px;
   height: 36px;
-  padding: 5px;
+  padding: 5px 9px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -397,7 +409,8 @@ if (process.env.NODE_ENV === 'development') {
 
 .toolbar>.btn {
   display: inline-block;
-  padding: 4px;
+  width: 20px;
+  text-align: center;
   cursor: pointer;
   color: #607190;
 }
@@ -447,7 +460,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 .popup.v-enter-active>.problem-ui, .popup.v-leave-active>.problem-ui {
-  transition: transform 0.2s;
+  transition: transform 0.2s ease-in-out;
 }
 
 .popup.v-enter-from>.problem-ui, .popup.v-leave-to>.problem-ui {
