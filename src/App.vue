@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, watch, computed } from 'vue';
+import { ref, reactive, watch, Transition } from 'vue';
 import { GM_notification, unsafeWindow } from '$';
 import storage from './storage';
 import { answerProblem } from './api';
@@ -16,6 +16,7 @@ const DEFAULT_CONFIG = {
 
 const config = reactive(storage.get("config", DEFAULT_CONFIG));
 watch(config, (value) => storage.set("config", value));
+window.yktConfig = config;  // Expose to global scope for convenience
 
 const presentations = reactive(new Map());
 const slides = reactive(new Map());
@@ -357,13 +358,16 @@ if (process.env.NODE_ENV === 'development') {
       <i class="fas fa-list-check fa-lg"></i>
     </span>
   </div>
-  <ProblemUI
-    v-show="problemUIVisible"
-    :config="config"
-    :presentations="presentations"
-    :problem-status="problemStatus"
-    @answer-problem="onAnswerProblem"
-  />
+  <Transition>
+    <div class="popup" v-show="problemUIVisible">
+      <ProblemUI class="problem-ui"
+        :config="config"
+        :presentations="presentations"
+        :problem-status="problemStatus"
+        @answer-problem="onAnswerProblem"
+      />
+    </div>
+  </Transition>
 </template>
 
 <style scoped>
@@ -413,5 +417,40 @@ if (process.env.NODE_ENV === 'development') {
 .toolbar>.btn.disabled {
   color: #bbbbbb;
   cursor: default;
+}
+
+.popup {
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(64, 64, 64, 0.4);
+}
+
+.popup.v-enter-active, .popup.v-leave-active {
+  transition: opacity 0.2s;
+}
+
+.popup.v-enter-from, .popup.v-leave-to {
+  opacity: 0;
+}
+
+.problem-ui {
+  width: 80%;
+  height: 90%;
+}
+
+.popup.v-enter-active>.problem-ui, .popup.v-leave-active>.problem-ui {
+  transition: transform 0.2s;
+}
+
+.popup.v-enter-from>.problem-ui, .popup.v-leave-to>.problem-ui {
+  transform: translateY(10px);
 }
 </style>

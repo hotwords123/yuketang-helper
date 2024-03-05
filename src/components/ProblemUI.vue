@@ -229,85 +229,67 @@ async function savePresentation(presentation) {
 
 <template>
   <div class="container">
-    <div class="popup">
-      <div class="list">
-        <template v-for="presentation in filteredPresentations" :key="presentation.id">
-          <div class="title">
-            {{ presentation.title }}
-            <span v-if="downloadProgress.has(presentation.id)" title="下载进度">
-              ({{ downloadProgress.get(presentation.id) }})
-            </span>
-            <i v-else class="download-btn fas fa-download" @click="handleDownload(presentation.id)"></i>
+    <div class="list">
+      <template v-for="presentation in filteredPresentations" :key="presentation.id">
+        <div class="title">
+          {{ presentation.title }}
+          <span v-if="downloadProgress.has(presentation.id)" title="下载进度">
+            ({{ downloadProgress.get(presentation.id) }})
+          </span>
+          <i v-else class="download-btn fas fa-download" @click="handleDownload(presentation.id)"></i>
+        </div>
+        <div class="slide"
+          v-for="slide in presentation.slides"
+          :key="slide.id"
+          :class="slideClass(slide)"
+          @click="setCurrentSlide(slide, presentation)"
+        >
+          <img :src="slide.thumbnail" :style="coverStyle(presentation)" />
+          <span class="tag">{{ slide.index }}</span>
+        </div>
+      </template>
+    </div>
+    <div class="tail">
+      <label>
+        <input type="checkbox" v-model="showAllSlides">
+        显示全部页面
+      </label>
+    </div>
+    <div class="detail">
+      <template v-if="currentSlide">
+        <div class="cover">
+          <img :key="currentSlide.id" :src="currentSlide.cover" :style="coverStyle(currentPresentation)">
+        </div>
+        <template v-if="currentProblem">
+          <div class="body">
+            <p>
+              题面：{{ currentProblem.body || "空" }}
+            </p>
+            <AnswerReveal
+              v-if="[1, 2, 4].includes(currentProblem.problemType)"
+              :problem="currentProblem"
+              :revealed="answerRevealed(currentProblem)"
+              @reveal="revealAnswer(currentProblem)"
+            />
+            <p v-if="currentProblem.result">
+              作答内容：<code>{{ JSON.stringify(currentProblem.result) }}</code>
+            </p>
+            <textarea v-model="answerContent" rows="6" placeholder="自动作答内容"></textarea>
           </div>
-          <div class="slide"
-            v-for="slide in presentation.slides"
-            :key="slide.id"
-            :class="slideClass(slide)"
-            @click="setCurrentSlide(slide, presentation)"
-          >
-            <img :src="slide.thumbnail" :style="coverStyle(presentation)" />
-            <span class="tag">{{ slide.index }}</span>
+          <div class="actions">
+            <button @click="updateAutoAnswer()">自动作答</button>
+            <button :disabled="!canRetry(currentProblem)" @click="handleRetry(currentProblem)">重试作答</button>
           </div>
         </template>
-      </div>
-      <div class="tail">
-        <label>
-          <input type="checkbox" v-model="showAllSlides">
-          显示全部页面
-        </label>
-      </div>
-      <div class="detail">
-        <template v-if="currentSlide">
-          <div class="cover">
-            <img :key="currentSlide.id" :src="currentSlide.cover" :style="coverStyle(currentPresentation)">
-          </div>
-          <template v-if="currentProblem">
-            <div class="body">
-              <p>
-                题面：{{ currentProblem.body || "空" }}
-              </p>
-              <AnswerReveal
-                v-if="[1, 2, 4].includes(currentProblem.problemType)"
-                :problem="currentProblem"
-                :revealed="answerRevealed(currentProblem)"
-                @reveal="revealAnswer(currentProblem)"
-              />
-              <p v-if="currentProblem.result">
-                作答内容：<code>{{ JSON.stringify(currentProblem.result) }}</code>
-              </p>
-              <textarea v-model="answerContent" rows="6" placeholder="自动作答内容"></textarea>
-            </div>
-            <div class="actions">
-              <button @click="updateAutoAnswer()">自动作答</button>
-              <button :disabled="!canRetry(currentProblem)" @click="handleRetry(currentProblem)">重试作答</button>
-            </div>
-          </template>
-        </template>
-      </div>
+      </template>
     </div>
   </div>
 </template>
 
 <style scoped>
 .container {
-  position: fixed;
-  z-index: 100;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: rgba(64, 64, 64, 0.4);
-}
-
-.popup {
   display: grid;
   grid-template: auto 36px / 240px auto;
-  width: 80%;
-  height: 90%;
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid #bbbbbb;
   border-radius: 5px;
