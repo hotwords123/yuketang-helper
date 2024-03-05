@@ -271,6 +271,12 @@ async function savePresentation(presentation) {
               :revealed="answerRevealed(currentProblem)"
               @reveal="revealAnswer(currentProblem)"
             />
+            <p v-if="currentProblem.remark">
+              备注：{{ currentProblem.remark }}
+            </p>
+            <p v-if="Array.isArray(currentProblem.remarkRich?.shapes)">
+              <img v-for="shape in currentProblem.remarkRich.shapes" :key="shape.id" :src="shape.url" />
+            </p>
             <p v-if="currentProblem.result">
               作答内容：<code>{{ JSON.stringify(currentProblem.result) }}</code>
             </p>
