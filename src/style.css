@@ -8,3 +8,28 @@
   display: none !important;
   visibility: hidden !important;
 }
+
+.icon-btn {
+  display: inline-block;
+  width: 20px;
+  text-align: center;
+  cursor: pointer;
+  color: #607190;
+}
+
+.icon-btn:hover {
+  color: #1e3050;
+}
+
+.icon-btn.active {
+  color: #1d63df;
+}
+
+.icon-btn.active:hover {
+  color: #1b53ac;
+}
+
+.icon-btn.disabled {
+  color: #bbbbbb;
+  cursor: default;
+}

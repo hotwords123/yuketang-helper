@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { jsPDF } from "jspdf";
 import { coverStyle, PROBLEM_TYPE_MAP } from "@/util";
 
@@ -28,6 +28,16 @@ function slideClass(slide) {
     }
   };
 }
+
+const slideRefs = new Map();
+watch(() => props.currentSlideId, (id) => {
+  const el = slideRefs.get(id);
+  if (el) {
+    requestAnimationFrame(() => {
+      el.scrollIntoView({ block: "center", behavior: "smooth" });
+    });
+  }
+});
 
 const downloadProgress = ref(null);
 
@@ -105,6 +115,7 @@ async function savePresentation() {
   <div class="slide"
     v-for="slide in filteredSlides"
     :key="slide.id"
+    :ref="el => slideRefs.set(slide.id, el)"
     :class="slideClass(slide)"
     @click="props.onNavigate?.(props.presentation.id, slide.id)"
   >

@@ -1,15 +1,16 @@
 <script setup>
-import { ref, reactive, watch, Transition } from 'vue';
+import { ref, reactive, computed, watch, Transition, TransitionGroup } from 'vue';
 import { GM_notification, unsafeWindow } from '$';
 import storage from './storage';
 import { answerProblem } from './api';
 import { MyWebSocket, MyXMLHttpRequest } from './network';
-import { randInt, shuffleArray, PROBLEM_TYPE_MAP } from './util';
+import { randInt, shuffleArray, coverStyle } from './util';
 import ProblemUI from './components/problem-ui/ProblemUI.vue';
+import ActiveProblem from './components/ActiveProblem.vue';
 
 // #region App state
 const DEFAULT_CONFIG = {
-  notifyProblems: true,
+  notifyProblems: "always",
   autoAnswer: false,
   autoAnswerDelay: [3 * 1000, 6 * 1000],
   maxPresentations: 5,
@@ -66,30 +67,46 @@ function onFetchTimeline(timeline) {
 }
 
 function onUnlockProblem(data) {
-  if (problemStatus.has(data.prob)) return;
+  const problem = problems.get(data.prob);
+  const slide = slides.get(data.sid);
+  if (!problem || !slide) return;
 
   const status = {
+    presentationId: data.pres,
+    slideId: data.sid,
     startTime: data.dt,
     endTime: data.dt + 1000 * data.limit,
+    done: !!problem.result,
+    autoAnswerTime: null,
+    answering: false,
   };
   problemStatus.set(data.prob, status);
 
   // Skip if problem has expired
   if (Date.now() > status.endTime) return;
 
-  const problem = problems.get(data.prob);
-  const slide = slides.get(data.sid);
-  if (!problem || !slide) return;
-
   // Skip if problem has been answered
   if (problem.result) return;
 
-  if (config.notifyProblems) {
+  if (config.notifyProblems && (config.notifyProblems !== "background" || document.hidden)) {
     notifyProblem(problem, slide);
   }
 
   if (config.autoAnswer) {
-    doAutoAnswer(problem);
+    if (getAnswerToProblem(problem)) {
+      const now = Date.now();
+      status.autoAnswerTime = Math.min(status.endTime - 5000, now + randInt(...config.autoAnswerDelay));
+
+      $toast({
+        message: `将在 ${Math.floor(Math.max(0, status.autoAnswerTime - now) / 1000)} 秒后自动作答本题`,
+        duration: 3000
+      });
+    } else {
+      $toast({
+        message: "未指定提交内容，无法自动作答本题",
+        duration: 3000
+      });
+    }
   }
 }
 
@@ -168,6 +185,12 @@ function onAnswerProblem(problemId, result) {
   const problem = problems.get(problemId);
   if (problem) {
     problem.result = result;
+    setTimeout(() => {
+      const status = problemStatus.get(problemId);
+      if (status) {
+        status.done = true;
+      }
+    }, 5000);
   }
 }
 // #endregion
@@ -197,63 +220,58 @@ function getProblemDetail(problem) {
 // #endregion
 
 // #region Auto answer
-const autoAnswerTimers = [];
+setInterval(() => {
+  const now = Date.now();
 
-window.addEventListener("keydown", (evt) => {
-  if (evt.key === "Escape") {
-    if (autoAnswerTimers.length > 0) {
-      const timer = autoAnswerTimers.shift();
-      clearTimeout(timer);
-      $toast({
-        message: "已取消自动作答",
-        duration: 3000
-      });
+  for (const [problemId, status] of problemStatus) {
+    if (status.autoAnswerTime !== null && now >= status.autoAnswerTime) {
+      doAutoAnswer(problems.get(problemId), status);
     }
   }
-});
+}, 500);
 
-function doAutoAnswer(problem) {
-  const result = getAnswerToProblem(problem);
-  if (!result) {
-    $toast({
-      message: "未指定提交内容，无法自动作答本题",
-      duration: 3000
-    });
-    return;
+async function doAutoAnswer(problem, status) {
+  if (status.answering) return;
+
+  status.autoAnswerTime = null;
+  status.answering = true;
+  const messages = [];
+
+  try {
+    const result = getAnswerToProblem(problem);
+    if (!result) {
+      throw new Error("未指定提交内容");
+    }
+    messages.push("内容：" + JSON.stringify(result));
+
+    const resp = await answerProblem(problem, result);
+    if (resp.code === 0) {
+      messages.push("作答完成");
+      onAnswerProblem(problem.problemId, result);
+    } else {
+      messages.push(`作答失败：${resp.msg} (${resp.code})`);
+    }
+  } catch (err) {
+    console.error(err);
+    messages.push(`作答失败：${err.message}`);
+  } finally {
+    status.answering = false;
   }
 
-  const delay = randInt(...config.autoAnswerDelay);
-  const timer = setTimeout(async () => {
-    const index = autoAnswerTimers.indexOf(timer);
-    if (index !== -1) autoAnswerTimers.splice(index, 1);
+  GM_notification({
+    title: "自动作答提示",
+    text: messages.join("\n"),
+    tag: "problem-auto-answer",
+    silent: true,
+  });
+}
 
-    const messages = ["内容：" + JSON.stringify(result)];
-
-    try {
-      const resp = await answerProblem(problem, result);
-      if (resp.code === 0) {
-        messages.push("作答完成");
-        onAnswerProblem(problem.problemId, result, resp);
-      } else {
-        messages.push(`作答失败：${resp.msg} (${resp.code})`);
-      }
-    } catch (err) {
-      console.error(err);
-      messages.push(`作答失败：${err.message}`);
-    }
-
-    GM_notification({
-      title: "自动作答提示",
-      text: messages.join("\n"),
-      tag: "problem-auto-answer",
-      silent: true,
-    });
-  }, delay);
-  autoAnswerTimers.push(timer);
+function cancelAutoAnswer(status) {
+  status.autoAnswerTime = null;
 
   $toast({
-    message: `将在 ${Math.round(delay / 1000)} 秒后自动作答本题，按 Esc 取消`,
-    duration: 3000
+    message: "已取消自动作答",
+    duration: 1500
   });
 }
 
@@ -288,38 +306,22 @@ function getAnswerToProblem(problem) {
 // #region Helper toolbar
 const problemUIVisible = ref(false);
 
-function revealAnswers(problem) {
-  const lines = [
-    `类型：${PROBLEM_TYPE_MAP[problem.problemType] || "未知"}`,
-    `题面：${problem.body || "无"}`,
-  ];
+function toggleNotifyProblems() {
+  let desc;
 
-  switch (problem.problemType) {
-    // Multiple-choice
-    case 1:
-    case 2: {
-      lines.push(`答案：${problem.answers.join("")}`);
-      break;
-    }
-
-    // Fill-in-the-blank
-    case 4: {
-      lines.push(...problem.blanks.map((({ answers }, i) => `答案 ${i + 1}：${JSON.stringify(answers)}`)));
-      break;
-    }
-
-    default:
-      lines.push("无答案");
-      break;
+  if (!config.notifyProblems) {
+    config.notifyProblems = "always";
+    desc = "开";
+  } else if (config.notifyProblems === "background") {
+    config.notifyProblems = false;
+    desc = "关";
+  } else {
+    config.notifyProblems = "background";
+    desc = "仅后台";
   }
 
-  alert(lines.join("\n"));
-}
-
-function toggleNotifyProblems() {
-  config.notifyProblems = !config.notifyProblems;
   $toast({
-    message: `习题提醒：${config.notifyProblems ? "开" : "关"}`,
+    message: `习题提醒：${desc}`,
     duration: 1500
   });
 }
@@ -342,17 +344,49 @@ const currentPresentationId = ref(null);
 const currentSlideId = ref(null);
 
 function navigate(presentationId, slideId) {
+  problemUIVisible.value = true;
   currentPresentationId.value = presentationId;
   currentSlideId.value = slideId;
 }
+
+// #endregion
+
+// #region Active problems
+const activeProblems = computed(() => {
+  const entries = [];
+  for (const [problemId, status] of problemStatus) {
+    if (!status.done) {
+      const problem = problems.get(problemId);
+      const presentation = presentations.get(status.presentationId);
+      const slide = slides.get(status.slideId);
+      entries.push({ problem, slide, presentation, status });
+    }
+  }
+  return entries;
+});
 // #endregion
 
 if (process.env.NODE_ENV === 'development') {
   unsafeWindow.debugHelper = () => {
     debugger;
     const presentations = storage.getMap("presentations");
+    let count = 0;
+
     for (const [id, presentation] of presentations) {
       onPresentationLoaded(id, presentation);
+
+      for (const slide of presentation.slides) {
+        if (slide.problem && count < 8) {
+          count++;
+          onUnlockProblem({
+            prob: slide.problem.problemId,
+            pres: id,
+            sid: slide.id,
+            dt: Date.now() - Math.floor(Math.random() * 60) * 1000,
+            limit: 60,
+          });
+        }
+      }
     }
   };
 }
@@ -360,25 +394,43 @@ if (process.env.NODE_ENV === 'development') {
 
 <template>
   <div class="toolbar">
-    <span class="btn" title="切换习题提醒"
+    <span class="icon-btn" title="切换习题提醒"
       :class="{ active: config.notifyProblems }"
       @click="toggleNotifyProblems()"
     >
-      <i class="fas fa-bell fa-lg"></i>
+      <i class="fa-bell fa-lg"
+        :class="config.notifyProblems === 'background' ? 'far' : 'fas'"
+      ></i>
     </span>
-    <span class="btn" title="切换自动作答"
+    <span class="icon-btn" title="切换自动作答"
       :class="{ active: config.autoAnswer }"
       @click="toggleAutoAnswer()"
     >
       <i class="fas fa-upload fa-lg"></i>
     </span>
-    <span class="btn" title="显示习题列表"
+    <span class="icon-btn" title="显示习题列表"
       :class="{ active: problemUIVisible }"
       @click="toggleProblemUI()"
     >
       <i class="fas fa-list-check fa-lg"></i>
     </span>
   </div>
+  <TransitionGroup tag="ul" class="track" appear>
+    <li v-for="{ problem, slide, presentation, status } in activeProblems"
+      class="anchor"
+      :key="problem.problemId"
+    >
+      <ActiveProblem class="inner"
+        :problem="problem"
+        :status="status"
+        @show="navigate(status.presentationId, status.slideId)"
+        @answer="doAutoAnswer(problem, status)"
+        @cancel="cancelAutoAnswer(status)"
+      >
+        <img :src="slide.thumbnail" :style="{ height: '100%', ...coverStyle(presentation) }">
+      </ActiveProblem>
+    </li>
+  </TransitionGroup>
   <Transition>
     <div class="popup" v-show="problemUIVisible">
       <ProblemUI class="problem-ui"
@@ -420,34 +472,47 @@ if (process.env.NODE_ENV === 'development') {
   box-shadow: 0 1px 4px 3px rgba(0, 0, 0, .1);
 }
 
-.toolbar>.btn {
-  display: inline-block;
-  width: 20px;
-  text-align: center;
-  cursor: pointer;
-  color: #607190;
+.track {
+  position: fixed;
+  z-index: 1000000;
+  bottom: 65px;
+  left: 15px;
+  display: flex;
+  flex-direction: row;
 }
 
-.toolbar>.btn:hover {
-  color: #1e3050;
+.anchor {
+  position: relative;
+  width: 100px;
+  list-style: none;
 }
 
-.toolbar>.btn.active {
-  color: #1d63df;
+.inner {
+  position: absolute;
+  bottom: 0;
 }
 
-.toolbar>.btn.active:hover {
-  color: #1b53ac;
+.anchor.v-move, .anchor.v-enter-active, .anchor.v-leave-active {
+  transition: all 0.5s ease;
 }
 
-.toolbar>.btn.disabled {
-  color: #bbbbbb;
-  cursor: default;
+.anchor.v-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.anchor.v-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.anchor.v-leave-active {
+  width: 0;
 }
 
 .popup {
   position: fixed;
-  z-index: 100;
+  z-index: 2000000;
   top: 0;
   left: 0;
   width: 100%;
@@ -473,7 +538,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 .popup.v-enter-active>.problem-ui, .popup.v-leave-active>.problem-ui {
-  transition: transform 0.2s ease-in-out;
+  transition: transform 0.2s ease;
 }
 
 .popup.v-enter-from>.problem-ui, .popup.v-leave-to>.problem-ui {
