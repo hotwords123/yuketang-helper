@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, reactive } from "vue";
+import { ref, computed, reactive, watch } from "vue";
 import { jsPDF } from "jspdf";
 import storage from "../storage";
 import { randInt, loadImage, PROBLEM_TYPE_MAP } from "../util";
@@ -9,14 +9,21 @@ import AnswerReveal from "./AnswerReveal.vue";
 const props = defineProps([
   "config",
   "presentations",
+  "slides",
+  "currentPresentationId",
+  "currentSlideId",
   "problemStatus",
+  "onNavigate",
   "onAnswerProblem",
 ]);
 
-const showAllSlides = ref(false);
-const currentPresentation = ref(null);
-const currentSlide = ref(null);
+const currentPresentation = computed(() =>
+  props.currentPresentationId && props.presentations.get(props.currentPresentationId));
+const currentSlide = computed(() =>
+  props.currentSlideId && props.slides.get(props.currentSlideId));
 const currentProblem = computed(() => currentSlide.value?.problem);
+
+const showAllSlides = ref(false);
 const answerContent = ref("");
 const downloadProgress = reactive(new Map());
 
@@ -43,18 +50,15 @@ function coverStyle(presentation) {
   return { aspectRatio: width + '/' + height };
 }
 
-function setCurrentSlide(slide, presentation) {
-  currentPresentation.value = presentation;
-  currentSlide.value = slide;
-
+watch(() => currentProblem.value?.problemId, (problemId) => {
   answerContent.value = "";
+  if (!problemId) return;
 
-  const problem = slide.problem;
-  if (problem) {
-    const problemAnswers = storage.getMap("auto-answer");
-    const result = problemAnswers.get(problem.problemId);
+  const problemAnswers = storage.getMap("auto-answer");
+  const result = problemAnswers.get(problemId);
 
-    switch (problem.problemType) {
+  if (result) {
+    switch (currentProblem.value.problemType) {
       case 1: case 2: case 3:
         if (Array.isArray(result))
           answerContent.value = result.join("");
@@ -71,7 +75,7 @@ function setCurrentSlide(slide, presentation) {
         break;
     }
   }
-}
+});
 
 const revealedProblemIds = reactive(new Set());
 
@@ -242,7 +246,7 @@ async function savePresentation(presentation) {
           v-for="slide in presentation.slides"
           :key="slide.id"
           :class="slideClass(slide)"
-          @click="setCurrentSlide(slide, presentation)"
+          @click="props.onNavigate?.(presentation.id, slide.id)"
         >
           <img :src="slide.thumbnail" :style="coverStyle(presentation)" />
           <span class="tag">{{ slide.index }}</span>

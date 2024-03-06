@@ -286,7 +286,6 @@ function getAnswerToProblem(problem) {
 // #endregion
 
 // #region Helper toolbar
-
 const problemUIVisible = ref(false);
 
 function revealAnswers(problem) {
@@ -338,6 +337,16 @@ function toggleProblemUI() {
 }
 // #endregion
 
+// #region Problem UI
+const currentPresentationId = ref(null);
+const currentSlideId = ref(null);
+
+function navigate(presentationId, slideId) {
+  currentPresentationId.value = presentationId;
+  currentSlideId.value = slideId;
+}
+// #endregion
+
 if (process.env.NODE_ENV === 'development') {
   unsafeWindow.debugHelper = () => {
     debugger;
@@ -375,7 +384,11 @@ if (process.env.NODE_ENV === 'development') {
       <ProblemUI class="problem-ui"
         :config="config"
         :presentations="presentations"
+        :slides="slides"
+        :current-presentation-id="currentPresentationId"
+        :current-slide-id="currentSlideId"
         :problem-status="problemStatus"
+        @navigate="navigate"
         @answer-problem="onAnswerProblem"
       />
     </div>
