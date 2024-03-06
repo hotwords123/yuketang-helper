@@ -40,3 +40,8 @@ export function loadImage(src) {
     };
   });
 }
+
+export function coverStyle(presentation) {
+  const { width, height } = presentation;
+  return { aspectRatio: width + '/' + height };
+}

@@ -5,7 +5,7 @@ import storage from './storage';
 import { answerProblem } from './api';
 import { MyWebSocket, MyXMLHttpRequest } from './network';
 import { randInt, shuffleArray, PROBLEM_TYPE_MAP } from './util';
-import ProblemUI from './components/ProblemUI.vue';
+import ProblemUI from './components/problem-ui/ProblemUI.vue';
 
 // #region App state
 const DEFAULT_CONFIG = {
