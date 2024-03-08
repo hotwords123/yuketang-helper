@@ -25,6 +25,7 @@ export default defineConfig({
         ],
         icon: 'https://www.google.com/s2/favicons?sz=64&domain=yuketang.cn',
         namespace: 'https://github.com/hotwords123/yuketang-helper',
+        "run-at": "document-start",
       },
       build: {
         externalGlobals: {
