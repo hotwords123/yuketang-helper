@@ -29,7 +29,11 @@
   color: #1b53ac;
 }
 
+.icon-btn.danger:hover {
+  color: #e4231d;
+}
+
 .icon-btn.disabled {
-  color: #bbbbbb;
+  color: #bbbbbb !important;
   cursor: default;
 }

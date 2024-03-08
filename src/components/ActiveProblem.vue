@@ -34,22 +34,21 @@ const answerBtnClass = computed(() => ({
   active: state.value === "ready",
   disabled: ["answered", "pending"].includes(state.value),
 }));
+
 const answerBtnTitle = computed(() => {
-  if (state.value === "ready") {
-    return "取消自动作答";
-  } else if (state.value === "ended") {
+  if (state.value === "ended") {
     return "重试作答";
+  } else if (state.value === "ready") {
+    return "立即作答";
   } else {
     return "自动作答";
   }
 });
 
 function handleAnswer() {
-  if (state.value === "ready") {
-    props.onCancel?.();
-  } else if (state.value === "ended") {
+  if (state.value === "ended") {
     props.onRetry?.();
-  } else if (state.value === "none") {
+  } else if (!["answered", "pending"].includes(state.value)) {
     props.onAnswer?.();
   }
 }
@@ -110,20 +109,27 @@ function revealAnswers(problem) {
 <template>
   <div class="card">
     <slot></slot>
-    <span class="tag" :class="state">{{ tagText }}</span>
+    <span class="tag" :class="state">
+      {{ tagText }}<!--
+      --><span class="icon-btn" title="取消作答" v-if="state === 'ready'" @click="props.onCancel?.()">
+        <i class="fas fa-xmark"></i>
+      </span>
+    </span>
     <ul class="actions">
-      <li class="icon-btn" title="查看答案" @click="revealAnswers(props.problem)">
-        <i class="fas fa-eye"></i>
+      <li>
+        <span class="icon-btn" title="查看答案" @click="revealAnswers(props.problem)">
+          <i class="fas fa-eye"></i>
+        </span>
       </li>
-      <li class="icon-btn" title="查看题目" @click="props.onShow()">
-        <i class="fas fa-up-right-from-square"></i>
+      <li>
+        <span class="icon-btn" title="查看题目" @click="props.onShow?.()">
+          <i class="fas fa-up-right-from-square"></i>
+        </span>
       </li>
-      <li class="icon-btn"
-        :class="answerBtnClass"
-        :title="answerBtnTitle"
-        @click="handleAnswer"
-      >
-        <i class="fas fa-pen"></i>
+      <li>
+        <span class="icon-btn" :class="answerBtnClass" :title="answerBtnTitle" @click="handleAnswer()">
+          <i class="fas fa-pen"></i>
+        </span>
       </li>
     </ul>
   </div>
@@ -135,7 +141,7 @@ function revealAnswers(problem) {
   background: #ffffff;
   border: 1px solid #bbbbbb;
   box-shadow: 0 1px 4px 3px rgba(0, 0, 0, .1);
-  opacity: 0.7;
+  opacity: 0.8;
   z-index: 0;
   transition: all 0.2s ease;
 }
@@ -168,6 +174,14 @@ function revealAnswers(problem) {
 
 .tag.answered {
   background: #1eb41ecc;
+}
+
+.tag>.icon-btn {
+  color: #eeeeee;
+}
+
+.tag>.icon-btn:hover {
+  color: #ffffff;
 }
 
 .actions {
