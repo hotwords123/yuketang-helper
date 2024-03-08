@@ -7,7 +7,6 @@ const props = defineProps([
   "status",
   "onShow",
   "onAnswer",
-  "onRetry",
   "onCancel",
   "onDone",
 ]);
@@ -31,9 +30,7 @@ const state = computed(() => {
   }
 });
 
-const answerBtnClass = computed(() => ({
-  disabled: ["answered", "pending"].includes(state.value),
-}));
+const canAnswer = computed(() => !["answered", "pending"].includes(state.value));
 
 const answerBtnTitle = computed(() => {
   if (state.value === "ended") {
@@ -44,14 +41,6 @@ const answerBtnTitle = computed(() => {
     return "自动作答";
   }
 });
-
-function handleAnswer() {
-  if (state.value === "ended") {
-    props.onRetry?.();
-  } else if (!["answered", "pending"].includes(state.value)) {
-    props.onAnswer?.();
-  }
-}
 
 const tagText = computed(() => {
   switch (state.value) {
@@ -130,7 +119,11 @@ function revealAnswers(problem) {
         </span>
       </li>
       <li>
-        <span class="icon-btn" :class="answerBtnClass" :title="answerBtnTitle" @click="handleAnswer()">
+        <span class="icon-btn"
+          :class="{ disabled: !canAnswer }"
+          :title="answerBtnTitle"
+          @click="canAnswer && props.onAnswer?.()"
+        >
           <i class="fas fa-pen"></i>
         </span>
       </li>
@@ -144,7 +137,7 @@ function revealAnswers(problem) {
   background: #ffffff;
   border: 1px solid #bbbbbb;
   box-shadow: 0 1px 4px 3px rgba(0, 0, 0, .1);
-  opacity: 0.8;
+  opacity: 0.9;
   z-index: 0;
   transition: all 0.2s ease;
 }

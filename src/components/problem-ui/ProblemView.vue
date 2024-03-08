@@ -5,8 +5,8 @@ import AnswerReveal from "./AnswerReveal.vue";
 
 const props = defineProps([
   "problem",
-  "canRetry",
-  "onRetry",
+  "canAnswer",
+  "onAnswer",
 ]);
 
 const answerRevealed = ref(false);
@@ -75,11 +75,11 @@ function updateAutoAnswer() {
   }
 }
 
-function handleRetry() {
+function handleAnswer() {
   const content = answerContent.value;
   const { problemType } = props.problem;
 
-  props.onRetry?.(content && parseAnswer(problemType, content));
+  props.onAnswer?.(content && parseAnswer(problemType, content));
 }
 </script>
 
@@ -107,7 +107,7 @@ function handleRetry() {
   </div>
   <div class="actions">
     <button @click="updateAutoAnswer()">自动作答</button>
-    <button :disabled="!props.canRetry" @click="handleRetry()">重试作答</button>
+    <button :disabled="!props.canAnswer" @click="handleAnswer()">提交答案</button>
   </div>
 </template>
 

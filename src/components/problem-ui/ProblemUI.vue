@@ -13,7 +13,7 @@ const props = defineProps([
   "currentSlideId",
   "problemStatus",
   "onNavigate",
-  "onRetryProblem",
+  "onAnswerProblem",
 ]);
 
 const currentPresentation = computed(() =>
@@ -26,8 +26,9 @@ const currentProblem = computed(() => currentSlide.value?.problem);
 
 const showAllSlides = ref(false);
 
-function canRetry(problem) {
-  return props.problemStatus.has(problem.problemId) && !problem.result;
+function canAnswerProblem(problem) {
+  const status = props.problemStatus.get(problem.problemId);
+  return status && !problem.result && !status.answering;
 }
 
 </script>
@@ -61,8 +62,8 @@ function canRetry(problem) {
             v-if="currentProblem"
             :key="currentProblem.problemId"
             :problem="currentProblem"
-            :can-retry="canRetry(currentProblem)"
-            @retry="(result) => props.onRetryProblem?.(currentProblem, result)"
+            :can-answer="canAnswerProblem(currentProblem)"
+            @answer="(result) => props.onAnswerProblem?.(currentProblem, result)"
           />
         </KeepAlive>
       </template>

@@ -76,7 +76,7 @@ function onUnlockProblem(data) {
     slideId: data.sid,
     startTime: data.dt,
     endTime: data.dt + 1000 * data.limit,
-    done: !!problem.result,
+    done: !!problem.result && process.env.NODE_ENV !== 'development',
     autoAnswerTime: null,
     answering: false,
   };
@@ -343,60 +343,78 @@ function navigate(presentationId, slideId) {
   currentSlideId.value = slideId;
 }
 
-async function handleRetry(problem, result) {
+async function handleAnswer(problem, result) {
   const { problemId } = problem;
-
-  if (!confirm("此功能用于补救超时未作答的题目，是否继续？")) {
+  const status = problemStatus.get(problemId);
+  if (!status) {
     $toast({
-      message: "已取消重试作答",
-      duration: 1500
+      message: "题目未发布",
+      duration: 3000
     });
     return;
   }
 
-  if (!result) {
-    result = getAnswerToProblem(problem);
-    if (!result) {
-      $toast({
-        message: "未指定提交内容，无法重试作答",
-        duration: 3000
-      });
-      return;
-    }
-
-    if (!confirm("未指定提交内容，是否使用默认答案？\n答案：" + JSON.stringify(result))) {
-      $toast({
-        message: "已取消重试作答",
-        duration: 1500
-      });
-      return;
-    }
+  if (status.answering) {
+    $toast({
+      message: "作答中，请稍后再试",
+      duration: 3000
+    });
+    return;
   }
 
+  result = result || getAnswerToProblem(problem);
+  if (!result) {
+    $toast({
+      message: "未指定提交内容",
+      duration: 3000
+    });
+    return;
+  }
+
+  status.autoAnswerTime = null;
+  status.answering = true;
+
   try {
-    const status = problemStatus.get(problemId);
-    const dt = status.startTime + randInt(...config.autoAnswerDelay);
+    if (Date.now() >= status.endTime) {
+      if (!confirm("作答已经截止，是否重试作答？\n此功能用于补救超时未作答的题目。")) {
+        $toast({
+          message: "已取消作答",
+          duration: 1500
+        });
+        return;
+      }
 
-    const resp = await retryProblem(problem, result, dt);
+      const dt = status.startTime + randInt(...config.autoAnswerDelay);
+      const resp = await retryProblem(problem, result, dt);
 
-    if (resp.code !== 0)
-      throw new Error(`${resp.msg} (${resp.code})`);
+      if (resp.code !== 0) {
+        throw new Error(`${resp.msg} (${resp.code})`);
+      }
 
-    if (!resp.data.success.includes(problemId))
-      throw new Error("服务器未返回成功信息");
+      if (!resp.data.success.includes(problemId)) {
+        throw new Error("服务器未返回成功信息");
+      }
+    } else {
+      const resp = await answerProblem(problem, result);
+      if (resp.code !== 0) {
+        throw new Error(`${resp.msg} (${resp.code})`);
+      }
+    }
 
     onAnswerProblem(problemId, result);
 
     $toast({
-      message: "重试作答成功",
+      message: "作答完成",
       duration: 3000
     });
   } catch (err) {
     console.error(err);
     $toast({
-      message: "重试作答失败：" + err.message,
+      message: "作答失败：" + err.message,
       duration: 3000
     });
+  } finally {
+    status.answering = false;
   }
 }
 // #endregion
@@ -474,8 +492,7 @@ if (process.env.NODE_ENV === 'development') {
         :problem="problem"
         :status="status"
         @show="navigate(status.presentationId, status.slideId)"
-        @answer="doAutoAnswer(problem, status)"
-        @retry="handleRetry(problem, null)"
+        @answer="handleAnswer(problem)"
         @cancel="cancelAutoAnswer(status)"
         @done="status.done = true"
       >
@@ -493,7 +510,7 @@ if (process.env.NODE_ENV === 'development') {
         :current-slide-id="currentSlideId"
         :problem-status="problemStatus"
         @navigate="navigate"
-        @retry-problem="handleRetry"
+        @answer-problem="handleAnswer"
       />
     </div>
   </Transition>
