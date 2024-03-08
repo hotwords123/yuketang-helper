@@ -185,12 +185,6 @@ function onAnswerProblem(problemId, result) {
   const problem = problems.get(problemId);
   if (problem) {
     problem.result = result;
-    setTimeout(() => {
-      const status = problemStatus.get(problemId);
-      if (status) {
-        status.done = true;
-      }
-    }, 5000);
   }
 }
 // #endregion
@@ -483,6 +477,7 @@ if (process.env.NODE_ENV === 'development') {
         @answer="doAutoAnswer(problem, status)"
         @retry="handleRetry(problem, null)"
         @cancel="cancelAutoAnswer(status)"
+        @done="status.done = true"
       >
         <img :src="slide.thumbnail" :style="{ height: '100%', ...coverStyle(presentation) }">
       </ActiveProblem>

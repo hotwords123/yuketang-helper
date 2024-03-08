@@ -9,6 +9,7 @@ const props = defineProps([
   "onAnswer",
   "onRetry",
   "onCancel",
+  "onDone",
 ]);
 
 const currentTime = ref(Date.now());
@@ -31,7 +32,6 @@ const state = computed(() => {
 });
 
 const answerBtnClass = computed(() => ({
-  active: state.value === "ready",
   disabled: ["answered", "pending"].includes(state.value),
 }));
 
@@ -113,9 +113,12 @@ function revealAnswers(problem) {
       {{ tagText }}<!--
       --><span class="icon-btn" title="取消作答" v-if="state === 'ready'" @click="props.onCancel?.()">
         <i class="fas fa-xmark"></i>
+      </span><!--
+      --><span class="icon-btn" title="关闭题目" v-if="state === 'answered'" @click="props.onDone?.()">
+        <i class="fas fa-check"></i>
       </span>
     </span>
-    <ul class="actions">
+    <ul class="actions bottom">
       <li>
         <span class="icon-btn" title="查看答案" @click="revealAnswers(props.problem)">
           <i class="fas fa-eye"></i>
@@ -186,9 +189,8 @@ function revealAnswers(problem) {
 
 .actions {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  padding: 5px;
+  bottom: 4px;
+  right: 5px;
   display: flex;
   flex-direction: row;
   gap: 3px;
