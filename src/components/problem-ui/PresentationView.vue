@@ -34,7 +34,12 @@ watch(() => props.currentSlideId, (id) => {
   const el = slideRefs.get(id);
   if (el) {
     requestAnimationFrame(() => {
-      el.scrollIntoView({ block: "center", behavior: "smooth" });
+      const containerBox = el.parentElement.getBoundingClientRect();
+      const itemBox = el.getBoundingClientRect();
+      // polyfill for scrollIntoViewIfNeeded
+      if (itemBox.top < containerBox.top || itemBox.bottom > containerBox.bottom) {
+        el.scrollIntoView({ block: "center", behavior: "smooth" });
+      }
     });
   }
 });
