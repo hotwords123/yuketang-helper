@@ -13,7 +13,7 @@ const props = defineProps([
   "currentSlideId",
   "problemStatus",
   "onNavigate",
-  "onAnswerProblem",
+  "onRetryProblem",
 ]);
 
 const currentPresentation = computed(() =>
@@ -28,48 +28,6 @@ const showAllSlides = ref(false);
 
 function canRetry(problem) {
   return props.problemStatus.has(problem.problemId) && !problem.result;
-}
-
-async function handleRetry(problem, content) {
-  const { problemId, problemType } = problem;
-
-  if (!content) {
-    $toast({
-      message: "作答内容不能为空",
-      duration: 3000
-    });
-    return;
-  }
-
-  if (!confirm("此功能用于补救超时未作答的题目，是否继续？"))
-    return;
-
-  try {
-    const result = parseAnswer(problemType, content);
-    const status = props.problemStatus.get(problemId);
-    const dt = status.startTime + randInt(...props.config.autoAnswerDelay);
-
-    const resp = await retryProblem(problem, result, dt);
-
-    if (resp.code !== 0)
-      throw new Error(`${resp.msg} (${resp.code})`);
-
-    if (!resp.data.success.includes(problemId))
-      throw new Error("服务器未返回成功信息");
-
-    props.onAnswerProblem?.(problemId, result);
-
-    $toast({
-      message: "重试作答成功",
-      duration: 3000
-    });
-  } catch (err) {
-    console.error(err);
-    $toast({
-      message: "重试作答失败：" + err.message,
-      duration: 3000
-    });
-  }
 }
 
 </script>
@@ -104,7 +62,7 @@ async function handleRetry(problem, content) {
             :key="currentProblem.problemId"
             :problem="currentProblem"
             :can-retry="canRetry(currentProblem)"
-            @retry="(content) => handleRetry(currentProblem, content)"
+            @retry="(result) => props.onRetryProblem?.(currentProblem, result)"
           />
         </KeepAlive>
       </template>

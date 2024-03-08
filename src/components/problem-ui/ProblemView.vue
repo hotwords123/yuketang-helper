@@ -74,6 +74,13 @@ function updateAutoAnswer() {
     });
   }
 }
+
+function handleRetry() {
+  const content = answerContent.value;
+  const { problemType } = props.problem;
+
+  props.onRetry?.(content && parseAnswer(problemType, content));
+}
 </script>
 
 <template>
@@ -100,7 +107,7 @@ function updateAutoAnswer() {
   </div>
   <div class="actions">
     <button @click="updateAutoAnswer()">自动作答</button>
-    <button :disabled="!props.canRetry" @click="props.onRetry?.(answerContent)">重试作答</button>
+    <button :disabled="!props.canRetry" @click="handleRetry()">重试作答</button>
   </div>
 </template>
 

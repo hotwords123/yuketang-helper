@@ -2,7 +2,7 @@
 import { ref, reactive, computed, watch, Transition, TransitionGroup } from 'vue';
 import { GM_notification, unsafeWindow } from '$';
 import storage from './storage';
-import { answerProblem } from './api';
+import { answerProblem, retryProblem } from './api';
 import { MyWebSocket, MyXMLHttpRequest } from './network';
 import { randInt, shuffleArray, coverStyle } from './util';
 import ProblemUI from './components/problem-ui/ProblemUI.vue';
@@ -349,6 +349,62 @@ function navigate(presentationId, slideId) {
   currentSlideId.value = slideId;
 }
 
+async function handleRetry(problem, result) {
+  const { problemId } = problem;
+
+  if (!confirm("此功能用于补救超时未作答的题目，是否继续？")) {
+    $toast({
+      message: "已取消重试作答",
+      duration: 1500
+    });
+    return;
+  }
+
+  if (!result) {
+    result = getAnswerToProblem(problem);
+    if (!result) {
+      $toast({
+        message: "未指定提交内容，无法重试作答",
+        duration: 3000
+      });
+      return;
+    }
+
+    if (!confirm("未指定提交内容，是否使用默认答案？\n答案：" + JSON.stringify(result))) {
+      $toast({
+        message: "已取消重试作答",
+        duration: 1500
+      });
+      return;
+    }
+  }
+
+  try {
+    const status = problemStatus.get(problemId);
+    const dt = status.startTime + randInt(...config.autoAnswerDelay);
+
+    const resp = await retryProblem(problem, result, dt);
+
+    if (resp.code !== 0)
+      throw new Error(`${resp.msg} (${resp.code})`);
+
+    if (!resp.data.success.includes(problemId))
+      throw new Error("服务器未返回成功信息");
+
+    onAnswerProblem(problemId, result);
+
+    $toast({
+      message: "重试作答成功",
+      duration: 3000
+    });
+  } catch (err) {
+    console.error(err);
+    $toast({
+      message: "重试作答失败：" + err.message,
+      duration: 3000
+    });
+  }
+}
 // #endregion
 
 // #region Active problems
@@ -425,6 +481,7 @@ if (process.env.NODE_ENV === 'development') {
         :status="status"
         @show="navigate(status.presentationId, status.slideId)"
         @answer="doAutoAnswer(problem, status)"
+        @retry="handleRetry(problem, null)"
         @cancel="cancelAutoAnswer(status)"
       >
         <img :src="slide.thumbnail" :style="{ height: '100%', ...coverStyle(presentation) }">
@@ -441,7 +498,7 @@ if (process.env.NODE_ENV === 'development') {
         :current-slide-id="currentSlideId"
         :problem-status="problemStatus"
         @navigate="navigate"
-        @answer-problem="onAnswerProblem"
+        @retry-problem="handleRetry"
       />
     </div>
   </Transition>
@@ -474,7 +531,7 @@ if (process.env.NODE_ENV === 'development') {
 
 .track {
   position: fixed;
-  z-index: 1000000;
+  z-index: 100;
   bottom: 65px;
   left: 15px;
   display: flex;
@@ -512,7 +569,7 @@ if (process.env.NODE_ENV === 'development') {
 
 .popup {
   position: fixed;
-  z-index: 2000000;
+  z-index: 200;
   top: 0;
   left: 0;
   width: 100%;

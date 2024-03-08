@@ -7,6 +7,7 @@ const props = defineProps([
   "status",
   "onShow",
   "onAnswer",
+  "onRetry",
   "onCancel",
 ]);
 
@@ -31,13 +32,23 @@ const state = computed(() => {
 
 const answerBtnClass = computed(() => ({
   active: state.value === "ready",
-  disabled: !["ready", "none"].includes(state.value),
+  disabled: ["answered", "pending"].includes(state.value),
 }));
-const answerBtnTitle = computed(() => state.value === 'ready' ? '取消自动作答' : '自动作答');
+const answerBtnTitle = computed(() => {
+  if (state.value === "ready") {
+    return "取消自动作答";
+  } else if (state.value === "ended") {
+    return "重试作答";
+  } else {
+    return "自动作答";
+  }
+});
 
 function handleAnswer() {
   if (state.value === "ready") {
     props.onCancel?.();
+  } else if (state.value === "ended") {
+    props.onRetry?.();
   } else if (state.value === "none") {
     props.onAnswer?.();
   }
