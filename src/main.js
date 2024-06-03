@@ -21,13 +21,17 @@ function launchLessonHelper() {
     GM_saveTab(tab);
   });
 
-  createApp(App).mount(
-    (() => {
-      const app = document.createElement('div');
-      document.body.append(app);
-      return app;
-    })(),
-  );
+  const run = () => {
+    const el = document.createElement('div');
+    document.body.append(el);
+    createApp(App).mount(el);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
 }
 
 function pollActiveLessons() {
