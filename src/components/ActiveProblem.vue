@@ -146,7 +146,7 @@ function revealAnswers(problem) {
   box-shadow: 0 1px 4px 3px rgba(0, 0, 0, .15);
   opacity: 1;
   z-index: 1;
-  transform: translateY(-6px);
+  transform: translateY(-3px);
 }
 
 .tag {
