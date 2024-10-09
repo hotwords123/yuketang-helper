@@ -19,7 +19,7 @@
 // @run-at       document-start
 // ==/UserScript==
 
-(a=>{if(typeof GM_addStyle=="function"){GM_addStyle(a);return}const t=document.createElement("style");t.textContent=a,document.head.append(t)})(' @import"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";:root{overflow:hidden}#watermark_layer{display:none!important;visibility:hidden!important}.icon-btn{display:inline-block;width:20px;text-align:center;cursor:pointer;color:#607190}.icon-btn:hover{color:#1e3050}.icon-btn.active{color:#1d63df}.icon-btn.active:hover{color:#1b53ac}.icon-btn.danger:hover{color:#e4231d}.icon-btn.disabled{color:#bbb!important;cursor:default}.title[data-v-c403efc9]{font-weight:700;overflow:hidden;margin:10px 0}.title[data-v-c403efc9]:after{content:"";display:inline-block;height:1px;background:#aaaaaa;position:relative;vertical-align:middle;width:100%;left:1em;margin-right:-100%}.title .download-btn[data-v-c403efc9]{cursor:pointer}.slide[data-v-c403efc9]{position:relative;margin:10px 0;border:2px solid #dddddd;cursor:pointer}.slide>img[data-v-c403efc9]{display:block;width:100%}.slide>.tag[data-v-c403efc9]{position:absolute;top:0;left:0;display:inline-block;padding:3px 5px;font-size:small;color:#f7f7f7;background:rgba(64,64,64,.4)}.slide.active[data-v-c403efc9]{border-color:#2d70e7}.slide.active>.tag[data-v-c403efc9]{background:#2d70e7}.slide.unlocked[data-v-c403efc9]{border-color:#d7d48e}.slide.unlocked.active[data-v-c403efc9]{border-color:#e6cb2d}.slide.unlocked.active>.tag[data-v-c403efc9]{background:#e6cb2d}.slide.answered[data-v-c403efc9]{border-color:#8dd790}.slide.answered.active[data-v-c403efc9]{border-color:#4caf50}.slide.answered.active>.tag[data-v-c403efc9]{background:#4caf50}.body[data-v-e9af29c2]{margin-top:25px}.body>textarea[data-v-e9af29c2]{width:100%;min-height:40px;resize:vertical}.actions[data-v-e9af29c2]{margin-top:25px;text-align:center}.actions>button[data-v-e9af29c2]{margin:0 20px;padding:4px 10px}.container[data-v-2a2241fe]{display:grid;grid-template:auto 36px / 240px auto;background:rgba(255,255,255,.9);border:1px solid #bbbbbb;border-radius:5px;overflow:hidden}.list[data-v-2a2241fe]{grid-row:1;grid-column:1;padding:5px 15px;overflow-y:auto}.tail[data-v-2a2241fe]{grid-row:2;grid-column:1;padding:5px 15px;line-height:26px;border-top:1px solid #bbbbbb}.tail label[data-v-2a2241fe]{font-size:small}.tail input[type=checkbox][data-v-2a2241fe]{-webkit-appearance:auto;-moz-appearance:auto;appearance:auto;vertical-align:middle}.detail[data-v-2a2241fe]{grid-row:1 / span 2;grid-column:2;padding:25px 40px;overflow-y:auto;border-left:1px solid #bbbbbb}.detail .cover[data-v-2a2241fe]{border:1px solid #dddddd;box-shadow:0 1px 4px 3px #0000001a}.detail .cover>img[data-v-2a2241fe]{display:block;width:100%}.card[data-v-308b571c]{height:180px;background:#ffffff;border:1px solid #bbbbbb;box-shadow:0 1px 4px 3px #0000001a;opacity:.9;z-index:0;transition:all .2s ease}.card[data-v-308b571c]:hover{box-shadow:0 1px 4px 3px #00000026;opacity:1;z-index:1;transform:translateY(-3px)}.tag[data-v-308b571c]{position:absolute;bottom:0;left:0;display:inline-block;padding:2px 4px;font-size:small;color:#fff;background:#666666cc}.tag.ended[data-v-308b571c]{background:#ff1e00cc}.tag.ready[data-v-308b571c],.tag.pending[data-v-308b571c]{background:#005effcc}.tag.answered[data-v-308b571c]{background:#1eb41ecc}.tag>.icon-btn[data-v-308b571c]{color:#eee}.tag>.icon-btn[data-v-308b571c]:hover{color:#fff}.actions[data-v-308b571c]{position:absolute;bottom:4px;right:5px;display:flex;flex-direction:row;gap:3px}.actions>.icon-btn[data-v-308b571c]{list-style:none}[data-v-56503c6c]{margin:0;padding:0;box-sizing:border-box}.toolbar[data-v-56503c6c]{position:fixed;z-index:2000001;left:15px;bottom:15px;width:100px;height:36px;padding:5px 9px;display:flex;flex-direction:row;justify-content:space-between;align-items:center;background:#ffffff;border:1px solid #cccccc;border-radius:4px;box-shadow:0 1px 4px 3px #0000001a}.track[data-v-56503c6c]{position:fixed;z-index:100;bottom:65px;left:15px;display:flex;flex-direction:row}.anchor[data-v-56503c6c]{position:relative;width:100px;list-style:none}.inner[data-v-56503c6c]{position:absolute;bottom:0}.anchor.v-move[data-v-56503c6c],.anchor.v-enter-active[data-v-56503c6c],.anchor.v-leave-active[data-v-56503c6c]{transition:all .5s ease}.anchor.v-enter-from[data-v-56503c6c]{opacity:0;transform:translateY(20px)}.anchor.v-leave-to[data-v-56503c6c]{opacity:0;transform:translateY(-20px)}.anchor.v-leave-active[data-v-56503c6c]{width:0}.popup[data-v-56503c6c]{position:fixed;z-index:200;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:rgba(64,64,64,.4)}.popup.v-enter-active[data-v-56503c6c],.popup.v-leave-active[data-v-56503c6c]{transition:opacity .2s}.popup.v-enter-from[data-v-56503c6c],.popup.v-leave-to[data-v-56503c6c]{opacity:0}.problem-ui[data-v-56503c6c]{width:80%;height:90%}.popup.v-enter-active>.problem-ui[data-v-56503c6c],.popup.v-leave-active>.problem-ui[data-v-56503c6c]{transition:transform .2s ease}.popup.v-enter-from>.problem-ui[data-v-56503c6c],.popup.v-leave-to>.problem-ui[data-v-56503c6c]{transform:translateY(10px)} ');
+(a=>{if(typeof GM_addStyle=="function"){GM_addStyle(a);return}const t=document.createElement("style");t.textContent=a,document.head.append(t)})(' @import"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";:root{overflow:hidden}#watermark_layer{display:none!important;visibility:hidden!important}.icon-btn{display:inline-block;width:20px;text-align:center;cursor:pointer;color:#607190}.icon-btn:hover{color:#1e3050}.icon-btn.active{color:#1d63df}.icon-btn.active:hover{color:#1b53ac}.icon-btn.danger:hover{color:#e4231d}.icon-btn.disabled{color:#bbb!important;cursor:default}.title[data-v-c403efc9]{font-weight:700;overflow:hidden;margin:10px 0}.title[data-v-c403efc9]:after{content:"";display:inline-block;height:1px;background:#aaaaaa;position:relative;vertical-align:middle;width:100%;left:1em;margin-right:-100%}.title .download-btn[data-v-c403efc9]{cursor:pointer}.slide[data-v-c403efc9]{position:relative;margin:10px 0;border:2px solid #dddddd;cursor:pointer}.slide>img[data-v-c403efc9]{display:block;width:100%}.slide>.tag[data-v-c403efc9]{position:absolute;top:0;left:0;display:inline-block;padding:3px 5px;font-size:small;color:#f7f7f7;background:rgba(64,64,64,.4)}.slide.active[data-v-c403efc9]{border-color:#2d70e7}.slide.active>.tag[data-v-c403efc9]{background:#2d70e7}.slide.unlocked[data-v-c403efc9]{border-color:#d7d48e}.slide.unlocked.active[data-v-c403efc9]{border-color:#e6cb2d}.slide.unlocked.active>.tag[data-v-c403efc9]{background:#e6cb2d}.slide.answered[data-v-c403efc9]{border-color:#8dd790}.slide.answered.active[data-v-c403efc9]{border-color:#4caf50}.slide.answered.active>.tag[data-v-c403efc9]{background:#4caf50}.body[data-v-e9af29c2]{margin-top:25px}.body>textarea[data-v-e9af29c2]{width:100%;min-height:40px;resize:vertical}.actions[data-v-e9af29c2]{margin-top:25px;text-align:center}.actions>button[data-v-e9af29c2]{margin:0 20px;padding:4px 10px}.container[data-v-2a2241fe]{display:grid;grid-template:auto 36px / 240px auto;background:rgba(255,255,255,.9);border:1px solid #bbbbbb;border-radius:5px;overflow:hidden}.list[data-v-2a2241fe]{grid-row:1;grid-column:1;padding:5px 15px;overflow-y:auto}.tail[data-v-2a2241fe]{grid-row:2;grid-column:1;padding:5px 15px;line-height:26px;border-top:1px solid #bbbbbb}.tail label[data-v-2a2241fe]{font-size:small}.tail input[type=checkbox][data-v-2a2241fe]{-webkit-appearance:auto;-moz-appearance:auto;appearance:auto;vertical-align:middle}.detail[data-v-2a2241fe]{grid-row:1 / span 2;grid-column:2;padding:25px 40px;overflow-y:auto;border-left:1px solid #bbbbbb}.detail .cover[data-v-2a2241fe]{border:1px solid #dddddd;box-shadow:0 1px 4px 3px #0000001a}.detail .cover>img[data-v-2a2241fe]{display:block;width:100%}.card[data-v-308b571c]{height:180px;background:#ffffff;border:1px solid #bbbbbb;box-shadow:0 1px 4px 3px #0000001a;opacity:.9;z-index:0;transition:all .2s ease}.card[data-v-308b571c]:hover{box-shadow:0 1px 4px 3px #00000026;opacity:1;z-index:1;transform:translateY(-3px)}.tag[data-v-308b571c]{position:absolute;bottom:0;left:0;display:inline-block;padding:2px 4px;font-size:small;color:#fff;background:#666666cc}.tag.ended[data-v-308b571c]{background:#ff1e00cc}.tag.ready[data-v-308b571c],.tag.pending[data-v-308b571c]{background:#005effcc}.tag.answered[data-v-308b571c]{background:#1eb41ecc}.tag>.icon-btn[data-v-308b571c]{color:#eee}.tag>.icon-btn[data-v-308b571c]:hover{color:#fff}.actions[data-v-308b571c]{position:absolute;bottom:4px;right:5px;display:flex;flex-direction:row;gap:3px}.actions>.icon-btn[data-v-308b571c]{list-style:none}[data-v-4f876465]{margin:0;padding:0;box-sizing:border-box}.toolbar[data-v-4f876465]{position:fixed;z-index:2000001;left:15px;bottom:15px;width:100px;height:36px;padding:5px 9px;display:flex;flex-direction:row;justify-content:space-between;align-items:center;background:#ffffff;border:1px solid #cccccc;border-radius:4px;box-shadow:0 1px 4px 3px #0000001a}.track[data-v-4f876465]{position:fixed;z-index:100;bottom:65px;left:15px;display:flex;flex-direction:row}.anchor[data-v-4f876465]{position:relative;width:100px;list-style:none}.inner[data-v-4f876465]{position:absolute;bottom:0}.anchor.v-move[data-v-4f876465],.anchor.v-enter-active[data-v-4f876465],.anchor.v-leave-active[data-v-4f876465]{transition:all .5s ease}.anchor.v-enter-from[data-v-4f876465]{opacity:0;transform:translateY(20px)}.anchor.v-leave-to[data-v-4f876465]{opacity:0;transform:translateY(-20px)}.anchor.v-leave-active[data-v-4f876465]{width:0}.popup[data-v-4f876465]{position:fixed;z-index:200;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:rgba(64,64,64,.4)}.popup.v-enter-active[data-v-4f876465],.popup.v-leave-active[data-v-4f876465]{transition:opacity .2s}.popup.v-enter-from[data-v-4f876465],.popup.v-leave-to[data-v-4f876465]{opacity:0}.problem-ui[data-v-4f876465]{width:80%;height:90%}.popup.v-enter-active>.problem-ui[data-v-4f876465],.popup.v-leave-active>.problem-ui[data-v-4f876465]{transition:transform .2s ease}.popup.v-enter-from>.problem-ui[data-v-4f876465],.popup.v-leave-to>.problem-ui[data-v-4f876465]{transform:translateY(10px)} ');
 
 (function (vue, jspdf) {
   'use strict';
@@ -223,15 +223,6 @@
   };
   function randInt(l, r) {
     return l + Math.floor(Math.random() * (r - l + 1));
-  }
-  function shuffleArray(array) {
-    for (let i = 1; i < array.length; i++) {
-      let j = randInt(0, i);
-      if (j != i) {
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-    }
-    return array;
   }
   function coverStyle(presentation) {
     const { width, height } = presentation;
@@ -788,7 +779,7 @@
     }
   };
   const ActiveProblem = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-308b571c"]]);
-  const _withScopeId = (n) => (vue.pushScopeId("data-v-56503c6c"), n = n(), vue.popScopeId(), n);
+  const _withScopeId = (n) => (vue.pushScopeId("data-v-4f876465"), n = n(), vue.popScopeId(), n);
   const _hoisted_1 = { class: "toolbar" };
   const _hoisted_2 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ vue.createElementVNode("i", { class: "fas fa-upload fa-lg" }, null, -1));
   const _hoisted_3 = [
@@ -1020,13 +1011,17 @@
         switch (problem.problemType) {
           case 1:
           case 2:
+            if (problem.answers.length === 0) {
+              return null;
+            }
             return problem.answers;
           case 3: {
-            const choices = problem.options.map((option) => option.key);
-            const count = randInt(1, problem.pollingCount);
-            return shuffleArray(choices).slice(0, count).sort();
+            return null;
           }
           case 4:
+            if (problem.blanks.length === 0 || problem.blanks.any((blank) => blank.answers.length === 0)) {
+              return null;
+            }
             return problem.blanks.map((blank) => blank.answers[0]);
           default:
             return null;
@@ -1224,7 +1219,7 @@
       };
     }
   };
-  const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-56503c6c"]]);
+  const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-4f876465"]]);
   const url = new URL(window.location.href);
   if (url.pathname.startsWith("/lesson/fullscreen/v3/")) {
     launchLessonHelper();
