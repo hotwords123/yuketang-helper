@@ -278,17 +278,24 @@ function getAnswerToProblem(problem) {
     // Multiple-choice
     case 1:
     case 2:
+      if (problem.answers.length === 0) {
+        return null;
+      }
       return problem.answers;
 
     // Vote
     case 3: {
-      const choices = problem.options.map(option => option.key);
-      const count = randInt(1, problem.pollingCount);
-      return shuffleArray(choices).slice(0, count).sort();
+      // const choices = problem.options.map(option => option.key);
+      // const count = randInt(1, problem.pollingCount);
+      // return shuffleArray(choices).slice(0, count).sort();
+      return null;
     }
 
     // Fill-in-the-blank
     case 4:
+      if (problem.blanks.length === 0 || problem.blanks.any(blank => blank.answers.length === 0)) {
+        return null;
+      }
       return problem.blanks.map(blank => blank.answers[0]);
 
     default:
