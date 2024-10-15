@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         雨课堂 helper
 // @namespace    https://github.com/hotwords123/yuketang-helper
-// @version      1.4.0
+// @version      1.5.0
 // @author       hotwords123
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=yuketang.cn
