@@ -16,7 +16,7 @@ export default defineConfig({
       entry: 'src/main.js',
       userscript: {
         name: '雨课堂 helper',
-        version: '1.5.0',
+        version: '1.5.1',
         description: '雨课堂辅助工具：课堂习题提示，自动作答习题',
         author: 'hotwords123',
         match: [
