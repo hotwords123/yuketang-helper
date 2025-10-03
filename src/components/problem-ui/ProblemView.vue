@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onActivated } from "vue";
+import { ref, onActivated, computed } from "vue";
 import storage from "@/storage";
 import AnswerReveal from "./AnswerReveal.vue";
 
@@ -11,6 +11,18 @@ const props = defineProps([
 
 const answerRevealed = ref(false);
 const answerContent = ref("");
+
+const answerPrompt = computed(() => {
+  switch (props.problem.problemType) {
+    case 1: return "单选题：输入选项字母，如 A";
+    case 2: return "多选题：输入所有选项字母，如 ACD";
+    case 3: return "投票题：输入所有选项字母，如 ACD";
+    case 4: return "填空题：每行输入一个空的答案，空行会被自动忽略";
+    case 5: return "问答题：直接输入作答内容，暂时不支持图片上传";
+    default: return "未知题目类型";
+  }
+});
+const answerPlaceholder = computed(() => `在此处输入自动作答内容\n${answerPrompt.value}`)
 
 onActivated(() => {
   const { problemId, problemType } = props.problem;
@@ -103,9 +115,14 @@ function handleAnswer() {
     <p v-if="props.problem.result">
       作答内容：<code>{{ JSON.stringify(props.problem.result) }}</code>
     </p>
-    <textarea v-model="answerContent" rows="6" placeholder="自动作答内容"></textarea>
+    <textarea
+      v-else
+      v-model="answerContent"
+      :placeholder="answerPlaceholder"
+      rows="6"
+    ></textarea>
   </div>
-  <div class="actions">
+  <div class="actions" v-if="!props.problem.result">
     <button @click="updateAutoAnswer()">自动作答</button>
     <button :disabled="!props.canAnswer" @click="handleAnswer()">提交答案</button>
   </div>
