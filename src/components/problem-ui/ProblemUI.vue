@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed, KeepAlive } from "vue";
-import { randInt, coverStyle } from "@/util";
-import { retryProblem } from "@/api";
+import { coverStyle } from "@/util";
 import PresentationView from "./PresentationView.vue";
 import ProblemView from "./ProblemView.vue";
 

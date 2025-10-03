@@ -4,7 +4,7 @@ import { GM_notification, unsafeWindow } from '$';
 import storage from './storage';
 import { answerProblem, retryProblem } from './api';
 import { MyWebSocket, MyXMLHttpRequest } from './network';
-import { randInt, shuffleArray, coverStyle } from './util';
+import { randInt, coverStyle } from './util';
 import ProblemUI from './components/problem-ui/ProblemUI.vue';
 import ActiveProblem from './components/ActiveProblem.vue';
 
