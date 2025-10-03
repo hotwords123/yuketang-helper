@@ -21,7 +21,7 @@ const config = reactive({
   ...storage.get("config", DEFAULT_CONFIG),
 });
 watch(config, (value) => storage.set("config", value));
-window.yktConfig = config;  // Expose to global scope for convenience
+unsafeWindow.yktConfig = config;  // Expose to global scope for convenience
 
 const presentations = reactive(new Map());
 const slides = reactive(new Map());
