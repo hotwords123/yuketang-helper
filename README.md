@@ -1,4 +1,4 @@
-# ykt-helper
+# yuketang-helper
 
 一个雨课堂辅助工具。
 
