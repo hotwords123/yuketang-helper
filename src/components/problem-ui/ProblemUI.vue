@@ -15,11 +15,13 @@ const props = defineProps([
   "onAnswerProblem",
 ]);
 
-const currentPresentation = computed(() =>
-  props.currentPresentationId && props.presentations.get(props.currentPresentationId)
+const currentPresentation = computed(
+  () =>
+    props.currentPresentationId &&
+    props.presentations.get(props.currentPresentationId)
 );
-const currentSlide = computed(() =>
-  props.currentSlideId && props.slides.get(props.currentSlideId)
+const currentSlide = computed(
+  () => props.currentSlideId && props.slides.get(props.currentSlideId)
 );
 const currentProblem = computed(() => currentSlide.value?.problem);
 
@@ -29,7 +31,6 @@ function canAnswerProblem(problem) {
   const status = props.problemStatus.get(problem.problemId);
   return status && !problem.result && !status.answering;
 }
-
 </script>
 
 <template>
@@ -47,14 +48,18 @@ function canAnswerProblem(problem) {
     </div>
     <div class="tail">
       <label>
-        <input type="checkbox" v-model="showAllSlides">
+        <input type="checkbox" v-model="showAllSlides" />
         显示全部页面
       </label>
     </div>
     <div class="detail">
       <template v-if="currentSlide">
         <div class="cover">
-          <img :key="currentSlide.id" :src="currentSlide.cover" :style="coverStyle(currentPresentation)">
+          <img
+            :key="currentSlide.id"
+            :src="currentSlide.cover"
+            :style="coverStyle(currentPresentation)"
+          />
         </div>
         <KeepAlive :max="10">
           <ProblemView
@@ -62,7 +67,9 @@ function canAnswerProblem(problem) {
             :key="currentProblem.problemId"
             :problem="currentProblem"
             :can-answer="canAnswerProblem(currentProblem)"
-            @answer="(result) => props.onAnswerProblem?.(currentProblem, result)"
+            @answer="
+              (result) => props.onAnswerProblem?.(currentProblem, result)
+            "
           />
         </KeepAlive>
       </template>
@@ -114,10 +121,10 @@ function canAnswerProblem(problem) {
 
 .detail .cover {
   border: 1px solid #dddddd;
-  box-shadow: 0 1px 4px 3px rgba(0, 0, 0, .1);
+  box-shadow: 0 1px 4px 3px rgba(0, 0, 0, 0.1);
 }
 
-.detail .cover>img {
+.detail .cover > img {
   display: block;
   width: 100%;
 }

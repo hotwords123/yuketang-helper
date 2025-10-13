@@ -1,5 +1,9 @@
 export const PROBLEM_TYPE_MAP = {
-  1: "单选题", 2: "多选题", 3: "投票题", 4: "填空题", 5: "主观题"
+  1: "单选题",
+  2: "多选题",
+  3: "投票题",
+  4: "填空题",
+  5: "主观题",
 };
 
 /**
@@ -43,5 +47,5 @@ export function loadImage(src) {
 
 export function coverStyle(presentation) {
   const { width, height } = presentation;
-  return { aspectRatio: width + '/' + height };
+  return { aspectRatio: width + "/" + height };
 }

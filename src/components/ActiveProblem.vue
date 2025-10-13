@@ -30,7 +30,9 @@ const state = computed(() => {
   }
 });
 
-const canAnswer = computed(() => !["answered", "pending"].includes(state.value));
+const canAnswer = computed(
+  () => !["answered", "pending"].includes(state.value)
+);
 
 const answerBtnTitle = computed(() => {
   if (state.value === "ended") {
@@ -82,7 +84,11 @@ function revealAnswers(problem) {
 
     // Fill-in-the-blank
     case 4: {
-      lines.push(...problem.blanks.map((({ answers }, i) => `答案 ${i + 1}：${JSON.stringify(answers)}`)));
+      lines.push(
+        ...problem.blanks.map(
+          ({ answers }, i) => `答案 ${i + 1}：${JSON.stringify(answers)}`
+        )
+      );
       break;
     }
 
@@ -99,17 +105,32 @@ function revealAnswers(problem) {
   <div class="card">
     <slot></slot>
     <span class="tag" :class="state">
-      {{ tagText }}<!--
-      --><span class="icon-btn" title="取消作答" v-if="state === 'ready'" @click="props.onCancel?.()">
-        <i class="fas fa-xmark"></i>
-      </span><!--
-      --><span class="icon-btn" title="关闭题目" v-if="state === 'answered'" @click="props.onDone?.()">
+      {{ tagText
+      }}<!--
+      --><span
+        class="icon-btn"
+        title="取消作答"
+        v-if="state === 'ready'"
+        @click="props.onCancel?.()"
+      >
+        <i class="fas fa-xmark"></i> </span
+      ><!--
+      --><span
+        class="icon-btn"
+        title="关闭题目"
+        v-if="state === 'answered'"
+        @click="props.onDone?.()"
+      >
         <i class="fas fa-check"></i>
       </span>
     </span>
     <ul class="actions bottom">
       <li>
-        <span class="icon-btn" title="查看答案" @click="revealAnswers(props.problem)">
+        <span
+          class="icon-btn"
+          title="查看答案"
+          @click="revealAnswers(props.problem)"
+        >
           <i class="fas fa-eye"></i>
         </span>
       </li>
@@ -119,7 +140,8 @@ function revealAnswers(problem) {
         </span>
       </li>
       <li>
-        <span class="icon-btn"
+        <span
+          class="icon-btn"
           :class="{ disabled: !canAnswer }"
           :title="answerBtnTitle"
           @click="canAnswer && props.onAnswer?.()"
@@ -136,14 +158,14 @@ function revealAnswers(problem) {
   height: 180px;
   background: #ffffff;
   border: 1px solid #bbbbbb;
-  box-shadow: 0 1px 4px 3px rgba(0, 0, 0, .1);
+  box-shadow: 0 1px 4px 3px rgba(0, 0, 0, 0.1);
   opacity: 0.9;
   z-index: 0;
   transition: all 0.2s ease;
 }
 
 .card:hover {
-  box-shadow: 0 1px 4px 3px rgba(0, 0, 0, .15);
+  box-shadow: 0 1px 4px 3px rgba(0, 0, 0, 0.15);
   opacity: 1;
   z-index: 1;
   transform: translateY(-3px);
@@ -164,7 +186,8 @@ function revealAnswers(problem) {
   background: #ff1e00cc;
 }
 
-.tag.ready, .tag.pending {
+.tag.ready,
+.tag.pending {
   background: #005effcc;
 }
 
@@ -172,11 +195,11 @@ function revealAnswers(problem) {
   background: #1eb41ecc;
 }
 
-.tag>.icon-btn {
+.tag > .icon-btn {
   color: #eeeeee;
 }
 
-.tag>.icon-btn:hover {
+.tag > .icon-btn:hover {
   color: #ffffff;
 }
 
@@ -189,7 +212,7 @@ function revealAnswers(problem) {
   gap: 3px;
 }
 
-.actions>.icon-btn {
+.actions > .icon-btn {
   list-style: none;
 }
 </style>

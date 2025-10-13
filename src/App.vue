@@ -1,12 +1,19 @@
 <script setup>
-import { ref, reactive, computed, watch, Transition, TransitionGroup } from 'vue';
-import { GM_notification, unsafeWindow } from '$';
-import storage from './storage';
-import { answerProblem, retryProblem } from './api';
-import { MyWebSocket, MyXMLHttpRequest } from './network';
-import { randInt, coverStyle } from './util';
-import ProblemUI from './components/problem-ui/ProblemUI.vue';
-import ActiveProblem from './components/ActiveProblem.vue';
+import {
+  ref,
+  reactive,
+  computed,
+  watch,
+  Transition,
+  TransitionGroup,
+} from "vue";
+import { GM_notification, unsafeWindow } from "$";
+import storage from "./storage";
+import { answerProblem, retryProblem } from "./api";
+import { MyWebSocket, MyXMLHttpRequest } from "./network";
+import { randInt, coverStyle } from "./util";
+import ProblemUI from "./components/problem-ui/ProblemUI.vue";
+import ActiveProblem from "./components/ActiveProblem.vue";
 
 // #region App state
 const DEFAULT_CONFIG = {
@@ -21,7 +28,7 @@ const config = reactive({
   ...storage.get("config", DEFAULT_CONFIG),
 });
 watch(config, (value) => storage.set("config", value));
-unsafeWindow.yktConfig = config;  // Expose to global scope for convenience
+unsafeWindow.yktConfig = config; // Expose to global scope for convenience
 
 const presentations = reactive(new Map());
 const slides = reactive(new Map());
@@ -76,7 +83,7 @@ function onUnlockProblem(data) {
     slideId: data.sid,
     startTime: data.dt,
     endTime: data.dt + 1000 * data.limit,
-    done: !!problem.result && process.env.NODE_ENV !== 'development',
+    done: !!problem.result && process.env.NODE_ENV !== "development",
     autoAnswerTime: null,
     answering: false,
   };
@@ -88,23 +95,29 @@ function onUnlockProblem(data) {
   // Skip if problem has been answered
   if (problem.result) return;
 
-  if (config.notifyProblems && (config.notifyProblems !== "background" || document.hidden)) {
+  if (
+    config.notifyProblems &&
+    (config.notifyProblems !== "background" || document.hidden)
+  ) {
     notifyProblem(problem, slide);
   }
 
   if (config.autoAnswer) {
     if (getAnswerToProblem(problem)) {
       const now = Date.now();
-      status.autoAnswerTime = Math.min(status.endTime - 5000, now + randInt(...config.autoAnswerDelay));
+      status.autoAnswerTime = Math.min(
+        status.endTime - 5000,
+        now + randInt(...config.autoAnswerDelay)
+      );
 
       $toast({
         message: `将在 ${Math.floor(Math.max(0, status.autoAnswerTime - now) / 1000)} 秒后自动作答本题`,
-        duration: 3000
+        duration: 3000,
       });
     } else {
       $toast({
         message: "未指定提交内容，无法自动作答本题",
-        duration: 3000
+        duration: 3000,
       });
     }
   }
@@ -178,7 +191,7 @@ function onPresentationLoaded(id, data) {
 }
 
 function onRedEnvelopeListLoaded(id, data) {
-  storage.alterMap("red-envelopes", map => map.set(id, data));
+  storage.alterMap("red-envelopes", (map) => map.set(id, data));
 }
 
 function onAnswerProblem(problemId, result) {
@@ -265,7 +278,7 @@ function cancelAutoAnswer(status) {
 
   $toast({
     message: "已取消自动作答",
-    duration: 1500
+    duration: 1500,
   });
 }
 
@@ -293,10 +306,13 @@ function getAnswerToProblem(problem) {
 
     // Fill-in-the-blank
     case 4:
-      if (problem.blanks.length === 0 || problem.blanks.any(blank => blank.answers.length === 0)) {
+      if (
+        problem.blanks.length === 0 ||
+        problem.blanks.any((blank) => blank.answers.length === 0)
+      ) {
         return null;
       }
-      return problem.blanks.map(blank => blank.answers[0]);
+      return problem.blanks.map((blank) => blank.answers[0]);
 
     default:
       return null;
@@ -323,7 +339,7 @@ function toggleNotifyProblems() {
 
   $toast({
     message: `习题提醒：${desc}`,
-    duration: 1500
+    duration: 1500,
   });
 }
 
@@ -331,7 +347,7 @@ function toggleAutoAnswer() {
   config.autoAnswer = !config.autoAnswer;
   $toast({
     message: `自动作答：${config.autoAnswer ? "开" : "关"}`,
-    duration: 1500
+    duration: 1500,
   });
 }
 
@@ -356,7 +372,7 @@ async function handleAnswer(problem, result) {
   if (!status) {
     $toast({
       message: "题目未发布",
-      duration: 3000
+      duration: 3000,
     });
     return;
   }
@@ -364,7 +380,7 @@ async function handleAnswer(problem, result) {
   if (status.answering) {
     $toast({
       message: "作答中，请稍后再试",
-      duration: 3000
+      duration: 3000,
     });
     return;
   }
@@ -373,7 +389,7 @@ async function handleAnswer(problem, result) {
   if (!result) {
     $toast({
       message: "未指定提交内容",
-      duration: 3000
+      duration: 3000,
     });
     return;
   }
@@ -383,10 +399,14 @@ async function handleAnswer(problem, result) {
 
   try {
     if (Date.now() >= status.endTime) {
-      if (!confirm("作答已经截止，是否重试作答？\n此功能用于补救超时未作答的题目。")) {
+      if (
+        !confirm(
+          "作答已经截止，是否重试作答？\n此功能用于补救超时未作答的题目。"
+        )
+      ) {
         $toast({
           message: "已取消作答",
-          duration: 1500
+          duration: 1500,
         });
         return;
       }
@@ -412,13 +432,13 @@ async function handleAnswer(problem, result) {
 
     $toast({
       message: "作答完成",
-      duration: 3000
+      duration: 3000,
     });
   } catch (err) {
     console.error(err);
     $toast({
       message: "作答失败：" + err.message,
-      duration: 3000
+      duration: 3000,
     });
   } finally {
     status.answering = false;
@@ -441,7 +461,7 @@ const activeProblems = computed(() => {
 });
 // #endregion
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === "development") {
   unsafeWindow.debugHelper = () => {
     debugger;
     const presentations = storage.getMap("presentations");
@@ -469,21 +489,28 @@ if (process.env.NODE_ENV === 'development') {
 
 <template>
   <div class="toolbar">
-    <span class="icon-btn" title="切换习题提醒"
+    <span
+      class="icon-btn"
+      title="切换习题提醒"
       :class="{ active: config.notifyProblems }"
       @click="toggleNotifyProblems()"
     >
-      <i class="fa-bell fa-lg"
+      <i
+        class="fa-bell fa-lg"
         :class="config.notifyProblems === 'background' ? 'far' : 'fas'"
       ></i>
     </span>
-    <span class="icon-btn" title="切换自动作答"
+    <span
+      class="icon-btn"
+      title="切换自动作答"
       :class="{ active: config.autoAnswer }"
       @click="toggleAutoAnswer()"
     >
       <i class="fas fa-upload fa-lg"></i>
     </span>
-    <span class="icon-btn" title="显示习题列表"
+    <span
+      class="icon-btn"
+      title="显示习题列表"
       :class="{ active: problemUIVisible }"
       @click="toggleProblemUI()"
     >
@@ -491,11 +518,13 @@ if (process.env.NODE_ENV === 'development') {
     </span>
   </div>
   <TransitionGroup tag="ul" class="track" appear>
-    <li v-for="{ problem, slide, presentation, status } in activeProblems"
+    <li
+      v-for="{ problem, slide, presentation, status } in activeProblems"
       class="anchor"
       :key="problem.problemId"
     >
-      <ActiveProblem class="inner"
+      <ActiveProblem
+        class="inner"
         :problem="problem"
         :status="status"
         @show="navigate(status.presentationId, status.slideId)"
@@ -503,13 +532,17 @@ if (process.env.NODE_ENV === 'development') {
         @cancel="cancelAutoAnswer(status)"
         @done="status.done = true"
       >
-        <img :src="slide.thumbnail" :style="{ height: '100%', ...coverStyle(presentation) }">
+        <img
+          :src="slide.thumbnail"
+          :style="{ height: '100%', ...coverStyle(presentation) }"
+        />
       </ActiveProblem>
     </li>
   </TransitionGroup>
   <Transition>
     <div class="popup" v-show="problemUIVisible">
-      <ProblemUI class="problem-ui"
+      <ProblemUI
+        class="problem-ui"
         :config="config"
         :presentations="presentations"
         :slides="slides"
@@ -545,7 +578,7 @@ if (process.env.NODE_ENV === 'development') {
   background: #ffffff;
   border: 1px solid #cccccc;
   border-radius: 4px;
-  box-shadow: 0 1px 4px 3px rgba(0, 0, 0, .1);
+  box-shadow: 0 1px 4px 3px rgba(0, 0, 0, 0.1);
 }
 
 .track {
@@ -568,7 +601,9 @@ if (process.env.NODE_ENV === 'development') {
   bottom: 0;
 }
 
-.anchor.v-move, .anchor.v-enter-active, .anchor.v-leave-active {
+.anchor.v-move,
+.anchor.v-enter-active,
+.anchor.v-leave-active {
   transition: all 0.5s ease;
 }
 
@@ -600,11 +635,13 @@ if (process.env.NODE_ENV === 'development') {
   background: rgba(64, 64, 64, 0.4);
 }
 
-.popup.v-enter-active, .popup.v-leave-active {
+.popup.v-enter-active,
+.popup.v-leave-active {
   transition: opacity 0.2s;
 }
 
-.popup.v-enter-from, .popup.v-leave-to {
+.popup.v-enter-from,
+.popup.v-leave-to {
   opacity: 0;
 }
 
@@ -613,11 +650,13 @@ if (process.env.NODE_ENV === 'development') {
   height: 90%;
 }
 
-.popup.v-enter-active>.problem-ui, .popup.v-leave-active>.problem-ui {
+.popup.v-enter-active > .problem-ui,
+.popup.v-leave-active > .problem-ui {
   transition: transform 0.2s ease;
 }
 
-.popup.v-enter-from>.problem-ui, .popup.v-leave-to>.problem-ui {
+.popup.v-enter-from > .problem-ui,
+.popup.v-leave-to > .problem-ui {
   transform: translateY(10px);
 }
 </style>

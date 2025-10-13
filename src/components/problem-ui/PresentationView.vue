@@ -16,34 +16,40 @@ const thumbStyle = computed(() => coverStyle(props.presentation));
 
 const filteredSlides = computed(() => {
   const { slides } = props.presentation;
-  return props.showAllSlides ? slides : slides.filter(slide => slide.problem);
+  return props.showAllSlides ? slides : slides.filter((slide) => slide.problem);
 });
 
 function slideClass(slide) {
   const problem = slide.problem;
   return {
     active: slide.id === props.currentSlideId,
-    ...problem && {
+    ...(problem && {
       unlocked: props.problemStatus.has(problem.problemId),
       answered: !!problem.result,
-    }
+    }),
   };
 }
 
 const slideRefs = new Map();
-watch(() => props.currentSlideId, (id) => {
-  const el = slideRefs.get(id);
-  if (el) {
-    requestAnimationFrame(() => {
-      const containerBox = el.parentElement.getBoundingClientRect();
-      const itemBox = el.getBoundingClientRect();
-      // polyfill for scrollIntoViewIfNeeded
-      if (itemBox.top < containerBox.top || itemBox.bottom > containerBox.bottom) {
-        el.scrollIntoView({ block: "center", behavior: "smooth" });
-      }
-    });
+watch(
+  () => props.currentSlideId,
+  (id) => {
+    const el = slideRefs.get(id);
+    if (el) {
+      requestAnimationFrame(() => {
+        const containerBox = el.parentElement.getBoundingClientRect();
+        const itemBox = el.getBoundingClientRect();
+        // polyfill for scrollIntoViewIfNeeded
+        if (
+          itemBox.top < containerBox.top ||
+          itemBox.bottom > containerBox.bottom
+        ) {
+          el.scrollIntoView({ block: "center", behavior: "smooth" });
+        }
+      });
+    }
   }
-});
+);
 
 const downloadProgress = ref(null);
 
@@ -51,14 +57,14 @@ async function handleDownload() {
   try {
     $toast({
       message: "正在下载课件，可能需要一些时间...",
-      duration: 3000
+      duration: 3000,
     });
     await savePresentation();
   } catch (err) {
     console.error(err);
     $toast({
       message: "下载失败：" + err.message,
-      duration: 3000
+      duration: 3000,
     });
   } finally {
     downloadProgress.value = null;
@@ -72,7 +78,7 @@ async function savePresentation() {
   const doc = new jsPDF({
     format: [width, height],
     orientation: width > height ? "l" : "p",
-    unit: 'px',
+    unit: "px",
     putOnlyUsedFonts: true,
     compress: true,
     hotfixes: ["px_scaling"],
@@ -116,12 +122,17 @@ async function savePresentation() {
     <span v-if="downloadProgress" title="下载进度">
       ({{ downloadProgress }})
     </span>
-    <i v-else class="download-btn fas fa-download" @click="handleDownload()"></i>
+    <i
+      v-else
+      class="download-btn fas fa-download"
+      @click="handleDownload()"
+    ></i>
   </div>
-  <div class="slide"
+  <div
+    class="slide"
     v-for="slide in filteredSlides"
     :key="slide.id"
-    :ref="el => slideRefs.set(slide.id, el)"
+    :ref="(el) => slideRefs.set(slide.id, el)"
     :class="slideClass(slide)"
     @click="props.onNavigate?.(props.presentation.id, slide.id)"
   >
@@ -160,12 +171,12 @@ async function savePresentation() {
   cursor: pointer;
 }
 
-.slide>img {
+.slide > img {
   display: block;
   width: 100%;
 }
 
-.slide>.tag {
+.slide > .tag {
   position: absolute;
   top: 0;
   left: 0;
@@ -173,14 +184,14 @@ async function savePresentation() {
   padding: 3px 5px;
   font-size: small;
   color: #f7f7f7;
-  background: rgba(64, 64, 64, .4);
+  background: rgba(64, 64, 64, 0.4);
 }
 
 .slide.active {
   border-color: #2d70e7;
 }
 
-.slide.active>.tag {
+.slide.active > .tag {
   background: #2d70e7;
 }
 
@@ -192,7 +203,7 @@ async function savePresentation() {
   border-color: #e6cb2d;
 }
 
-.slide.unlocked.active>.tag {
+.slide.unlocked.active > .tag {
   background: #e6cb2d;
 }
 
@@ -204,7 +215,7 @@ async function savePresentation() {
   border-color: #4caf50;
 }
 
-.slide.answered.active>.tag {
+.slide.answered.active > .tag {
   background: #4caf50;
 }
 </style>

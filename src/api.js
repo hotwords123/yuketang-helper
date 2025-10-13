@@ -8,7 +8,8 @@ export async function request(path, options = {}) {
   };
 
   if (options.bearer) {
-    init.headers["Authorization"] = "Bearer " + localStorage.getItem("Authorization");
+    init.headers["Authorization"] =
+      "Bearer " + localStorage.getItem("Authorization");
   }
 
   if (options.params) {
@@ -32,7 +33,7 @@ export async function request(path, options = {}) {
 }
 
 export const H5_HEADERS = {
-  "xtbz": "ykt",
+  xtbz: "ykt",
   "X-Client": "h5",
 };
 
@@ -51,7 +52,7 @@ export function answerProblem(problem, result, dt = Date.now()) {
       problemId: problem.problemId,
       problemType: problem.problemType,
       dt: dt,
-      result: result
+      result: result,
     },
     bearer: true,
   });
@@ -62,12 +63,14 @@ export function retryProblem(problem, result, dt) {
     method: "POST",
     headers: H5_HEADERS,
     body: {
-      problems: [{
-        problemId: problem.problemId,
-        problemType: problem.problemType,
-        dt: dt,
-        result: result
-      }]
+      problems: [
+        {
+          problemId: problem.problemId,
+          problemType: problem.problemType,
+          dt: dt,
+          result: result,
+        },
+      ],
     },
     bearer: true,
   });

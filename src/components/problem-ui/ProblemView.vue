@@ -3,26 +3,30 @@ import { ref, onActivated, computed } from "vue";
 import storage from "@/storage";
 import AnswerReveal from "./AnswerReveal.vue";
 
-const props = defineProps([
-  "problem",
-  "canAnswer",
-  "onAnswer",
-]);
+const props = defineProps(["problem", "canAnswer", "onAnswer"]);
 
 const answerRevealed = ref(false);
 const answerContent = ref("");
 
 const answerPrompt = computed(() => {
   switch (props.problem.problemType) {
-    case 1: return "单选题：输入选项字母，如 A";
-    case 2: return "多选题：输入所有选项字母，如 ACD";
-    case 3: return "投票题：输入所有选项字母，如 ACD";
-    case 4: return "填空题：每行输入一个空的答案，空行会被自动忽略";
-    case 5: return "问答题：直接输入作答内容，暂时不支持图片上传";
-    default: return "未知题目类型";
+    case 1:
+      return "单选题：输入选项字母，如 A";
+    case 2:
+      return "多选题：输入所有选项字母，如 ACD";
+    case 3:
+      return "投票题：输入所有选项字母，如 ACD";
+    case 4:
+      return "填空题：每行输入一个空的答案，空行会被自动忽略";
+    case 5:
+      return "问答题：直接输入作答内容，暂时不支持图片上传";
+    default:
+      return "未知题目类型";
   }
 });
-const answerPlaceholder = computed(() => `在此处输入自动作答内容\n${answerPrompt.value}`)
+const answerPlaceholder = computed(
+  () => `在此处输入自动作答内容\n${answerPrompt.value}`
+);
 
 onActivated(() => {
   const { problemId, problemType } = props.problem;
@@ -33,14 +37,14 @@ onActivated(() => {
 
   if (result) {
     switch (problemType) {
-      case 1: case 2: case 3:
-        if (Array.isArray(result))
-          answerContent.value = result.join("");
+      case 1:
+      case 2:
+      case 3:
+        if (Array.isArray(result)) answerContent.value = result.join("");
         break;
 
       case 4:
-        if (Array.isArray(result))
-          answerContent.value = result.join("\n");
+        if (Array.isArray(result)) answerContent.value = result.join("\n");
         break;
 
       case 5:
@@ -53,11 +57,13 @@ onActivated(() => {
 
 function parseAnswer(problemType, content) {
   switch (problemType) {
-    case 1: case 2: case 3:
+    case 1:
+    case 2:
+    case 3:
       return content.split("").sort();
 
     case 4:
-      return content.split("\n").filter(text => !!text);
+      return content.split("\n").filter((text) => !!text);
 
     case 5:
       // { content: string, pics: { pic: string, thumb: string }[] }
@@ -74,7 +80,7 @@ function updateAutoAnswer() {
 
     $toast({
       message: "已重置本题的自动作答内容",
-      duration: 3000
+      duration: 3000,
     });
   } else {
     const result = parseAnswer(problemType, content);
@@ -82,7 +88,7 @@ function updateAutoAnswer() {
 
     $toast({
       message: "已设置本题的自动作答内容",
-      duration: 3000
+      duration: 3000,
     });
   }
 }
@@ -97,20 +103,20 @@ function handleAnswer() {
 
 <template>
   <div class="body">
-    <p>
-      题面：{{ props.problem.body || "空" }}
-    </p>
+    <p>题面：{{ props.problem.body || "空" }}</p>
     <AnswerReveal
       v-if="[1, 2, 4].includes(props.problem.problemType)"
       :problem="problem"
       :revealed="answerRevealed || !!props.problem.result"
       @reveal="answerRevealed = true"
     />
-    <p v-if="props.problem.remark">
-      备注：{{ props.problem.remark }}
-    </p>
+    <p v-if="props.problem.remark">备注：{{ props.problem.remark }}</p>
     <p v-if="Array.isArray(props.problem.remarkRich?.shapes)">
-      <img v-for="shape in props.problem.remarkRich.shapes" :key="shape.id" :src="shape.url" />
+      <img
+        v-for="shape in props.problem.remarkRich.shapes"
+        :key="shape.id"
+        :src="shape.url"
+      />
     </p>
     <p v-if="props.problem.result">
       作答内容：<code>{{ JSON.stringify(props.problem.result) }}</code>
@@ -124,7 +130,9 @@ function handleAnswer() {
   </div>
   <div class="actions" v-if="!props.problem.result">
     <button @click="updateAutoAnswer()">自动作答</button>
-    <button :disabled="!props.canAnswer" @click="handleAnswer()">提交答案</button>
+    <button :disabled="!props.canAnswer" @click="handleAnswer()">
+      提交答案
+    </button>
   </div>
 </template>
 
@@ -133,7 +141,7 @@ function handleAnswer() {
   margin-top: 25px;
 }
 
-.body>textarea {
+.body > textarea {
   width: 100%;
   min-height: 40px;
   resize: vertical;
@@ -144,7 +152,7 @@ function handleAnswer() {
   text-align: center;
 }
 
-.actions>button {
+.actions > button {
   margin: 0 20px;
   padding: 4px 10px;
 }

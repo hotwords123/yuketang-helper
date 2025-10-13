@@ -1,10 +1,16 @@
-import { createApp } from 'vue';
-import { GM_openInTab, GM_getTab, GM_saveTab, GM_getTabs, unsafeWindow } from '$';
-import './style.css';
-import App from './App.vue';
-import storage from './storage';
+import { createApp } from "vue";
+import {
+  GM_openInTab,
+  GM_getTab,
+  GM_saveTab,
+  GM_getTabs,
+  unsafeWindow,
+} from "$";
+import "./style.css";
+import App from "./App.vue";
+import storage from "./storage";
 import * as API from "./api";
-import { MyWebSocket, MyXMLHttpRequest } from './network';
+import { MyWebSocket, MyXMLHttpRequest } from "./network";
 
 const url = new URL(window.location.href);
 
@@ -22,13 +28,13 @@ function launchLessonHelper() {
   });
 
   const run = () => {
-    const el = document.createElement('div');
+    const el = document.createElement("div");
     document.body.append(el);
     createApp(App).mount(el);
   };
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', run);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", run);
   } else {
     run();
   }
@@ -61,7 +67,10 @@ function pollActiveLessons() {
       const { classroomId, lessonId } = lesson;
 
       if (!enteredLessonIds.has(lessonId)) {
-        const url = new URL(`/lesson/fullscreen/v3/${lessonId}`, location.origin);
+        const url = new URL(
+          `/lesson/fullscreen/v3/${lessonId}`,
+          location.origin
+        );
         GM_openInTab(url.href, { active: false });
         enteredLessonIds.add(lessonId);
       }

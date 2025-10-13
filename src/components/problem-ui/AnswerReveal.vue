@@ -1,9 +1,5 @@
 <script setup>
-const props = defineProps([
-  "problem",
-  "revealed",
-  "onReveal",
-]);
+const props = defineProps(["problem", "revealed", "onReveal"]);
 </script>
 
 <template>
