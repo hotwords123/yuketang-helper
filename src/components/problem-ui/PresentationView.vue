@@ -2,6 +2,7 @@
 import { ref, computed, watch } from "vue";
 import { jsPDF } from "jspdf";
 import { coverStyle, PROBLEM_TYPE_MAP } from "@/util";
+import MemoizedImage from "./MemoizedImage.vue";
 
 const props = defineProps([
   "presentation",
@@ -124,7 +125,7 @@ async function savePresentation() {
     :class="slideClass(slide)"
     @click="props.onNavigate?.(props.presentation.id, slide.id)"
   >
-    <img :src="slide.thumbnail" :style="thumbStyle" />
+    <MemoizedImage :src="slide.thumbnail" :style="thumbStyle" />
     <span class="tag">{{ slide.index }}</span>
   </div>
 </template>
