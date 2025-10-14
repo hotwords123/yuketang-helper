@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         雨课堂 helper
 // @namespace    https://github.com/hotwords123/yuketang-helper
-// @version      1.5.1
+// @version      1.6.0
 // @author       hotwords123
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=yuketang.cn
 // @match        https://*.yuketang.cn/lesson/fullscreen/v3/*
 // @match        https://*.yuketang.cn/v2/web/*
-// @require      https://cdn.jsdelivr.net/npm/vue@3.4.27/dist/vue.global.prod.js
-// @require      https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js
+// @require      https://cdn.jsdelivr.net/npm/vue@3.5.22/dist/vue.global.prod.js
+// @require      https://cdn.jsdelivr.net/npm/jspdf@3.0.3/dist/jspdf.umd.min.js
 // @grant        GM_addStyle
 // @grant        GM_getTab
 // @grant        GM_getTabs
@@ -19,23 +19,21 @@
 // @run-at       document-start
 // ==/UserScript==
 
-(a=>{if(typeof GM_addStyle=="function"){GM_addStyle(a);return}const t=document.createElement("style");t.textContent=a,document.head.append(t)})(' @import"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";:root{overflow:hidden}#watermark_layer{display:none!important;visibility:hidden!important}.icon-btn{display:inline-block;width:20px;text-align:center;cursor:pointer;color:#607190}.icon-btn:hover{color:#1e3050}.icon-btn.active{color:#1d63df}.icon-btn.active:hover{color:#1b53ac}.icon-btn.danger:hover{color:#e4231d}.icon-btn.disabled{color:#bbb!important;cursor:default}.title[data-v-c403efc9]{font-weight:700;overflow:hidden;margin:10px 0}.title[data-v-c403efc9]:after{content:"";display:inline-block;height:1px;background:#aaaaaa;position:relative;vertical-align:middle;width:100%;left:1em;margin-right:-100%}.title .download-btn[data-v-c403efc9]{cursor:pointer}.slide[data-v-c403efc9]{position:relative;margin:10px 0;border:2px solid #dddddd;cursor:pointer}.slide>img[data-v-c403efc9]{display:block;width:100%}.slide>.tag[data-v-c403efc9]{position:absolute;top:0;left:0;display:inline-block;padding:3px 5px;font-size:small;color:#f7f7f7;background:rgba(64,64,64,.4)}.slide.active[data-v-c403efc9]{border-color:#2d70e7}.slide.active>.tag[data-v-c403efc9]{background:#2d70e7}.slide.unlocked[data-v-c403efc9]{border-color:#d7d48e}.slide.unlocked.active[data-v-c403efc9]{border-color:#e6cb2d}.slide.unlocked.active>.tag[data-v-c403efc9]{background:#e6cb2d}.slide.answered[data-v-c403efc9]{border-color:#8dd790}.slide.answered.active[data-v-c403efc9]{border-color:#4caf50}.slide.answered.active>.tag[data-v-c403efc9]{background:#4caf50}.body[data-v-c30aaf7b]{margin-top:25px}.body>textarea[data-v-c30aaf7b]{width:100%;min-height:40px;resize:vertical}.actions[data-v-c30aaf7b]{margin-top:25px;text-align:center}.actions>button[data-v-c30aaf7b]{margin:0 20px;padding:4px 10px}.container[data-v-6be28a33]{display:grid;grid-template:auto 36px / 240px auto;background:rgba(255,255,255,.9);border:1px solid #bbbbbb;border-radius:5px;overflow:hidden}.list[data-v-6be28a33]{grid-row:1;grid-column:1;padding:5px 15px;overflow-y:auto}.tail[data-v-6be28a33]{grid-row:2;grid-column:1;padding:5px 15px;line-height:26px;border-top:1px solid #bbbbbb}.tail label[data-v-6be28a33]{font-size:small}.tail input[type=checkbox][data-v-6be28a33]{-webkit-appearance:auto;-moz-appearance:auto;appearance:auto;vertical-align:middle}.detail[data-v-6be28a33]{grid-row:1 / span 2;grid-column:2;padding:25px 40px;overflow-y:auto;border-left:1px solid #bbbbbb}.detail .cover[data-v-6be28a33]{border:1px solid #dddddd;box-shadow:0 1px 4px 3px #0000001a}.detail .cover>img[data-v-6be28a33]{display:block;width:100%}.card[data-v-308b571c]{height:180px;background:#ffffff;border:1px solid #bbbbbb;box-shadow:0 1px 4px 3px #0000001a;opacity:.9;z-index:0;transition:all .2s ease}.card[data-v-308b571c]:hover{box-shadow:0 1px 4px 3px #00000026;opacity:1;z-index:1;transform:translateY(-3px)}.tag[data-v-308b571c]{position:absolute;bottom:0;left:0;display:inline-block;padding:2px 4px;font-size:small;color:#fff;background:#666666cc}.tag.ended[data-v-308b571c]{background:#ff1e00cc}.tag.ready[data-v-308b571c],.tag.pending[data-v-308b571c]{background:#005effcc}.tag.answered[data-v-308b571c]{background:#1eb41ecc}.tag>.icon-btn[data-v-308b571c]{color:#eee}.tag>.icon-btn[data-v-308b571c]:hover{color:#fff}.actions[data-v-308b571c]{position:absolute;bottom:4px;right:5px;display:flex;flex-direction:row;gap:3px}.actions>.icon-btn[data-v-308b571c]{list-style:none}[data-v-3cad7091]{margin:0;padding:0;box-sizing:border-box}.toolbar[data-v-3cad7091]{position:fixed;z-index:2000001;left:15px;bottom:15px;width:100px;height:36px;padding:5px 9px;display:flex;flex-direction:row;justify-content:space-between;align-items:center;background:#ffffff;border:1px solid #cccccc;border-radius:4px;box-shadow:0 1px 4px 3px #0000001a}.track[data-v-3cad7091]{position:fixed;z-index:100;bottom:65px;left:15px;display:flex;flex-direction:row}.anchor[data-v-3cad7091]{position:relative;width:100px;list-style:none}.inner[data-v-3cad7091]{position:absolute;bottom:0}.anchor.v-move[data-v-3cad7091],.anchor.v-enter-active[data-v-3cad7091],.anchor.v-leave-active[data-v-3cad7091]{transition:all .5s ease}.anchor.v-enter-from[data-v-3cad7091]{opacity:0;transform:translateY(20px)}.anchor.v-leave-to[data-v-3cad7091]{opacity:0;transform:translateY(-20px)}.anchor.v-leave-active[data-v-3cad7091]{width:0}.popup[data-v-3cad7091]{position:fixed;z-index:200;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:rgba(64,64,64,.4)}.popup.v-enter-active[data-v-3cad7091],.popup.v-leave-active[data-v-3cad7091]{transition:opacity .2s}.popup.v-enter-from[data-v-3cad7091],.popup.v-leave-to[data-v-3cad7091]{opacity:0}.problem-ui[data-v-3cad7091]{width:80%;height:90%}.popup.v-enter-active>.problem-ui[data-v-3cad7091],.popup.v-leave-active>.problem-ui[data-v-3cad7091]{transition:transform .2s ease}.popup.v-enter-from>.problem-ui[data-v-3cad7091],.popup.v-leave-to>.problem-ui[data-v-3cad7091]{transform:translateY(10px)} ');
-
 (function (vue, jspdf) {
   'use strict';
 
-  var __defProp = Object.defineProperty;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __publicField = (obj, key, value) => {
-    __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-    return value;
-  };
-  var _GM_getTab = /* @__PURE__ */ (() => typeof GM_getTab != "undefined" ? GM_getTab : void 0)();
-  var _GM_getTabs = /* @__PURE__ */ (() => typeof GM_getTabs != "undefined" ? GM_getTabs : void 0)();
-  var _GM_notification = /* @__PURE__ */ (() => typeof GM_notification != "undefined" ? GM_notification : void 0)();
-  var _GM_openInTab = /* @__PURE__ */ (() => typeof GM_openInTab != "undefined" ? GM_openInTab : void 0)();
-  var _GM_saveTab = /* @__PURE__ */ (() => typeof GM_saveTab != "undefined" ? GM_saveTab : void 0)();
-  var _unsafeWindow = /* @__PURE__ */ (() => typeof unsafeWindow != "undefined" ? unsafeWindow : void 0)();
+  const d=new Set;const importCSS = async e=>{d.has(e)||(d.add(e),(t=>{typeof GM_addStyle=="function"?GM_addStyle(t):document.head.appendChild(document.createElement("style")).append(t);})(e));};
+
+  importCSS(' .title[data-v-a9820715]{font-weight:700;overflow:hidden;margin:10px 0}.title[data-v-a9820715]:after{content:"";display:inline-block;height:1px;background:#aaa;position:relative;vertical-align:middle;width:100%;left:1em;margin-right:-100%}.title .download-btn[data-v-a9820715]{cursor:pointer}.slide[data-v-a9820715]{position:relative;margin:10px 0;border:2px solid #dddddd;cursor:pointer}.slide>img[data-v-a9820715]{display:block;width:100%}.slide>.tag[data-v-a9820715]{position:absolute;top:0;left:0;display:inline-block;padding:3px 5px;font-size:small;color:#f7f7f7;background:#40404066}.slide.active[data-v-a9820715]{border-color:#2d70e7}.slide.active>.tag[data-v-a9820715]{background:#2d70e7}.slide.unlocked[data-v-a9820715]{border-color:#d7d48e}.slide.unlocked.active[data-v-a9820715]{border-color:#e6cb2d}.slide.unlocked.active>.tag[data-v-a9820715]{background:#e6cb2d}.slide.answered[data-v-a9820715]{border-color:#8dd790}.slide.answered.active[data-v-a9820715]{border-color:#4caf50}.slide.answered.active>.tag[data-v-a9820715]{background:#4caf50}.body[data-v-63a388c3]{margin-top:25px}.body>textarea[data-v-63a388c3]{width:100%;min-height:40px;resize:vertical}.actions[data-v-63a388c3]{margin-top:25px;text-align:center}.actions>button[data-v-63a388c3]{margin:0 20px;padding:4px 10px}.container[data-v-e971312a]{display:grid;grid-template:auto 36px / 240px auto;background:#ffffffe6;border:1px solid #bbbbbb;border-radius:5px;overflow:hidden}.list[data-v-e971312a]{grid-row:1;grid-column:1;padding:5px 15px;overflow-y:auto}.tail[data-v-e971312a]{grid-row:2;grid-column:1;padding:5px 15px;line-height:26px;border-top:1px solid #bbbbbb}.tail label[data-v-e971312a]{font-size:small}.tail input[type=checkbox][data-v-e971312a]{appearance:auto;vertical-align:middle}.detail[data-v-e971312a]{grid-row:1 / span 2;grid-column:2;padding:25px 40px;overflow-y:auto;border-left:1px solid #bbbbbb}.detail .cover[data-v-e971312a]{border:1px solid #dddddd;box-shadow:0 1px 4px 3px #0000001a}.detail .cover>img[data-v-e971312a]{display:block;width:100%}.card[data-v-250da923]{height:180px;background:#fff;border:1px solid #bbbbbb;box-shadow:0 1px 4px 3px #0000001a;opacity:.9;z-index:0;transition:all .2s ease}.card[data-v-250da923]:hover{box-shadow:0 1px 4px 3px #00000026;opacity:1;z-index:1;transform:translateY(-3px)}.tag[data-v-250da923]{position:absolute;bottom:0;left:0;display:inline-block;padding:2px 4px;font-size:small;color:#fff;background:#666c}.tag.ended[data-v-250da923]{background:#ff1e00cc}.tag.ready[data-v-250da923],.tag.pending[data-v-250da923]{background:#005effcc}.tag.answered[data-v-250da923]{background:#1eb41ecc}.tag>.icon-btn[data-v-250da923]{color:#eee}.tag>.icon-btn[data-v-250da923]:hover{color:#fff}.actions[data-v-250da923]{position:absolute;bottom:4px;right:5px;display:flex;flex-direction:row;gap:3px}.actions>.icon-btn[data-v-250da923]{list-style:none}[data-v-4aa66361]{margin:0;padding:0;box-sizing:border-box}.toolbar[data-v-4aa66361]{position:fixed;z-index:2000001;left:15px;bottom:15px;width:100px;height:36px;padding:5px 9px;display:flex;flex-direction:row;justify-content:space-between;align-items:center;background:#fff;border:1px solid #cccccc;border-radius:4px;box-shadow:0 1px 4px 3px #0000001a}.track[data-v-4aa66361]{position:fixed;z-index:100;bottom:65px;left:15px;display:flex;flex-direction:row}.anchor[data-v-4aa66361]{position:relative;width:100px;list-style:none}.inner[data-v-4aa66361]{position:absolute;bottom:0}.anchor.v-move[data-v-4aa66361],.anchor.v-enter-active[data-v-4aa66361],.anchor.v-leave-active[data-v-4aa66361]{transition:all .5s ease}.anchor.v-enter-from[data-v-4aa66361]{opacity:0;transform:translateY(20px)}.anchor.v-leave-to[data-v-4aa66361]{opacity:0;transform:translateY(-20px)}.anchor.v-leave-active[data-v-4aa66361]{width:0}.popup[data-v-4aa66361]{position:fixed;z-index:200;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#40404066}.popup.v-enter-active[data-v-4aa66361],.popup.v-leave-active[data-v-4aa66361]{transition:opacity .2s}.popup.v-enter-from[data-v-4aa66361],.popup.v-leave-to[data-v-4aa66361]{opacity:0}.problem-ui[data-v-4aa66361]{width:80%;height:90%}.popup.v-enter-active>.problem-ui[data-v-4aa66361],.popup.v-leave-active>.problem-ui[data-v-4aa66361]{transition:transform .2s ease}.popup.v-enter-from>.problem-ui[data-v-4aa66361],.popup.v-leave-to>.problem-ui[data-v-4aa66361]{transform:translateY(10px)} ');
+
+  var _GM_getTab = (() => typeof GM_getTab != "undefined" ? GM_getTab : void 0)();
+  var _GM_getTabs = (() => typeof GM_getTabs != "undefined" ? GM_getTabs : void 0)();
+  var _GM_notification = (() => typeof GM_notification != "undefined" ? GM_notification : void 0)();
+  var _GM_openInTab = (() => typeof GM_openInTab != "undefined" ? GM_openInTab : void 0)();
+  var _GM_saveTab = (() => typeof GM_saveTab != "undefined" ? GM_saveTab : void 0)();
+  var _unsafeWindow = (() => typeof unsafeWindow != "undefined" ? unsafeWindow : void 0)();
+  const styleCss = '@import"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";:root{overflow:hidden}#watermark_layer{display:none!important;visibility:hidden!important}.icon-btn{display:inline-block;width:20px;text-align:center;cursor:pointer;color:#607190}.icon-btn:hover{color:#1e3050}.icon-btn.active{color:#1d63df}.icon-btn.active:hover{color:#1b53ac}.icon-btn.danger:hover{color:#e4231d}.icon-btn.disabled{color:#bbb!important;cursor:default}';
+  importCSS(styleCss);
   class StorageManager {
     constructor(prefix) {
       this.prefix = prefix;
@@ -62,7 +60,7 @@
         return new Map(this.get(key, []));
       } catch (err) {
         console.error(err);
-        return /* @__PURE__ */ new Map();
+        return new Map();
       }
     }
     setMap(key, map) {
@@ -103,7 +101,7 @@
     return json;
   }
   const H5_HEADERS = {
-    "xtbz": "ykt",
+    xtbz: "ykt",
     "X-Client": "h5"
   };
   const WEB_HEADERS = {
@@ -130,12 +128,14 @@
       method: "POST",
       headers: H5_HEADERS,
       body: {
-        problems: [{
-          problemId: problem.problemId,
-          problemType: problem.problemType,
-          dt,
-          result
-        }]
+        problems: [
+          {
+            problemId: problem.problemId,
+            problemType: problem.problemType,
+            dt,
+            result
+          }
+        ]
       },
       bearer: true
     });
@@ -152,7 +152,7 @@
       headers: WEB_HEADERS
     });
   }
-  const API = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const API = Object.freeze( Object.defineProperty({
     __proto__: null,
     H5_HEADERS,
     WEB_HEADERS,
@@ -163,6 +163,8 @@
     retryProblem
   }, Symbol.toStringTag, { value: "Module" }));
   class MyWebSocket extends WebSocket {
+    static original = WebSocket;
+    static handlers = [];
     static addHandler(handler) {
       this.handlers.push(handler);
     }
@@ -188,9 +190,9 @@
       });
     }
   }
-  __publicField(MyWebSocket, "original", WebSocket);
-  __publicField(MyWebSocket, "handlers", []);
   class MyXMLHttpRequest extends XMLHttpRequest {
+    static original = XMLHttpRequest;
+    static handlers = [];
     static addHandler(handler) {
       this.handlers.push(handler);
     }
@@ -212,8 +214,6 @@
       });
     }
   }
-  __publicField(MyXMLHttpRequest, "original", XMLHttpRequest);
-  __publicField(MyXMLHttpRequest, "handlers", []);
   const PROBLEM_TYPE_MAP = {
     1: "单选题",
     2: "多选题",
@@ -228,6 +228,57 @@
     const { width, height } = presentation;
     return { aspectRatio: width + "/" + height };
   }
+  const _hoisted_1$6 = ["src"];
+  const _sfc_main$6 = {
+    __name: "MemoizedImage",
+    props: {
+      src: {
+        type: String,
+        required: true
+      }
+    },
+    setup(__props) {
+      const props = __props;
+      const cachedSrc = vue.ref("");
+      vue.watch(
+        () => props.src,
+        (newSrc, oldSrc) => {
+          if (shouldUpdate(newSrc, oldSrc)) {
+            cachedSrc.value = newSrc;
+          }
+        },
+        { immediate: true }
+      );
+      function shouldUpdate(newSrc, oldSrc) {
+        if (!newSrc || !oldSrc) {
+          return true;
+        }
+        try {
+          const newUrl = new URL(newSrc, window.location.href);
+          const oldUrl = new URL(oldSrc, window.location.href);
+          if (newUrl.origin !== oldUrl.origin || newUrl.pathname !== oldUrl.pathname) {
+            return true;
+          }
+          const newParams = newUrl.searchParams;
+          const oldParams = oldUrl.searchParams;
+          const allKeys = new Set([...newParams.keys(), ...oldParams.keys()]);
+          allKeys.delete("e");
+          allKeys.delete("token");
+          for (const key of allKeys) {
+            if (newParams.get(key) !== oldParams.get(key)) {
+              return true;
+            }
+          }
+        } catch (e) {
+          return true;
+        }
+        return false;
+      }
+      return (_ctx, _cache) => {
+        return vue.openBlock(), vue.createElementBlock("img", vue.mergeProps({ src: cachedSrc.value }, _ctx.$attrs), null, 16, _hoisted_1$6);
+      };
+    }
+  };
   const _export_sfc = (sfc, props) => {
     const target = sfc.__vccOpts || sfc;
     for (const [key, val] of props) {
@@ -241,8 +292,7 @@
     title: "下载进度"
   };
   const _hoisted_3$4 = ["onClick"];
-  const _hoisted_4$4 = ["src"];
-  const _hoisted_5$4 = { class: "tag" };
+  const _hoisted_4$2 = { class: "tag" };
   const _sfc_main$5 = {
     __name: "PresentationView",
     props: [
@@ -269,19 +319,22 @@
           }
         };
       }
-      const slideRefs = /* @__PURE__ */ new Map();
-      vue.watch(() => props.currentSlideId, (id) => {
-        const el = slideRefs.get(id);
-        if (el) {
-          requestAnimationFrame(() => {
-            const containerBox = el.parentElement.getBoundingClientRect();
-            const itemBox = el.getBoundingClientRect();
-            if (itemBox.top < containerBox.top || itemBox.bottom > containerBox.bottom) {
-              el.scrollIntoView({ block: "center", behavior: "smooth" });
-            }
-          });
+      const slideRefs = new Map();
+      vue.watch(
+        () => props.currentSlideId,
+        (id) => {
+          const el = slideRefs.get(id);
+          if (el) {
+            requestAnimationFrame(() => {
+              const containerBox = el.parentElement.getBoundingClientRect();
+              const itemBox = el.getBoundingClientRect();
+              if (itemBox.top < containerBox.top || itemBox.bottom > containerBox.bottom) {
+                el.scrollIntoView({ block: "center", behavior: "smooth" });
+              }
+            });
+          }
         }
-      });
+      );
       const downloadProgress = vue.ref(null);
       async function handleDownload() {
         try {
@@ -351,43 +404,33 @@
               key: slide.id,
               ref_for: true,
               ref: (el) => vue.unref(slideRefs).set(slide.id, el),
-              onClick: ($event) => {
-                var _a;
-                return (_a = props.onNavigate) == null ? void 0 : _a.call(props, props.presentation.id, slide.id);
-              }
+              onClick: ($event) => props.onNavigate?.(props.presentation.id, slide.id)
             }, [
-              vue.createElementVNode("img", {
+              vue.createVNode(_sfc_main$6, {
                 src: slide.thumbnail,
                 style: vue.normalizeStyle(thumbStyle.value)
-              }, null, 12, _hoisted_4$4),
-              vue.createElementVNode("span", _hoisted_5$4, vue.toDisplayString(slide.index), 1)
+              }, null, 8, ["src", "style"]),
+              vue.createElementVNode("span", _hoisted_4$2, vue.toDisplayString(slide.index), 1)
             ], 10, _hoisted_3$4);
           }), 128))
         ], 64);
       };
     }
   };
-  const PresentationView = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["__scopeId", "data-v-c403efc9"]]);
+  const PresentationView = _export_sfc(_sfc_main$5, [["__scopeId", "data-v-a9820715"]]);
   const _hoisted_1$4 = { key: 0 };
   const _hoisted_2$4 = { key: 2 };
   const _sfc_main$4 = {
     __name: "AnswerReveal",
-    props: [
-      "problem",
-      "revealed",
-      "onReveal"
-    ],
+    props: ["problem", "revealed", "onReveal"],
     setup(__props) {
       const props = __props;
       return (_ctx, _cache) => {
         return !props.revealed ? (vue.openBlock(), vue.createElementBlock("p", _hoisted_1$4, [
-          vue.createTextVNode(" 答案："),
+          _cache[1] || (_cache[1] = vue.createTextVNode(" 答案：", -1)),
           vue.createElementVNode("a", {
             href: "#",
-            onClick: _cache[0] || (_cache[0] = vue.withModifiers(($event) => {
-              var _a;
-              return (_a = props.onReveal) == null ? void 0 : _a.call(props);
-            }, ["prevent"]))
+            onClick: _cache[0] || (_cache[0] = vue.withModifiers(($event) => props.onReveal?.(), ["prevent"]))
           }, "查看答案")
         ])) : props.problem.problemType === 4 ? (vue.openBlock(true), vue.createElementBlock(vue.Fragment, { key: 1 }, vue.renderList(props.problem.blanks, (blank, key) => {
           return vue.openBlock(), vue.createElementBlock("p", null, [
@@ -395,7 +438,7 @@
             vue.createElementVNode("code", null, vue.toDisplayString(JSON.stringify(blank.answers)), 1)
           ]);
         }), 256)) : (vue.openBlock(), vue.createElementBlock("p", _hoisted_2$4, [
-          vue.createTextVNode(" 答案："),
+          _cache[2] || (_cache[2] = vue.createTextVNode(" 答案：", -1)),
           vue.createElementVNode("code", null, vue.toDisplayString(JSON.stringify(props.problem.answers)), 1)
         ]));
       };
@@ -404,25 +447,35 @@
   const _hoisted_1$3 = { class: "body" };
   const _hoisted_2$3 = { key: 1 };
   const _hoisted_3$3 = { key: 2 };
-  const _hoisted_4$3 = ["src"];
-  const _hoisted_5$3 = { key: 3 };
-  const _hoisted_6$3 = ["placeholder"];
-  const _hoisted_7$2 = {
+  const _hoisted_4$1 = ["src"];
+  const _hoisted_5$1 = { key: 3 };
+  const _hoisted_6$1 = ["placeholder"];
+  const _hoisted_7 = {
     key: 0,
     class: "actions"
   };
-  const _hoisted_8$1 = ["disabled"];
+  const _hoisted_8 = ["disabled"];
   const _sfc_main$3 = {
     __name: "ProblemView",
-    props: [
-      "problem",
-      "canAnswer",
-      "onAnswer"
-    ],
+    props: ["problem", "canAnswer", "onAnswer"],
     setup(__props) {
       const props = __props;
       const answerRevealed = vue.ref(false);
       const answerContent = vue.ref("");
+      const hasAnswer = vue.computed(() => {
+        const { problem } = props;
+        switch (problem.problemType) {
+          case 1:
+          case 2:
+            return Array.isArray(problem.answers) && problem.answers.length > 0;
+          case 4:
+            return problem.blanks.some(
+              (blank) => Array.isArray(blank.answers) && blank.answers.length > 0
+            );
+          default:
+            return false;
+        }
+      });
       const answerPrompt = vue.computed(() => {
         switch (props.problem.problemType) {
           case 1:
@@ -439,8 +492,10 @@
             return "未知题目类型";
         }
       });
-      const answerPlaceholder = vue.computed(() => `在此处输入自动作答内容
-${answerPrompt.value}`);
+      const answerPlaceholder = vue.computed(
+        () => `在此处输入自动作答内容
+${answerPrompt.value}`
+      );
       vue.onActivated(() => {
         const { problemId, problemType } = props.problem;
         const problemAnswers = storage.getMap("auto-answer");
@@ -451,12 +506,10 @@ ${answerPrompt.value}`);
             case 1:
             case 2:
             case 3:
-              if (Array.isArray(result))
-                answerContent.value = result.join("");
+              if (Array.isArray(result)) answerContent.value = result.join("");
               break;
             case 4:
-              if (Array.isArray(result))
-                answerContent.value = result.join("\n");
+              if (Array.isArray(result)) answerContent.value = result.join("\n");
               break;
             case 5:
               if (result && typeof result.content === "string")
@@ -496,63 +549,61 @@ ${answerPrompt.value}`);
         }
       }
       function handleAnswer() {
-        var _a;
         const content = answerContent.value;
         const { problemType } = props.problem;
-        (_a = props.onAnswer) == null ? void 0 : _a.call(props, content && parseAnswer(problemType, content));
+        props.onAnswer?.(content && parseAnswer(problemType, content));
       }
       return (_ctx, _cache) => {
-        var _a;
         return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
           vue.createElementVNode("div", _hoisted_1$3, [
-            vue.createElementVNode("p", null, " 题面：" + vue.toDisplayString(props.problem.body || "空"), 1),
-            [1, 2, 4].includes(props.problem.problemType) ? (vue.openBlock(), vue.createBlock(_sfc_main$4, {
+            vue.createElementVNode("p", null, "题面：" + vue.toDisplayString(props.problem.body || "空"), 1),
+            hasAnswer.value ? (vue.openBlock(), vue.createBlock(_sfc_main$4, {
               key: 0,
-              problem: __props.problem,
+              problem: props.problem,
               revealed: answerRevealed.value || !!props.problem.result,
               onReveal: _cache[0] || (_cache[0] = ($event) => answerRevealed.value = true)
             }, null, 8, ["problem", "revealed"])) : vue.createCommentVNode("", true),
-            props.problem.remark ? (vue.openBlock(), vue.createElementBlock("p", _hoisted_2$3, " 备注：" + vue.toDisplayString(props.problem.remark), 1)) : vue.createCommentVNode("", true),
-            Array.isArray((_a = props.problem.remarkRich) == null ? void 0 : _a.shapes) ? (vue.openBlock(), vue.createElementBlock("p", _hoisted_3$3, [
+            props.problem.remark ? (vue.openBlock(), vue.createElementBlock("p", _hoisted_2$3, "备注：" + vue.toDisplayString(props.problem.remark), 1)) : vue.createCommentVNode("", true),
+            Array.isArray(props.problem.remarkRich?.shapes) ? (vue.openBlock(), vue.createElementBlock("p", _hoisted_3$3, [
               (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(props.problem.remarkRich.shapes, (shape) => {
                 return vue.openBlock(), vue.createElementBlock("img", {
                   key: shape.id,
                   src: shape.url
-                }, null, 8, _hoisted_4$3);
+                }, null, 8, _hoisted_4$1);
               }), 128))
             ])) : vue.createCommentVNode("", true),
-            props.problem.result ? (vue.openBlock(), vue.createElementBlock("p", _hoisted_5$3, [
-              vue.createTextVNode(" 作答内容："),
+            props.problem.result ? (vue.openBlock(), vue.createElementBlock("p", _hoisted_5$1, [
+              _cache[4] || (_cache[4] = vue.createTextVNode(" 作答内容：", -1)),
               vue.createElementVNode("code", null, vue.toDisplayString(JSON.stringify(props.problem.result)), 1)
             ])) : vue.withDirectives((vue.openBlock(), vue.createElementBlock("textarea", {
               key: 4,
               "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => answerContent.value = $event),
               placeholder: answerPlaceholder.value,
               rows: "6"
-            }, null, 8, _hoisted_6$3)), [
+            }, null, 8, _hoisted_6$1)), [
               [vue.vModelText, answerContent.value]
             ])
           ]),
-          !props.problem.result ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_7$2, [
+          !props.problem.result ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_7, [
             vue.createElementVNode("button", {
               onClick: _cache[2] || (_cache[2] = ($event) => updateAutoAnswer())
             }, "自动作答"),
             vue.createElementVNode("button", {
               disabled: !props.canAnswer,
               onClick: _cache[3] || (_cache[3] = ($event) => handleAnswer())
-            }, "提交答案", 8, _hoisted_8$1)
+            }, " 提交答案 ", 8, _hoisted_8)
           ])) : vue.createCommentVNode("", true)
         ], 64);
       };
     }
   };
-  const ProblemView = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-c30aaf7b"]]);
+  const ProblemView = _export_sfc(_sfc_main$3, [["__scopeId", "data-v-63a388c3"]]);
   const _hoisted_1$2 = { class: "container" };
   const _hoisted_2$2 = { class: "list" };
   const _hoisted_3$2 = { class: "tail" };
-  const _hoisted_4$2 = { class: "detail" };
-  const _hoisted_5$2 = { class: "cover" };
-  const _hoisted_6$2 = ["src"];
+  const _hoisted_4 = { class: "detail" };
+  const _hoisted_5 = { class: "cover" };
+  const _hoisted_6 = ["src"];
   const _sfc_main$2 = {
     __name: "ProblemUI",
     props: [
@@ -573,10 +624,7 @@ ${answerPrompt.value}`);
       const currentSlide = vue.computed(
         () => props.currentSlideId && props.slides.get(props.currentSlideId)
       );
-      const currentProblem = vue.computed(() => {
-        var _a;
-        return (_a = currentSlide.value) == null ? void 0 : _a.problem;
-      });
+      const currentProblem = vue.computed(() => currentSlide.value?.problem);
       const showAllSlides = vue.ref(false);
       function canAnswerProblem(problem) {
         const status = props.problemStatus.get(problem.problemId);
@@ -604,27 +652,24 @@ ${answerPrompt.value}`);
               }, null, 512), [
                 [vue.vModelCheckbox, showAllSlides.value]
               ]),
-              vue.createTextVNode(" 显示全部页面 ")
+              _cache[2] || (_cache[2] = vue.createTextVNode(" 显示全部页面 ", -1))
             ])
           ]),
-          vue.createElementVNode("div", _hoisted_4$2, [
+          vue.createElementVNode("div", _hoisted_4, [
             currentSlide.value ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 0 }, [
-              vue.createElementVNode("div", _hoisted_5$2, [
+              vue.createElementVNode("div", _hoisted_5, [
                 (vue.openBlock(), vue.createElementBlock("img", {
                   key: currentSlide.value.id,
                   src: currentSlide.value.cover,
                   style: vue.normalizeStyle(vue.unref(coverStyle)(currentPresentation.value))
-                }, null, 12, _hoisted_6$2))
+                }, null, 12, _hoisted_6))
               ]),
               (vue.openBlock(), vue.createBlock(vue.KeepAlive, { max: 10 }, [
                 currentProblem.value ? (vue.openBlock(), vue.createBlock(ProblemView, {
                   key: currentProblem.value.problemId,
                   problem: currentProblem.value,
                   "can-answer": canAnswerProblem(currentProblem.value),
-                  onAnswer: _cache[1] || (_cache[1] = (result) => {
-                    var _a;
-                    return (_a = props.onAnswerProblem) == null ? void 0 : _a.call(props, currentProblem.value, result);
-                  })
+                  onAnswer: _cache[1] || (_cache[1] = (result) => props.onAnswerProblem?.(currentProblem.value, result))
                 }, null, 8, ["problem", "can-answer"])) : vue.createCommentVNode("", true)
               ], 1024))
             ], 64)) : vue.createCommentVNode("", true)
@@ -633,31 +678,10 @@ ${answerPrompt.value}`);
       };
     }
   };
-  const ProblemUI = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["__scopeId", "data-v-6be28a33"]]);
-  const _withScopeId$1 = (n) => (vue.pushScopeId("data-v-308b571c"), n = n(), vue.popScopeId(), n);
+  const ProblemUI = _export_sfc(_sfc_main$2, [["__scopeId", "data-v-e971312a"]]);
   const _hoisted_1$1 = { class: "card" };
-  const _hoisted_2$1 = /* @__PURE__ */ _withScopeId$1(() => /* @__PURE__ */ vue.createElementVNode("i", { class: "fas fa-xmark" }, null, -1));
-  const _hoisted_3$1 = [
-    _hoisted_2$1
-  ];
-  const _hoisted_4$1 = /* @__PURE__ */ _withScopeId$1(() => /* @__PURE__ */ vue.createElementVNode("i", { class: "fas fa-check" }, null, -1));
-  const _hoisted_5$1 = [
-    _hoisted_4$1
-  ];
-  const _hoisted_6$1 = { class: "actions bottom" };
-  const _hoisted_7$1 = /* @__PURE__ */ _withScopeId$1(() => /* @__PURE__ */ vue.createElementVNode("i", { class: "fas fa-eye" }, null, -1));
-  const _hoisted_8 = [
-    _hoisted_7$1
-  ];
-  const _hoisted_9 = /* @__PURE__ */ _withScopeId$1(() => /* @__PURE__ */ vue.createElementVNode("i", { class: "fas fa-up-right-from-square" }, null, -1));
-  const _hoisted_10 = [
-    _hoisted_9
-  ];
-  const _hoisted_11 = ["title"];
-  const _hoisted_12 = /* @__PURE__ */ _withScopeId$1(() => /* @__PURE__ */ vue.createElementVNode("i", { class: "fas fa-pen" }, null, -1));
-  const _hoisted_13 = [
-    _hoisted_12
-  ];
+  const _hoisted_2$1 = { class: "actions bottom" };
+  const _hoisted_3$1 = ["title"];
   const _sfc_main$1 = {
     __name: "ActiveProblem",
     props: [
@@ -687,7 +711,9 @@ ${answerPrompt.value}`);
           return "none";
         }
       });
-      const canAnswer = vue.computed(() => !["answered", "pending"].includes(state.value));
+      const canAnswer = vue.computed(
+        () => !["answered", "pending"].includes(state.value)
+      );
       const answerBtnTitle = vue.computed(() => {
         if (state.value === "ended") {
           return "重试作答";
@@ -726,13 +752,17 @@ ${answerPrompt.value}`);
           `题面：${problem.body || "无"}`
         ];
         switch (problem.problemType) {
-          case 1:
+case 1:
           case 2: {
             lines.push(`答案：${problem.answers.join("")}`);
             break;
           }
-          case 4: {
-            lines.push(...problem.blanks.map(({ answers }, i) => `答案 ${i + 1}：${JSON.stringify(answers)}`));
+case 4: {
+            lines.push(
+              ...problem.blanks.map(
+                ({ answers }, i) => `答案 ${i + 1}：${JSON.stringify(answers)}`
+              )
+            );
             break;
           }
           default:
@@ -752,67 +782,56 @@ ${answerPrompt.value}`);
               key: 0,
               class: "icon-btn",
               title: "取消作答",
-              onClick: _cache[0] || (_cache[0] = ($event) => {
-                var _a;
-                return (_a = props.onCancel) == null ? void 0 : _a.call(props);
-              })
-            }, _hoisted_3$1)) : vue.createCommentVNode("", true),
+              onClick: _cache[0] || (_cache[0] = ($event) => props.onCancel?.())
+            }, [..._cache[5] || (_cache[5] = [
+              vue.createElementVNode("i", { class: "fas fa-xmark" }, null, -1)
+            ])])) : vue.createCommentVNode("", true),
             state.value === "answered" ? (vue.openBlock(), vue.createElementBlock("span", {
               key: 1,
               class: "icon-btn",
               title: "关闭题目",
-              onClick: _cache[1] || (_cache[1] = ($event) => {
-                var _a;
-                return (_a = props.onDone) == null ? void 0 : _a.call(props);
-              })
-            }, _hoisted_5$1)) : vue.createCommentVNode("", true)
+              onClick: _cache[1] || (_cache[1] = ($event) => props.onDone?.())
+            }, [..._cache[6] || (_cache[6] = [
+              vue.createElementVNode("i", { class: "fas fa-check" }, null, -1)
+            ])])) : vue.createCommentVNode("", true)
           ], 2),
-          vue.createElementVNode("ul", _hoisted_6$1, [
+          vue.createElementVNode("ul", _hoisted_2$1, [
             vue.createElementVNode("li", null, [
               vue.createElementVNode("span", {
                 class: "icon-btn",
                 title: "查看答案",
                 onClick: _cache[2] || (_cache[2] = ($event) => revealAnswers(props.problem))
-              }, _hoisted_8)
+              }, [..._cache[7] || (_cache[7] = [
+                vue.createElementVNode("i", { class: "fas fa-eye" }, null, -1)
+              ])])
             ]),
             vue.createElementVNode("li", null, [
               vue.createElementVNode("span", {
                 class: "icon-btn",
                 title: "查看题目",
-                onClick: _cache[3] || (_cache[3] = ($event) => {
-                  var _a;
-                  return (_a = props.onShow) == null ? void 0 : _a.call(props);
-                })
-              }, _hoisted_10)
+                onClick: _cache[3] || (_cache[3] = ($event) => props.onShow?.())
+              }, [..._cache[8] || (_cache[8] = [
+                vue.createElementVNode("i", { class: "fas fa-up-right-from-square" }, null, -1)
+              ])])
             ]),
             vue.createElementVNode("li", null, [
               vue.createElementVNode("span", {
                 class: vue.normalizeClass(["icon-btn", { disabled: !canAnswer.value }]),
                 title: answerBtnTitle.value,
-                onClick: _cache[4] || (_cache[4] = ($event) => {
-                  var _a;
-                  return canAnswer.value && ((_a = props.onAnswer) == null ? void 0 : _a.call(props));
-                })
-              }, _hoisted_13, 10, _hoisted_11)
+                onClick: _cache[4] || (_cache[4] = ($event) => canAnswer.value && props.onAnswer?.())
+              }, [..._cache[9] || (_cache[9] = [
+                vue.createElementVNode("i", { class: "fas fa-pen" }, null, -1)
+              ])], 10, _hoisted_3$1)
             ])
           ])
         ]);
       };
     }
   };
-  const ActiveProblem = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-308b571c"]]);
-  const _withScopeId = (n) => (vue.pushScopeId("data-v-3cad7091"), n = n(), vue.popScopeId(), n);
+  const ActiveProblem = _export_sfc(_sfc_main$1, [["__scopeId", "data-v-250da923"]]);
   const _hoisted_1 = { class: "toolbar" };
-  const _hoisted_2 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ vue.createElementVNode("i", { class: "fas fa-upload fa-lg" }, null, -1));
-  const _hoisted_3 = [
-    _hoisted_2
-  ];
-  const _hoisted_4 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ vue.createElementVNode("i", { class: "fas fa-list-check fa-lg" }, null, -1));
-  const _hoisted_5 = [
-    _hoisted_4
-  ];
-  const _hoisted_6 = ["src"];
-  const _hoisted_7 = { class: "popup" };
+  const _hoisted_2 = ["src"];
+  const _hoisted_3 = { class: "popup" };
   const _sfc_main = {
     __name: "App",
     setup(__props) {
@@ -828,10 +847,10 @@ ${answerPrompt.value}`);
       });
       vue.watch(config, (value) => storage.set("config", value));
       _unsafeWindow.yktConfig = config;
-      const presentations = vue.reactive(/* @__PURE__ */ new Map());
-      const slides = vue.reactive(/* @__PURE__ */ new Map());
-      const problems = vue.reactive(/* @__PURE__ */ new Map());
-      const problemStatus = vue.reactive(/* @__PURE__ */ new Map());
+      const presentations = vue.reactive( new Map());
+      const slides = vue.reactive( new Map());
+      const problems = vue.reactive( new Map());
+      const problemStatus = vue.reactive( new Map());
       MyWebSocket.addHandler((ws, url2) => {
         if (url2.pathname === "/wsapp/") {
           ws.intercept((message) => {
@@ -861,8 +880,7 @@ ${answerPrompt.value}`);
       function onUnlockProblem(data) {
         const problem = problems.get(data.prob);
         const slide = slides.get(data.sid);
-        if (!problem || !slide)
-          return;
+        if (!problem || !slide) return;
         const status = {
           presentationId: data.pres,
           slideId: data.sid,
@@ -873,17 +891,18 @@ ${answerPrompt.value}`);
           answering: false
         };
         problemStatus.set(data.prob, status);
-        if (Date.now() > status.endTime)
-          return;
-        if (problem.result)
-          return;
+        if (Date.now() > status.endTime) return;
+        if (problem.result) return;
         if (config.notifyProblems && (config.notifyProblems !== "background" || document.hidden)) {
           notifyProblem(problem, slide);
         }
         if (config.autoAnswer) {
           if (getAnswerToProblem(problem)) {
             const now = Date.now();
-            status.autoAnswerTime = Math.min(status.endTime - 5e3, now + randInt(...config.autoAnswerDelay));
+            status.autoAnswerTime = Math.min(
+              status.endTime - 5e3,
+              now + randInt(...config.autoAnswerDelay)
+            );
             $toast({
               message: `将在 ${Math.floor(Math.max(0, status.autoAnswerTime - now) / 1e3)} 秒后自动作答本题`,
               duration: 3e3
@@ -964,7 +983,7 @@ ${answerPrompt.value}`);
         _GM_notification({
           title: "课堂习题提示",
           text: getProblemDetail(problem),
-          image: slide == null ? void 0 : slide.thumbnail,
+          image: slide?.thumbnail,
           tag: "problem-notice",
           silent: false
         });
@@ -988,8 +1007,7 @@ ${answerPrompt.value}`);
         }
       }, 500);
       async function doAutoAnswer(problem, status) {
-        if (status.answering)
-          return;
+        if (status.answering) return;
         status.autoAnswerTime = null;
         status.answering = true;
         const messages = [];
@@ -1031,16 +1049,16 @@ ${answerPrompt.value}`);
         if (problemAnswers.has(problem.problemId))
           return problemAnswers.get(problem.problemId);
         switch (problem.problemType) {
-          case 1:
+case 1:
           case 2:
             if (problem.answers.length === 0) {
               return null;
             }
             return problem.answers;
-          case 3: {
+case 3: {
             return null;
           }
-          case 4:
+case 4:
             if (problem.blanks.length === 0 || problem.blanks.any((blank) => blank.answers.length === 0)) {
               return null;
             }
@@ -1113,7 +1131,9 @@ ${answerPrompt.value}`);
         status.answering = true;
         try {
           if (Date.now() >= status.endTime) {
-            if (!confirm("作答已经截止，是否重试作答？\n此功能用于补救超时未作答的题目。")) {
+            if (!confirm(
+              "作答已经截止，是否重试作答？\n此功能用于补救超时未作答的题目。"
+            )) {
               $toast({
                 message: "已取消作答",
                 duration: 1500
@@ -1177,12 +1197,16 @@ ${answerPrompt.value}`);
               class: vue.normalizeClass(["icon-btn", { active: config.autoAnswer }]),
               title: "切换自动作答",
               onClick: _cache[1] || (_cache[1] = ($event) => toggleAutoAnswer())
-            }, _hoisted_3, 2),
+            }, [..._cache[3] || (_cache[3] = [
+              vue.createElementVNode("i", { class: "fas fa-upload fa-lg" }, null, -1)
+            ])], 2),
             vue.createElementVNode("span", {
               class: vue.normalizeClass(["icon-btn", { active: problemUIVisible.value }]),
               title: "显示习题列表",
               onClick: _cache[2] || (_cache[2] = ($event) => toggleProblemUI())
-            }, _hoisted_5, 2)
+            }, [..._cache[4] || (_cache[4] = [
+              vue.createElementVNode("i", { class: "fas fa-list-check fa-lg" }, null, -1)
+            ])], 2)
           ]),
           vue.createVNode(vue.TransitionGroup, {
             tag: "ul",
@@ -1208,7 +1232,7 @@ ${answerPrompt.value}`);
                       vue.createElementVNode("img", {
                         src: slide.thumbnail,
                         style: vue.normalizeStyle({ height: "100%", ...vue.unref(coverStyle)(presentation) })
-                      }, null, 12, _hoisted_6)
+                      }, null, 12, _hoisted_2)
                     ]),
                     _: 2
                   }, 1032, ["problem", "status", "onShow", "onAnswer", "onCancel", "onDone"])
@@ -1219,7 +1243,7 @@ ${answerPrompt.value}`);
           }),
           vue.createVNode(vue.Transition, null, {
             default: vue.withCtx(() => [
-              vue.withDirectives(vue.createElementVNode("div", _hoisted_7, [
+              vue.withDirectives(vue.createElementVNode("div", _hoisted_3, [
                 vue.createVNode(ProblemUI, {
                   class: "problem-ui",
                   config,
@@ -1241,7 +1265,7 @@ ${answerPrompt.value}`);
       };
     }
   };
-  const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-3cad7091"]]);
+  const App = _export_sfc(_sfc_main, [["__scopeId", "data-v-4aa66361"]]);
   const url = new URL(window.location.href);
   if (url.pathname.startsWith("/lesson/fullscreen/v3/")) {
     launchLessonHelper();
@@ -1266,7 +1290,7 @@ ${answerPrompt.value}`);
     }
   }
   function pollActiveLessons() {
-    const enteredLessonIds = /* @__PURE__ */ new Set();
+    const enteredLessonIds = new Set();
     function updateLessonIds() {
       return new Promise((resolve) => {
         _GM_getTabs((tabs) => {
@@ -1288,7 +1312,10 @@ ${answerPrompt.value}`);
       for (const lesson of resp.data.onLessonClassrooms) {
         const { classroomId, lessonId } = lesson;
         if (!enteredLessonIds.has(lessonId)) {
-          const url2 = new URL(`/lesson/fullscreen/v3/${lessonId}`, location.origin);
+          const url2 = new URL(
+            `/lesson/fullscreen/v3/${lessonId}`,
+            location.origin
+          );
           _GM_openInTab(url2.href, { active: false });
           enteredLessonIds.add(lessonId);
         }
