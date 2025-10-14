@@ -8,6 +8,21 @@ const props = defineProps(["problem", "canAnswer", "onAnswer"]);
 const answerRevealed = ref(false);
 const answerContent = ref("");
 
+const hasAnswer = computed(() => {
+  const { problem } = props;
+  switch (problem.problemType) {
+    case 1:
+    case 2:
+      return Array.isArray(problem.answers) && problem.answers.length > 0;
+    case 4:
+      return problem.blanks.some(
+        (blank) => Array.isArray(blank.answers) && blank.answers.length > 0
+      );
+    default:
+      return false;
+  }
+});
+
 const answerPrompt = computed(() => {
   switch (props.problem.problemType) {
     case 1:
@@ -105,8 +120,8 @@ function handleAnswer() {
   <div class="body">
     <p>题面：{{ props.problem.body || "空" }}</p>
     <AnswerReveal
-      v-if="[1, 2, 4].includes(props.problem.problemType)"
-      :problem="problem"
+      v-if="hasAnswer"
+      :problem="props.problem"
       :revealed="answerRevealed || !!props.problem.result"
       @reveal="answerRevealed = true"
     />
