@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         雨课堂 helper
 // @namespace    https://github.com/hotwords123/yuketang-helper
-// @version      1.6.0
+// @version      1.6.1
 // @author       hotwords123
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=yuketang.cn
@@ -1269,7 +1269,7 @@ case 4:
   const url = new URL(window.location.href);
   if (url.pathname.startsWith("/lesson/fullscreen/v3/")) {
     launchLessonHelper();
-  } else if (url.pathname.startsWith("/v2/web/")) {
+  } else if (url.pathname === "/v2/web/index") {
     pollActiveLessons();
   }
   function launchLessonHelper() {
