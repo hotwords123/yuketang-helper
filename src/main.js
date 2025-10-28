@@ -16,7 +16,7 @@ const url = new URL(window.location.href);
 
 if (url.pathname.startsWith("/lesson/fullscreen/v3/")) {
   launchLessonHelper();
-} else if (url.pathname.startsWith("/v2/web/")) {
+} else if (url.pathname === "/v2/web/index") {
   pollActiveLessons();
 }
 
