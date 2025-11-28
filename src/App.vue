@@ -20,6 +20,7 @@ const DEFAULT_CONFIG = {
   notifyProblems: "always",
   autoAnswer: false,
   autoAnswerDelay: [3 * 1000, 6 * 1000],
+  autoAnswerRandomChoice: false,
   maxPresentations: 5,
 };
 
@@ -282,6 +283,16 @@ function cancelAutoAnswer(status) {
   });
 }
 
+function getRandomChoices(options, minCount, maxCount) {
+  if (!config.autoAnswerRandomChoice) {
+    return null;
+  }
+
+  const choices = options.map((option) => option.key);
+  const count = randInt(minCount, maxCount);
+  return shuffleArray(choices).slice(0, count).sort();
+}
+
 function getAnswerToProblem(problem) {
   const problemAnswers = storage.getMap("auto-answer");
   if (problemAnswers.has(problem.problemId))
@@ -291,32 +302,31 @@ function getAnswerToProblem(problem) {
     // Multiple-choice
     case 1:
     case 2:
-      if (problem.answers.length === 0) {
-        return null;
+      if (problem.answers.length !== 0) {
+        return problem.answers;
       }
-      return problem.answers;
+      return getRandomChoices(
+        problem.options,
+        1,
+        problem.problemType === 1 ? 1 : problem.options.length
+      );
 
     // Vote
-    case 3: {
-      // const choices = problem.options.map(option => option.key);
-      // const count = randInt(1, problem.pollingCount);
-      // return shuffleArray(choices).slice(0, count).sort();
-      return null;
-    }
+    case 3:
+      return getRandomChoices(problem.options, 1, problem.pollingCount);
 
     // Fill-in-the-blank
     case 4:
       if (
-        problem.blanks.length === 0 ||
-        problem.blanks.any((blank) => blank.answers.length === 0)
+        problem.blanks.length > 0 &&
+        problem.blanks.every((blank) => blank.answers.length > 0)
       ) {
-        return null;
+        return problem.blanks.map((blank) => blank.answers[0]);
       }
-      return problem.blanks.map((blank) => blank.answers[0]);
-
-    default:
-      return null;
+      break;
   }
+
+  return null;
 }
 // #endregion
 
