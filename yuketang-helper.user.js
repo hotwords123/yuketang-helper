@@ -1,12 +1,11 @@
 // ==UserScript==
 // @name         雨课堂 helper
 // @namespace    https://github.com/hotwords123/yuketang-helper
-// @version      1.6.1
+// @version      1.6.2
 // @author       hotwords123
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=yuketang.cn
-// @match        https://*.yuketang.cn/lesson/fullscreen/v3/*
-// @match        https://*.yuketang.cn/v2/web/*
+// @match        https://*.yuketang.cn/*
 // @require      https://cdn.jsdelivr.net/npm/vue@3.5.22/dist/vue.global.prod.js
 // @require      https://cdn.jsdelivr.net/npm/jspdf@3.0.3/dist/jspdf.umd.min.js
 // @grant        GM_addStyle
@@ -16,6 +15,7 @@
 // @grant        GM_openInTab
 // @grant        GM_saveTab
 // @grant        unsafeWindow
+// @grant        window.onurlchange
 // @run-at       document-start
 // ==/UserScript==
 
@@ -24,7 +24,7 @@
 
   const d=new Set;const importCSS = async e=>{d.has(e)||(d.add(e),(t=>{typeof GM_addStyle=="function"?GM_addStyle(t):document.head.appendChild(document.createElement("style")).append(t);})(e));};
 
-  importCSS(' .title[data-v-a9820715]{font-weight:700;overflow:hidden;margin:10px 0}.title[data-v-a9820715]:after{content:"";display:inline-block;height:1px;background:#aaa;position:relative;vertical-align:middle;width:100%;left:1em;margin-right:-100%}.title .download-btn[data-v-a9820715]{cursor:pointer}.slide[data-v-a9820715]{position:relative;margin:10px 0;border:2px solid #dddddd;cursor:pointer}.slide>img[data-v-a9820715]{display:block;width:100%}.slide>.tag[data-v-a9820715]{position:absolute;top:0;left:0;display:inline-block;padding:3px 5px;font-size:small;color:#f7f7f7;background:#40404066}.slide.active[data-v-a9820715]{border-color:#2d70e7}.slide.active>.tag[data-v-a9820715]{background:#2d70e7}.slide.unlocked[data-v-a9820715]{border-color:#d7d48e}.slide.unlocked.active[data-v-a9820715]{border-color:#e6cb2d}.slide.unlocked.active>.tag[data-v-a9820715]{background:#e6cb2d}.slide.answered[data-v-a9820715]{border-color:#8dd790}.slide.answered.active[data-v-a9820715]{border-color:#4caf50}.slide.answered.active>.tag[data-v-a9820715]{background:#4caf50}.body[data-v-63a388c3]{margin-top:25px}.body>textarea[data-v-63a388c3]{width:100%;min-height:40px;resize:vertical}.actions[data-v-63a388c3]{margin-top:25px;text-align:center}.actions>button[data-v-63a388c3]{margin:0 20px;padding:4px 10px}.container[data-v-e971312a]{display:grid;grid-template:auto 36px / 240px auto;background:#ffffffe6;border:1px solid #bbbbbb;border-radius:5px;overflow:hidden}.list[data-v-e971312a]{grid-row:1;grid-column:1;padding:5px 15px;overflow-y:auto}.tail[data-v-e971312a]{grid-row:2;grid-column:1;padding:5px 15px;line-height:26px;border-top:1px solid #bbbbbb}.tail label[data-v-e971312a]{font-size:small}.tail input[type=checkbox][data-v-e971312a]{appearance:auto;vertical-align:middle}.detail[data-v-e971312a]{grid-row:1 / span 2;grid-column:2;padding:25px 40px;overflow-y:auto;border-left:1px solid #bbbbbb}.detail .cover[data-v-e971312a]{border:1px solid #dddddd;box-shadow:0 1px 4px 3px #0000001a}.detail .cover>img[data-v-e971312a]{display:block;width:100%}.card[data-v-250da923]{height:180px;background:#fff;border:1px solid #bbbbbb;box-shadow:0 1px 4px 3px #0000001a;opacity:.9;z-index:0;transition:all .2s ease}.card[data-v-250da923]:hover{box-shadow:0 1px 4px 3px #00000026;opacity:1;z-index:1;transform:translateY(-3px)}.tag[data-v-250da923]{position:absolute;bottom:0;left:0;display:inline-block;padding:2px 4px;font-size:small;color:#fff;background:#666c}.tag.ended[data-v-250da923]{background:#ff1e00cc}.tag.ready[data-v-250da923],.tag.pending[data-v-250da923]{background:#005effcc}.tag.answered[data-v-250da923]{background:#1eb41ecc}.tag>.icon-btn[data-v-250da923]{color:#eee}.tag>.icon-btn[data-v-250da923]:hover{color:#fff}.actions[data-v-250da923]{position:absolute;bottom:4px;right:5px;display:flex;flex-direction:row;gap:3px}.actions>.icon-btn[data-v-250da923]{list-style:none}[data-v-4aa66361]{margin:0;padding:0;box-sizing:border-box}.toolbar[data-v-4aa66361]{position:fixed;z-index:2000001;left:15px;bottom:15px;width:100px;height:36px;padding:5px 9px;display:flex;flex-direction:row;justify-content:space-between;align-items:center;background:#fff;border:1px solid #cccccc;border-radius:4px;box-shadow:0 1px 4px 3px #0000001a}.track[data-v-4aa66361]{position:fixed;z-index:100;bottom:65px;left:15px;display:flex;flex-direction:row}.anchor[data-v-4aa66361]{position:relative;width:100px;list-style:none}.inner[data-v-4aa66361]{position:absolute;bottom:0}.anchor.v-move[data-v-4aa66361],.anchor.v-enter-active[data-v-4aa66361],.anchor.v-leave-active[data-v-4aa66361]{transition:all .5s ease}.anchor.v-enter-from[data-v-4aa66361]{opacity:0;transform:translateY(20px)}.anchor.v-leave-to[data-v-4aa66361]{opacity:0;transform:translateY(-20px)}.anchor.v-leave-active[data-v-4aa66361]{width:0}.popup[data-v-4aa66361]{position:fixed;z-index:200;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#40404066}.popup.v-enter-active[data-v-4aa66361],.popup.v-leave-active[data-v-4aa66361]{transition:opacity .2s}.popup.v-enter-from[data-v-4aa66361],.popup.v-leave-to[data-v-4aa66361]{opacity:0}.problem-ui[data-v-4aa66361]{width:80%;height:90%}.popup.v-enter-active>.problem-ui[data-v-4aa66361],.popup.v-leave-active>.problem-ui[data-v-4aa66361]{transition:transform .2s ease}.popup.v-enter-from>.problem-ui[data-v-4aa66361],.popup.v-leave-to>.problem-ui[data-v-4aa66361]{transform:translateY(10px)} ');
+  importCSS(' .title[data-v-a9820715]{font-weight:700;overflow:hidden;margin:10px 0}.title[data-v-a9820715]:after{content:"";display:inline-block;height:1px;background:#aaa;position:relative;vertical-align:middle;width:100%;left:1em;margin-right:-100%}.title .download-btn[data-v-a9820715]{cursor:pointer}.slide[data-v-a9820715]{position:relative;margin:10px 0;border:2px solid #dddddd;cursor:pointer}.slide>img[data-v-a9820715]{display:block;width:100%}.slide>.tag[data-v-a9820715]{position:absolute;top:0;left:0;display:inline-block;padding:3px 5px;font-size:small;color:#f7f7f7;background:#40404066}.slide.active[data-v-a9820715]{border-color:#2d70e7}.slide.active>.tag[data-v-a9820715]{background:#2d70e7}.slide.unlocked[data-v-a9820715]{border-color:#d7d48e}.slide.unlocked.active[data-v-a9820715]{border-color:#e6cb2d}.slide.unlocked.active>.tag[data-v-a9820715]{background:#e6cb2d}.slide.answered[data-v-a9820715]{border-color:#8dd790}.slide.answered.active[data-v-a9820715]{border-color:#4caf50}.slide.answered.active>.tag[data-v-a9820715]{background:#4caf50}.body[data-v-63a388c3]{margin-top:25px}.body>textarea[data-v-63a388c3]{width:100%;min-height:40px;resize:vertical}.actions[data-v-63a388c3]{margin-top:25px;text-align:center}.actions>button[data-v-63a388c3]{margin:0 20px;padding:4px 10px}.container[data-v-e971312a]{display:grid;grid-template:auto 36px / 240px auto;background:#ffffffe6;border:1px solid #bbbbbb;border-radius:5px;overflow:hidden}.list[data-v-e971312a]{grid-row:1;grid-column:1;padding:5px 15px;overflow-y:auto}.tail[data-v-e971312a]{grid-row:2;grid-column:1;padding:5px 15px;line-height:26px;border-top:1px solid #bbbbbb}.tail label[data-v-e971312a]{font-size:small}.tail input[type=checkbox][data-v-e971312a]{appearance:auto;vertical-align:middle}.detail[data-v-e971312a]{grid-row:1 / span 2;grid-column:2;padding:25px 40px;overflow-y:auto;border-left:1px solid #bbbbbb}.detail .cover[data-v-e971312a]{border:1px solid #dddddd;box-shadow:0 1px 4px 3px #0000001a}.detail .cover>img[data-v-e971312a]{display:block;width:100%}.card[data-v-250da923]{height:180px;background:#fff;border:1px solid #bbbbbb;box-shadow:0 1px 4px 3px #0000001a;opacity:.9;z-index:0;transition:all .2s ease}.card[data-v-250da923]:hover{box-shadow:0 1px 4px 3px #00000026;opacity:1;z-index:1;transform:translateY(-3px)}.tag[data-v-250da923]{position:absolute;bottom:0;left:0;display:inline-block;padding:2px 4px;font-size:small;color:#fff;background:#666c}.tag.ended[data-v-250da923]{background:#ff1e00cc}.tag.ready[data-v-250da923],.tag.pending[data-v-250da923]{background:#005effcc}.tag.answered[data-v-250da923]{background:#1eb41ecc}.tag>.icon-btn[data-v-250da923]{color:#eee}.tag>.icon-btn[data-v-250da923]:hover{color:#fff}.actions[data-v-250da923]{position:absolute;bottom:4px;right:5px;display:flex;flex-direction:row;gap:3px}.actions>.icon-btn[data-v-250da923]{list-style:none}[data-v-186342b8]{margin:0;padding:0;box-sizing:border-box}.toolbar[data-v-186342b8]{position:fixed;z-index:2000001;left:15px;bottom:15px;width:100px;height:36px;padding:5px 9px;display:flex;flex-direction:row;justify-content:space-between;align-items:center;background:#fff;border:1px solid #cccccc;border-radius:4px;box-shadow:0 1px 4px 3px #0000001a}.track[data-v-186342b8]{position:fixed;z-index:100;bottom:65px;left:15px;display:flex;flex-direction:row}.anchor[data-v-186342b8]{position:relative;width:100px;list-style:none}.inner[data-v-186342b8]{position:absolute;bottom:0}.anchor.v-move[data-v-186342b8],.anchor.v-enter-active[data-v-186342b8],.anchor.v-leave-active[data-v-186342b8]{transition:all .5s ease}.anchor.v-enter-from[data-v-186342b8]{opacity:0;transform:translateY(20px)}.anchor.v-leave-to[data-v-186342b8]{opacity:0;transform:translateY(-20px)}.anchor.v-leave-active[data-v-186342b8]{width:0}.popup[data-v-186342b8]{position:fixed;z-index:200;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#40404066}.popup.v-enter-active[data-v-186342b8],.popup.v-leave-active[data-v-186342b8]{transition:opacity .2s}.popup.v-enter-from[data-v-186342b8],.popup.v-leave-to[data-v-186342b8]{opacity:0}.problem-ui[data-v-186342b8]{width:80%;height:90%}.popup.v-enter-active>.problem-ui[data-v-186342b8],.popup.v-leave-active>.problem-ui[data-v-186342b8]{transition:transform .2s ease}.popup.v-enter-from>.problem-ui[data-v-186342b8],.popup.v-leave-to>.problem-ui[data-v-186342b8]{transform:translateY(10px)} ');
 
   var _GM_getTab = (() => typeof GM_getTab != "undefined" ? GM_getTab : void 0)();
   var _GM_getTabs = (() => typeof GM_getTabs != "undefined" ? GM_getTabs : void 0)();
@@ -32,6 +32,7 @@
   var _GM_openInTab = (() => typeof GM_openInTab != "undefined" ? GM_openInTab : void 0)();
   var _GM_saveTab = (() => typeof GM_saveTab != "undefined" ? GM_saveTab : void 0)();
   var _unsafeWindow = (() => typeof unsafeWindow != "undefined" ? unsafeWindow : void 0)();
+  var _monkeyWindow = (() => window)();
   const styleCss = '@import"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";:root{overflow:hidden}#watermark_layer{display:none!important;visibility:hidden!important}.icon-btn{display:inline-block;width:20px;text-align:center;cursor:pointer;color:#607190}.icon-btn:hover{color:#1e3050}.icon-btn.active{color:#1d63df}.icon-btn.active:hover{color:#1b53ac}.icon-btn.danger:hover{color:#e4231d}.icon-btn.disabled{color:#bbb!important;cursor:default}';
   importCSS(styleCss);
   class StorageManager {
@@ -74,7 +75,7 @@
   }
   const storage = new StorageManager("ykt-helper:");
   async function request(path, options = {}) {
-    const url2 = new URL(path, location.origin);
+    const url = new URL(path, location.origin);
     const init = {
       method: options.method ?? "GET",
       headers: options.headers,
@@ -86,14 +87,14 @@
     }
     if (options.params) {
       for (const key in options.params) {
-        url2.searchParams.set(key, options.params[key]);
+        url.searchParams.set(key, options.params[key]);
       }
     }
     if (options.body) {
       init.headers["Content-Type"] = "application/json; charset=utf-8";
       init.body = JSON.stringify(options.body);
     }
-    const resp = await fetch(url2.href, init);
+    const resp = await fetch(url.href, init);
     if (options.bearer && resp.headers.has("Set-Auth")) {
       localStorage.setItem("Authorization", resp.headers.get("Set-Auth"));
     }
@@ -168,9 +169,9 @@
     static addHandler(handler) {
       this.handlers.push(handler);
     }
-    constructor(url2, protocols) {
-      super(url2, protocols);
-      const parsed = new URL(url2, location.href);
+    constructor(url, protocols) {
+      super(url, protocols);
+      const parsed = new URL(url, location.href);
       for (const handler of this.constructor.handlers) {
         handler(this, parsed);
       }
@@ -196,12 +197,12 @@
     static addHandler(handler) {
       this.handlers.push(handler);
     }
-    open(method, url2, async) {
-      const parsed = new URL(url2, location.href);
+    open(method, url, async) {
+      const parsed = new URL(url, location.href);
       for (const handler of this.constructor.handlers) {
         handler(this, method, parsed);
       }
-      return super.open(method, url2, async);
+      return super.open(method, url, async);
     }
     intercept(callback) {
       let payload;
@@ -839,6 +840,7 @@ case 4: {
         notifyProblems: "always",
         autoAnswer: false,
         autoAnswerDelay: [3 * 1e3, 6 * 1e3],
+        autoAnswerRandomChoice: false,
         maxPresentations: 5
       };
       const config = vue.reactive({
@@ -851,8 +853,8 @@ case 4: {
       const slides = vue.reactive( new Map());
       const problems = vue.reactive( new Map());
       const problemStatus = vue.reactive( new Map());
-      MyWebSocket.addHandler((ws, url2) => {
-        if (url2.pathname === "/wsapp/") {
+      MyWebSocket.addHandler((ws, url) => {
+        if (url.pathname === "/wsapp/") {
           ws.intercept((message) => {
           });
           ws.listen((message) => {
@@ -923,24 +925,24 @@ case 4: {
           silent: true
         });
       }
-      MyXMLHttpRequest.addHandler((xhr, method, url2) => {
-        if (url2.pathname === "/api/v3/lesson/presentation/fetch") {
+      MyXMLHttpRequest.addHandler((xhr, method, url) => {
+        if (url.pathname === "/api/v3/lesson/presentation/fetch") {
           xhr.intercept((resp) => {
-            const id = url2.searchParams.get("presentation_id");
+            const id = url.searchParams.get("presentation_id");
             if (resp.code === 0) {
               onPresentationLoaded(id, resp.data);
             }
           });
         }
-        if (url2.pathname === "/api/v3/lesson/redenvelope/issue-list") {
+        if (url.pathname === "/api/v3/lesson/redenvelope/issue-list") {
           xhr.intercept((resp) => {
-            const id = url2.searchParams.get("redEnvelopeId");
+            const id = url.searchParams.get("redEnvelopeId");
             if (resp.code === 0) {
               onRedEnvelopeListLoaded(id, resp.data);
             }
           });
         }
-        if (url2.pathname === "/api/v3/lesson/problem/answer") {
+        if (url.pathname === "/api/v3/lesson/problem/answer") {
           xhr.intercept((resp, payload) => {
             const { problemId, result } = JSON.parse(payload);
             if (resp.code === 0) {
@@ -1044,6 +1046,14 @@ case 4: {
           duration: 1500
         });
       }
+      function getRandomChoices(options, minCount, maxCount) {
+        if (!config.autoAnswerRandomChoice) {
+          return null;
+        }
+        const choices = options.map((option) => option.key);
+        const count = randInt(minCount, maxCount);
+        return shuffleArray(choices).slice(0, count).sort();
+      }
       function getAnswerToProblem(problem) {
         const problemAnswers = storage.getMap("auto-answer");
         if (problemAnswers.has(problem.problemId))
@@ -1051,21 +1061,23 @@ case 4: {
         switch (problem.problemType) {
 case 1:
           case 2:
-            if (problem.answers.length === 0) {
-              return null;
+            if (problem.answers.length !== 0) {
+              return problem.answers;
             }
-            return problem.answers;
-case 3: {
-            return null;
-          }
+            return getRandomChoices(
+              problem.options,
+              1,
+              problem.problemType === 1 ? 1 : problem.options.length
+            );
+case 3:
+            return getRandomChoices(problem.options, 1, problem.pollingCount);
 case 4:
-            if (problem.blanks.length === 0 || problem.blanks.any((blank) => blank.answers.length === 0)) {
-              return null;
+            if (problem.blanks.length > 0 && problem.blanks.every((blank) => blank.answers.length > 0)) {
+              return problem.blanks.map((blank) => blank.answers[0]);
             }
-            return problem.blanks.map((blank) => blank.answers[0]);
-          default:
-            return null;
+            break;
         }
+        return null;
       }
       const problemUIVisible = vue.ref(false);
       function toggleNotifyProblems() {
@@ -1265,17 +1277,14 @@ case 4:
       };
     }
   };
-  const App = _export_sfc(_sfc_main, [["__scopeId", "data-v-4aa66361"]]);
-  const url = new URL(window.location.href);
-  if (url.pathname.startsWith("/lesson/fullscreen/v3/")) {
+  const App = _export_sfc(_sfc_main, [["__scopeId", "data-v-186342b8"]]);
+  if (window.location.pathname.startsWith("/lesson/fullscreen/v3/")) {
     launchLessonHelper();
-  } else if (url.pathname === "/v2/web/index") {
-    pollActiveLessons();
   }
   function launchLessonHelper() {
     _GM_getTab((tab) => {
       tab.type = "lesson";
-      tab.lessonId = url.pathname.split("/")[4];
+      tab.lessonId = window.location.pathname.split("/")[4];
       _GM_saveTab(tab);
     });
     const run = () => {
@@ -1312,20 +1321,46 @@ case 4:
       for (const lesson of resp.data.onLessonClassrooms) {
         const { classroomId, lessonId } = lesson;
         if (!enteredLessonIds.has(lessonId)) {
-          const url2 = new URL(
+          const url = new URL(
             `/lesson/fullscreen/v3/${lessonId}`,
             location.origin
           );
-          _GM_openInTab(url2.href, { active: false });
+          _GM_openInTab(url.href, { active: false });
           enteredLessonIds.add(lessonId);
         }
       }
     }
     updateLessonIds();
-    setInterval(async () => {
+    const handle = setInterval(async () => {
       await updateLessonIds();
       await checkActiveLessons();
     }, 5e3);
+    return () => {
+      clearInterval(handle);
+      enteredLessonIds.clear();
+    };
+  }
+  let stopPollingLessons = null;
+  function handleUrlChange(url) {
+    const POLLING_PROMPT = " [自动进入课堂]";
+    const parsed = new URL(url);
+    const shouldPoll = parsed.pathname === "/v2/web/index";
+    if (shouldPoll && stopPollingLessons === null) {
+      console.log("[yuketang-helper] Start polling active lessons");
+      stopPollingLessons = pollActiveLessons();
+      document.title += POLLING_PROMPT;
+    } else if (!shouldPoll && stopPollingLessons !== null) {
+      console.log("[yuketang-helper] Stop polling active lessons");
+      stopPollingLessons();
+      stopPollingLessons = null;
+      document.title = document.title.replace(POLLING_PROMPT, "");
+    }
+  }
+  handleUrlChange(window.location.href);
+  if (_monkeyWindow.onurlchange === null) {
+    _monkeyWindow.addEventListener("urlchange", (evt) => {
+      handleUrlChange(evt.url);
+    });
   }
   _unsafeWindow.WebSocket = MyWebSocket;
   _unsafeWindow.XMLHttpRequest = MyXMLHttpRequest;
