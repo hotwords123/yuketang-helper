@@ -4,6 +4,7 @@ import {
   GM_getTab,
   GM_saveTab,
   GM_getTabs,
+  monkeyWindow,
   unsafeWindow,
 } from "$";
 import "./style.css";
@@ -12,18 +13,15 @@ import storage from "./storage";
 import * as API from "./api";
 import { MyWebSocket, MyXMLHttpRequest } from "./network";
 
-const url = new URL(window.location.href);
-
-if (url.pathname.startsWith("/lesson/fullscreen/v3/")) {
+// #region Lesson helper
+if (window.location.pathname.startsWith("/lesson/fullscreen/v3/")) {
   launchLessonHelper();
-} else if (url.pathname === "/v2/web/index") {
-  pollActiveLessons();
 }
 
 function launchLessonHelper() {
   GM_getTab((tab) => {
     tab.type = "lesson";
-    tab.lessonId = url.pathname.split("/")[4];
+    tab.lessonId = window.location.pathname.split("/")[4];
     GM_saveTab(tab);
   });
 
@@ -39,7 +37,9 @@ function launchLessonHelper() {
     run();
   }
 }
+// #endregion
 
+// #region Poll active lessons
 function pollActiveLessons() {
   const enteredLessonIds = new Set();
 
@@ -79,11 +79,45 @@ function pollActiveLessons() {
 
   updateLessonIds();
 
-  setInterval(async () => {
+  const handle = setInterval(async () => {
     await updateLessonIds();
     await checkActiveLessons();
   }, 5000);
+
+  return () => {
+    clearInterval(handle);
+    enteredLessonIds.clear();
+  };
 }
+
+let stopPollingLessons = null;
+
+function handleUrlChange(url) {
+  const POLLING_PROMPT = " [自动进入课堂]";
+
+  const parsed = new URL(url);
+  const shouldPoll = parsed.pathname === "/v2/web/index";
+
+  if (shouldPoll && stopPollingLessons === null) {
+    console.log("[yuketang-helper] Start polling active lessons");
+    stopPollingLessons = pollActiveLessons();
+    document.title += POLLING_PROMPT;
+  } else if (!shouldPoll && stopPollingLessons !== null) {
+    console.log("[yuketang-helper] Stop polling active lessons");
+    stopPollingLessons();
+    stopPollingLessons = null;
+    document.title = document.title.replace(POLLING_PROMPT, "");
+  }
+}
+
+handleUrlChange(window.location.href);
+
+if (monkeyWindow.onurlchange === null) {
+  monkeyWindow.addEventListener("urlchange", (evt) => {
+    handleUrlChange(evt.url);
+  });
+}
+// #endregion
 
 unsafeWindow.WebSocket = MyWebSocket;
 unsafeWindow.XMLHttpRequest = MyXMLHttpRequest;
