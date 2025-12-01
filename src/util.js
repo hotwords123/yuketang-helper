@@ -1,3 +1,5 @@
+import { onUnmounted } from "vue";
+
 export const PROBLEM_TYPE_MAP = {
   1: "单选题",
   2: "多选题",
@@ -48,4 +50,11 @@ export function loadImage(src) {
 export function coverStyle(presentation) {
   const { width, height } = presentation;
   return { aspectRatio: width + "/" + height };
+}
+
+export function useInterval(callback, delay, ...args) {
+  const handle = setInterval(callback, delay, ...args);
+  const cancel = () => clearInterval(handle);
+  onUnmounted(cancel);
+  return { handle, cancel };
 }

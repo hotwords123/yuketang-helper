@@ -11,7 +11,7 @@ import { GM_notification, unsafeWindow } from "$";
 import storage from "./storage";
 import { answerProblem, retryProblem } from "./api";
 import { MyWebSocket, MyXMLHttpRequest } from "./network";
-import { randInt, coverStyle } from "./util";
+import { randInt, coverStyle, useInterval } from "./util";
 import ProblemUI from "./components/problem-ui/ProblemUI.vue";
 import ActiveProblem from "./components/ActiveProblem.vue";
 
@@ -38,11 +38,14 @@ const problemStatus = reactive(new Map());
 // #endregion
 
 // #region WebSocket messages
+let wsIntercepted = false;
 const messagesReceived = [];
 const messagesSent = [];
 
 MyWebSocket.addHandler((ws, url) => {
   if (url.pathname === "/wsapp/") {
+    wsIntercepted = true;
+
     ws.intercept((message) => {
       messagesSent.push(message);
     });
@@ -203,6 +206,52 @@ function onAnswerProblem(problemId, result) {
 }
 // #endregion
 
+// #region Page Vue instance
+const pageVueInstance = (() => {
+  let cached = null;
+  return () => {
+    if (!cached) {
+      const pageElement = document.querySelector("div#app > section.page");
+      const vueInstance = pageElement?.__vue__;
+      if (vueInstance) {
+        cached = vueInstance;
+      }
+    }
+    return cached;
+  };
+})();
+
+function markProblemAsDone(problemId) {
+  const vueInstance = pageVueInstance();
+  if (!vueInstance) return;
+
+  for (const card of vueInstance.cards) {
+    if (card.problemID === problemId) {
+      card.isComplete = true;
+      card.status = "已完成";
+    }
+  }
+}
+
+const { cancel: cancelLoadCheck } = useInterval(() => {
+  if (wsIntercepted) {
+    cancelLoadCheck();
+    return;
+  }
+
+  const vueInstance = pageVueInstance();
+  const cards = vueInstance?.cards;
+  if (Array.isArray(cards) && cards.length > 0) {
+    const ret = confirm("检测到雨课堂 helper 可能未正确加载，是否刷新页面？");
+    if (ret) {
+      location.reload();
+    } else {
+      cancelLoadCheck();
+    }
+  }
+}, 1000);
+// #endregion
+
 // #region Problem notification
 function notifyProblem(problem, slide) {
   GM_notification({
@@ -228,7 +277,7 @@ function getProblemDetail(problem) {
 // #endregion
 
 // #region Auto answer
-setInterval(() => {
+useInterval(() => {
   const now = Date.now();
 
   for (const [problemId, status] of problemStatus) {
@@ -256,6 +305,7 @@ async function doAutoAnswer(problem, status) {
     if (resp.code === 0) {
       messages.push("作答完成");
       onAnswerProblem(problem.problemId, result);
+      markProblemAsDone(problem.problemId);
     } else {
       messages.push(`作答失败：${resp.msg} (${resp.code})`);
     }
