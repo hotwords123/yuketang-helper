@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         雨课堂 helper
 // @namespace    https://github.com/hotwords123/yuketang-helper
-// @version      1.6.2
+// @version      1.6.3
 // @author       hotwords123
 // @description  雨课堂辅助工具：课堂习题提示，自动作答习题
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=yuketang.cn
@@ -24,7 +24,7 @@
 
   const d=new Set;const importCSS = async e=>{d.has(e)||(d.add(e),(t=>{typeof GM_addStyle=="function"?GM_addStyle(t):document.head.appendChild(document.createElement("style")).append(t);})(e));};
 
-  importCSS(' .title[data-v-a9820715]{font-weight:700;overflow:hidden;margin:10px 0}.title[data-v-a9820715]:after{content:"";display:inline-block;height:1px;background:#aaa;position:relative;vertical-align:middle;width:100%;left:1em;margin-right:-100%}.title .download-btn[data-v-a9820715]{cursor:pointer}.slide[data-v-a9820715]{position:relative;margin:10px 0;border:2px solid #dddddd;cursor:pointer}.slide>img[data-v-a9820715]{display:block;width:100%}.slide>.tag[data-v-a9820715]{position:absolute;top:0;left:0;display:inline-block;padding:3px 5px;font-size:small;color:#f7f7f7;background:#40404066}.slide.active[data-v-a9820715]{border-color:#2d70e7}.slide.active>.tag[data-v-a9820715]{background:#2d70e7}.slide.unlocked[data-v-a9820715]{border-color:#d7d48e}.slide.unlocked.active[data-v-a9820715]{border-color:#e6cb2d}.slide.unlocked.active>.tag[data-v-a9820715]{background:#e6cb2d}.slide.answered[data-v-a9820715]{border-color:#8dd790}.slide.answered.active[data-v-a9820715]{border-color:#4caf50}.slide.answered.active>.tag[data-v-a9820715]{background:#4caf50}.body[data-v-63a388c3]{margin-top:25px}.body>textarea[data-v-63a388c3]{width:100%;min-height:40px;resize:vertical}.actions[data-v-63a388c3]{margin-top:25px;text-align:center}.actions>button[data-v-63a388c3]{margin:0 20px;padding:4px 10px}.container[data-v-e971312a]{display:grid;grid-template:auto 36px / 240px auto;background:#ffffffe6;border:1px solid #bbbbbb;border-radius:5px;overflow:hidden}.list[data-v-e971312a]{grid-row:1;grid-column:1;padding:5px 15px;overflow-y:auto}.tail[data-v-e971312a]{grid-row:2;grid-column:1;padding:5px 15px;line-height:26px;border-top:1px solid #bbbbbb}.tail label[data-v-e971312a]{font-size:small}.tail input[type=checkbox][data-v-e971312a]{appearance:auto;vertical-align:middle}.detail[data-v-e971312a]{grid-row:1 / span 2;grid-column:2;padding:25px 40px;overflow-y:auto;border-left:1px solid #bbbbbb}.detail .cover[data-v-e971312a]{border:1px solid #dddddd;box-shadow:0 1px 4px 3px #0000001a}.detail .cover>img[data-v-e971312a]{display:block;width:100%}.card[data-v-250da923]{height:180px;background:#fff;border:1px solid #bbbbbb;box-shadow:0 1px 4px 3px #0000001a;opacity:.9;z-index:0;transition:all .2s ease}.card[data-v-250da923]:hover{box-shadow:0 1px 4px 3px #00000026;opacity:1;z-index:1;transform:translateY(-3px)}.tag[data-v-250da923]{position:absolute;bottom:0;left:0;display:inline-block;padding:2px 4px;font-size:small;color:#fff;background:#666c}.tag.ended[data-v-250da923]{background:#ff1e00cc}.tag.ready[data-v-250da923],.tag.pending[data-v-250da923]{background:#005effcc}.tag.answered[data-v-250da923]{background:#1eb41ecc}.tag>.icon-btn[data-v-250da923]{color:#eee}.tag>.icon-btn[data-v-250da923]:hover{color:#fff}.actions[data-v-250da923]{position:absolute;bottom:4px;right:5px;display:flex;flex-direction:row;gap:3px}.actions>.icon-btn[data-v-250da923]{list-style:none}[data-v-186342b8]{margin:0;padding:0;box-sizing:border-box}.toolbar[data-v-186342b8]{position:fixed;z-index:2000001;left:15px;bottom:15px;width:100px;height:36px;padding:5px 9px;display:flex;flex-direction:row;justify-content:space-between;align-items:center;background:#fff;border:1px solid #cccccc;border-radius:4px;box-shadow:0 1px 4px 3px #0000001a}.track[data-v-186342b8]{position:fixed;z-index:100;bottom:65px;left:15px;display:flex;flex-direction:row}.anchor[data-v-186342b8]{position:relative;width:100px;list-style:none}.inner[data-v-186342b8]{position:absolute;bottom:0}.anchor.v-move[data-v-186342b8],.anchor.v-enter-active[data-v-186342b8],.anchor.v-leave-active[data-v-186342b8]{transition:all .5s ease}.anchor.v-enter-from[data-v-186342b8]{opacity:0;transform:translateY(20px)}.anchor.v-leave-to[data-v-186342b8]{opacity:0;transform:translateY(-20px)}.anchor.v-leave-active[data-v-186342b8]{width:0}.popup[data-v-186342b8]{position:fixed;z-index:200;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#40404066}.popup.v-enter-active[data-v-186342b8],.popup.v-leave-active[data-v-186342b8]{transition:opacity .2s}.popup.v-enter-from[data-v-186342b8],.popup.v-leave-to[data-v-186342b8]{opacity:0}.problem-ui[data-v-186342b8]{width:80%;height:90%}.popup.v-enter-active>.problem-ui[data-v-186342b8],.popup.v-leave-active>.problem-ui[data-v-186342b8]{transition:transform .2s ease}.popup.v-enter-from>.problem-ui[data-v-186342b8],.popup.v-leave-to>.problem-ui[data-v-186342b8]{transform:translateY(10px)} ');
+  importCSS(' .title[data-v-a9820715]{font-weight:700;overflow:hidden;margin:10px 0}.title[data-v-a9820715]:after{content:"";display:inline-block;height:1px;background:#aaa;position:relative;vertical-align:middle;width:100%;left:1em;margin-right:-100%}.title .download-btn[data-v-a9820715]{cursor:pointer}.slide[data-v-a9820715]{position:relative;margin:10px 0;border:2px solid #dddddd;cursor:pointer}.slide>img[data-v-a9820715]{display:block;width:100%}.slide>.tag[data-v-a9820715]{position:absolute;top:0;left:0;display:inline-block;padding:3px 5px;font-size:small;color:#f7f7f7;background:#40404066}.slide.active[data-v-a9820715]{border-color:#2d70e7}.slide.active>.tag[data-v-a9820715]{background:#2d70e7}.slide.unlocked[data-v-a9820715]{border-color:#d7d48e}.slide.unlocked.active[data-v-a9820715]{border-color:#e6cb2d}.slide.unlocked.active>.tag[data-v-a9820715]{background:#e6cb2d}.slide.answered[data-v-a9820715]{border-color:#8dd790}.slide.answered.active[data-v-a9820715]{border-color:#4caf50}.slide.answered.active>.tag[data-v-a9820715]{background:#4caf50}.body[data-v-63a388c3]{margin-top:25px}.body>textarea[data-v-63a388c3]{width:100%;min-height:40px;resize:vertical}.actions[data-v-63a388c3]{margin-top:25px;text-align:center}.actions>button[data-v-63a388c3]{margin:0 20px;padding:4px 10px}.container[data-v-e971312a]{display:grid;grid-template:auto 36px / 240px auto;background:#ffffffe6;border:1px solid #bbbbbb;border-radius:5px;overflow:hidden}.list[data-v-e971312a]{grid-row:1;grid-column:1;padding:5px 15px;overflow-y:auto}.tail[data-v-e971312a]{grid-row:2;grid-column:1;padding:5px 15px;line-height:26px;border-top:1px solid #bbbbbb}.tail label[data-v-e971312a]{font-size:small}.tail input[type=checkbox][data-v-e971312a]{appearance:auto;vertical-align:middle}.detail[data-v-e971312a]{grid-row:1 / span 2;grid-column:2;padding:25px 40px;overflow-y:auto;border-left:1px solid #bbbbbb}.detail .cover[data-v-e971312a]{border:1px solid #dddddd;box-shadow:0 1px 4px 3px #0000001a}.detail .cover>img[data-v-e971312a]{display:block;width:100%}.card[data-v-250da923]{height:180px;background:#fff;border:1px solid #bbbbbb;box-shadow:0 1px 4px 3px #0000001a;opacity:.9;z-index:0;transition:all .2s ease}.card[data-v-250da923]:hover{box-shadow:0 1px 4px 3px #00000026;opacity:1;z-index:1;transform:translateY(-3px)}.tag[data-v-250da923]{position:absolute;bottom:0;left:0;display:inline-block;padding:2px 4px;font-size:small;color:#fff;background:#666c}.tag.ended[data-v-250da923]{background:#ff1e00cc}.tag.ready[data-v-250da923],.tag.pending[data-v-250da923]{background:#005effcc}.tag.answered[data-v-250da923]{background:#1eb41ecc}.tag>.icon-btn[data-v-250da923]{color:#eee}.tag>.icon-btn[data-v-250da923]:hover{color:#fff}.actions[data-v-250da923]{position:absolute;bottom:4px;right:5px;display:flex;flex-direction:row;gap:3px}.actions>.icon-btn[data-v-250da923]{list-style:none}[data-v-762db53e]{margin:0;padding:0;box-sizing:border-box}.toolbar[data-v-762db53e]{position:fixed;z-index:2000001;left:15px;bottom:15px;width:100px;height:36px;padding:5px 9px;display:flex;flex-direction:row;justify-content:space-between;align-items:center;background:#fff;border:1px solid #cccccc;border-radius:4px;box-shadow:0 1px 4px 3px #0000001a}.track[data-v-762db53e]{position:fixed;z-index:100;bottom:65px;left:15px;display:flex;flex-direction:row}.anchor[data-v-762db53e]{position:relative;width:100px;list-style:none}.inner[data-v-762db53e]{position:absolute;bottom:0}.anchor.v-move[data-v-762db53e],.anchor.v-enter-active[data-v-762db53e],.anchor.v-leave-active[data-v-762db53e]{transition:all .5s ease}.anchor.v-enter-from[data-v-762db53e]{opacity:0;transform:translateY(20px)}.anchor.v-leave-to[data-v-762db53e]{opacity:0;transform:translateY(-20px)}.anchor.v-leave-active[data-v-762db53e]{width:0}.popup[data-v-762db53e]{position:fixed;z-index:200;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#40404066}.popup.v-enter-active[data-v-762db53e],.popup.v-leave-active[data-v-762db53e]{transition:opacity .2s}.popup.v-enter-from[data-v-762db53e],.popup.v-leave-to[data-v-762db53e]{opacity:0}.problem-ui[data-v-762db53e]{width:80%;height:90%}.popup.v-enter-active>.problem-ui[data-v-762db53e],.popup.v-leave-active>.problem-ui[data-v-762db53e]{transition:transform .2s ease}.popup.v-enter-from>.problem-ui[data-v-762db53e],.popup.v-leave-to>.problem-ui[data-v-762db53e]{transform:translateY(10px)} ');
 
   var _GM_getTab = (() => typeof GM_getTab != "undefined" ? GM_getTab : void 0)();
   var _GM_getTabs = (() => typeof GM_getTabs != "undefined" ? GM_getTabs : void 0)();
@@ -228,6 +228,12 @@
   function coverStyle(presentation) {
     const { width, height } = presentation;
     return { aspectRatio: width + "/" + height };
+  }
+  function useInterval(callback, delay, ...args) {
+    const handle = setInterval(callback, delay, ...args);
+    const cancel = () => clearInterval(handle);
+    vue.onUnmounted(cancel);
+    return { handle, cancel };
   }
   const _hoisted_1$6 = ["src"];
   const _sfc_main$6 = {
@@ -853,8 +859,10 @@ case 4: {
       const slides = vue.reactive( new Map());
       const problems = vue.reactive( new Map());
       const problemStatus = vue.reactive( new Map());
+      let wsIntercepted = false;
       MyWebSocket.addHandler((ws, url) => {
         if (url.pathname === "/wsapp/") {
+          wsIntercepted = true;
           ws.intercept((message) => {
           });
           ws.listen((message) => {
@@ -981,6 +989,45 @@ case 4: {
           problem.result = result;
         }
       }
+      const pageVueInstance = (() => {
+        let cached = null;
+        return () => {
+          if (!cached) {
+            const pageElement = document.querySelector("div#app > section.page");
+            const vueInstance = pageElement?.__vue__;
+            if (vueInstance) {
+              cached = vueInstance;
+            }
+          }
+          return cached;
+        };
+      })();
+      function markProblemAsDone(problemId) {
+        const vueInstance = pageVueInstance();
+        if (!vueInstance) return;
+        for (const card of vueInstance.cards) {
+          if (card.problemID === problemId) {
+            card.isComplete = true;
+            card.status = "已完成";
+          }
+        }
+      }
+      const { cancel: cancelLoadCheck } = useInterval(() => {
+        if (wsIntercepted) {
+          cancelLoadCheck();
+          return;
+        }
+        const vueInstance = pageVueInstance();
+        const cards = vueInstance?.cards;
+        if (Array.isArray(cards) && cards.length > 0) {
+          const ret = confirm("检测到雨课堂 helper 可能未正确加载，是否刷新页面？");
+          if (ret) {
+            location.reload();
+          } else {
+            cancelLoadCheck();
+          }
+        }
+      }, 1e3);
       function notifyProblem(problem, slide) {
         _GM_notification({
           title: "课堂习题提示",
@@ -1000,7 +1047,7 @@ case 4: {
         }
         return lines.join("\n");
       }
-      setInterval(() => {
+      useInterval(() => {
         const now = Date.now();
         for (const [problemId, status] of problemStatus) {
           if (status.autoAnswerTime !== null && now >= status.autoAnswerTime) {
@@ -1023,6 +1070,7 @@ case 4: {
           if (resp.code === 0) {
             messages.push("作答完成");
             onAnswerProblem(problem.problemId, result);
+            markProblemAsDone(problem.problemId);
           } else {
             messages.push(`作答失败：${resp.msg} (${resp.code})`);
           }
@@ -1277,7 +1325,7 @@ case 4:
       };
     }
   };
-  const App = _export_sfc(_sfc_main, [["__scopeId", "data-v-186342b8"]]);
+  const App = _export_sfc(_sfc_main, [["__scopeId", "data-v-762db53e"]]);
   if (window.location.pathname.startsWith("/lesson/fullscreen/v3/")) {
     launchLessonHelper();
   }
