@@ -7,7 +7,7 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=yuketang.cn
 // @match        https://*.yuketang.cn/*
 // @require      https://cdn.jsdelivr.net/npm/vue@3.5.22/dist/vue.global.prod.js
-// @require      https://cdn.jsdelivr.net/npm/jspdf@3.0.3/dist/jspdf.umd.min.js
+// @require      https://cdn.jsdelivr.net/npm/jspdf@4.0.0/dist/jspdf.umd.min.js
 // @grant        GM_addStyle
 // @grant        GM_getTab
 // @grant        GM_getTabs
