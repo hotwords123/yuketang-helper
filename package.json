@@ -10,7 +10,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "jspdf": "^4.1.0",
+    "jspdf": "^4.2.0",
     "vue": "^3.5.22"
   },
   "devDependencies": {
