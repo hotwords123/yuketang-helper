@@ -1315,9 +1315,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jspdf@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "jspdf@npm:4.2.0"
+"jspdf@npm:^4.2.1":
+  version: 4.2.1
+  resolution: "jspdf@npm:4.2.1"
   dependencies:
     "@babel/runtime": "npm:^7.28.6"
     canvg: "npm:^3.0.11"
@@ -1335,7 +1335,7 @@ __metadata:
       optional: true
     html2canvas:
       optional: true
-  checksum: 10c0/446f8aca80e862b2528d343892c22e608753530683cd939aa58b5f5a7dc37d387e45dca115451961059ad8a76fa63237343052248f38a8fc31dba7d498a6dbc4
+  checksum: 10c0/d905809b374de1060ab39ba4b1603935fcced314bef8f63f7fd272d3f96eff0b50a96e48d3c2063ac8e51b84a1442464ff2b037af13f54b082e456416da470b7
   languageName: node
   linkType: hard
 
@@ -1950,15 +1950,15 @@ __metadata:
   linkType: hard
 
 "tar@npm:^7.4.3":
-  version: 7.5.10
-  resolution: "tar@npm:7.5.10"
+  version: 7.5.12
+  resolution: "tar@npm:7.5.12"
   dependencies:
     "@isaacs/fs-minipass": "npm:^4.0.0"
     chownr: "npm:^3.0.0"
     minipass: "npm:^7.1.2"
     minizlib: "npm:^3.1.0"
     yallist: "npm:^5.0.0"
-  checksum: 10c0/ed905e4b33886377df6e9206e5d1bd34458c21666e27943f946799416f86348c938590d573d6a69312cb29c583b122647a64ec92782f2b7e24e68d985dd72531
+  checksum: 10c0/3825c5974f5fde792981f47ee9ffea021ee7f4b552b7ab95eeb98e5dfadfd5a5d5861f01fb772e2e5637a41980d3c019fd6cdad1be48b462b886abd7fe0fa17c
   languageName: node
   linkType: hard
 
@@ -2186,7 +2186,7 @@ __metadata:
   resolution: "yuketang-helper@workspace:."
   dependencies:
     "@vitejs/plugin-vue": "npm:^6.0.1"
-    jspdf: "npm:^4.2.0"
+    jspdf: "npm:^4.2.1"
     postcss: "npm:^8.5.6"
     prettier: "npm:3.6.2"
     vite: "npm:^7.1.11"
